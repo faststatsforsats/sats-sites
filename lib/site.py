@@ -28,7 +28,8 @@ ATTRIBUTION_LINES = {
     "bls": {"text": "Source: U.S. Bureau of Labor Statistics, retrieved {date}. BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov.", "url": "https://www.bls.gov"},
     "altme": {"text": "Source: alternative.me", "url": "https://alternative.me/crypto/fear-and-greed-index/"},
     "mempool": {"text": "Fee data: mempool.space", "url": "https://mempool.space"},
-    "blockchain": {"text": "Network data: blockchain.com", "url": "https://www.blockchain.com/explorer/charts"},
+    "blockchain": {"text": "Price and network data: blockchain.com", "url": "https://www.blockchain.com/explorer/charts"},
+    "worldbank": {"text": "Gold price: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0", "url": "https://www.worldbank.org/en/research/commodity-markets"},
 }
 
 SATS_LINE = "Sats means satoshis, the smallest unit of bitcoin."

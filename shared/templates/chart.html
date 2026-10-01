@@ -17,9 +17,7 @@
       <img src="{{ png }}" alt="{{ alt }}" width="1600" height="900" loading="eager">
     </picture>
     <figcaption>
-      {% if chart.get('source') %}Source: {{ chart.get('source') }}.{% endif %}
-      {% if chart.get('pulled') %}Pulled {{ chart.get('pulled') }}.{% endif %}
-      <a href="{{ png }}">Open the image</a>{% if chart.get('data') %} or <a href="{{ chart.get('data') }}">the data</a>{% endif %}.
+      {% if chart.get('source') %}Source: {{ chart.get('source') }}. {% endif %}{% if chart.get('pulled') %}Pulled {{ chart.get('pulled') }}. {% endif %}<a href="{{ png }}">Open the image</a>{% if chart.get('data') %} or <a href="{{ chart.get('data') }}">the data</a>{% endif %}.
     </figcaption>
   </figure>
   <details class="embed">
