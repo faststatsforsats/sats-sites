@@ -1,0 +1,31 @@
+# Builds all three sites on every pull request and every push to main.
+# A red check means a page would break the Cloudflare build; fix it before merging.
+name: Build check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "data/**"
+      - "charts/**"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: python3 -m pip install -r requirements.txt
+      - run: python3 build.py all --strict
+      - name: List what was built
+        run: |
+          for site in stats facts acts; do
+            echo "== $site =="; find sites/$site/dist -type f | sort | head -50
+          done
