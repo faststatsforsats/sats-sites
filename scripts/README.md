@@ -1,3 +1,44 @@
-# Scripts
+# Scripts: the Daily Build
 
-The Daily Build scripts (step 16 of the Build Recipe) go here: one module per data source (CoinGecko, BLS, FRED, mempool.space, blockchain.com, alternative.me), one per chart (drawn with `lib/chartstyle.py`), and the runner that `.github/workflows/daily-build.yml` calls at 09:00 UTC.
+`.github/workflows/daily-build.yml` runs `scripts/daily_build.py` every morning at 09:00 UTC and commits what it produces. The commit lands in `data/`, `charts/`, and `content/stats/charts/`, which rebuilds the Stats site on Cloudflare Pages. Nothing here is run by hand on a normal day.
+
+| File | What it does |
+| --- | --- |
+| `daily_build.py` | The runner: pull the sources, write `data/*.json`, draw the charts, refresh the chart pages, write `charts/index.json` and `data/latest.json`, print a summary |
+| `chartbook.py` | One function per chart, all drawn through `lib/chartstyle.py`. Add a chart here |
+| `pages.py` | The programmatic chart pages under `content/stats/charts/`. The build owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`; the explainer the Content Writer adds below the markers is kept |
+| `series.py` | Date-series helpers: monthly and quarterly averages, "a year ago" lookups, sats-per-unit conversions |
+| `nostr_post.py` | Posts the chart of the day as the site's Nostr account (NIP-01 note, BIP-340 signature via coincurve). Rotates through the charts by day of the year |
+| `sources/` | One module per source; each returns plain `(date, value)` lists and raises `SourceError` when the source is down |
+| `fixtures/` | Synthetic data shaped like each source, for offline runs: `python3 scripts/daily_build.py --fixtures`. Regenerate with `python3 scripts/fixtures/generate.py` |
+
+## Sources and keys
+
+| Source | What | Key | Module |
+| --- | --- | --- | --- |
+| blockchain.com charts | daily price (USD) and hash rate since 2009 | none | `sources/blockchain_com.py` |
+| alternative.me | Crypto Fear & Greed Index, daily since 2018 | none | `sources/alternative_me.py` |
+| U.S. Bureau of Labor Statistics API v2 | CPI and average prices (eggs, gasoline, ground beef, milk, bread, coffee, electricity), monthly | `BLS_KEY` | `sources/bls.py` |
+| FRED | median new-home price (MSPUS, quarterly), S&P 500 (daily, last 10 years) | `FRED_KEY` | `sources/fred.py` |
+| World Bank Pink Sheet | gold, USD per troy ounce, monthly since 1960 (FRED removed the daily LBMA gold series in 2022) | none | `sources/worldbank.py` |
+| api.faststatsforsats.com | today's price in 30 currencies (CoinGecko, via the Worker) and the fee tiers | none | `sources/live_api.py` |
+
+Keys live in the repository's secrets store (Settings, Secrets and variables, Actions): `BLS_KEY` and `FRED_KEY` for the data, `NOSTR_NSEC` for the daily post. The post is skipped, without failing the build, until `NOSTR_NSEC` exists; add it at launch (step 35), once the custom domains are live, so the first note does not carry dead links.
+
+## When a source fails
+
+The runner keeps yesterday's data file for that source, draws what it can, and prints `FAIL <source>: <reason>` in the workflow log. The job still succeeds as long as at least one chart was drawn. A source that fails three days running is worth a look: open the Actions tab, the latest Daily Build run, and read the "Pull data" step.
+
+## Running it yourself
+
+```
+python3 -m pip install -r requirements-daily.txt
+python3 scripts/daily_build.py --fixtures      # offline, synthetic data
+BLS_KEY=... FRED_KEY=... python3 scripts/daily_build.py   # the real thing
+python3 scripts/nostr_post.py --dry-run         # print today's note without posting
+python3 scripts/nostr_post.py --self-test       # key handling and signing checks
+```
+
+## The charts (October 2026)
+
+sats-per-dollar, price-usd, eggs-in-sats, gold-in-sats, home-in-bitcoin, fear-greed, hashrate. Each writes a light PNG, a dark PNG, and an SVG into `charts/`, an entry in `charts/index.json`, and a page at `/charts/<slug>/` on the Stats site.

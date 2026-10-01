@@ -139,7 +139,7 @@ def new_figure(title: str, subtitle: str | None, mode: str = "light"):
     plt, c = apply(mode)
     fig = plt.figure(figsize=(WIDTH_PX / DPI, HEIGHT_PX / DPI), dpi=DPI)
     # Leave room for the title block at the top and the footer at the bottom
-    ax = fig.add_axes([0.095, 0.17, 0.865, 0.62])
+    ax = fig.add_axes([0.095, 0.2, 0.80, 0.59])   # room on the right for an end label, two footer lines below
     fig.text(0.04, 0.945, title, fontsize=15, fontweight="bold", color=c.ink, ha="left", va="top", wrap=True)
     if subtitle:
         fig.text(0.04, 0.875, subtitle, fontsize=11, color=c.ink2, ha="left", va="top")
@@ -150,11 +150,10 @@ def finish(fig, ax, c: Colors, source: str, pulled: str, site: str = SITE_NAME, 
     """Footer line, tick styling, and the thin-mark defaults."""
     for spine in ("left", "bottom"):
         ax.spines[spine].set_color(c.axis)
-    ax.tick_params(length=0, pad=6)
+    ax.tick_params(which="both", length=0, pad=6)
     ax.set_facecolor(c.surface)
-    footer = f"Source: {source}. Pulled {pulled}."
-    fig.text(0.04, 0.045, footer, fontsize=9, color=c.muted, ha="left", va="bottom")
-    fig.text(0.96, 0.045, f"{site}  |  {site_url}", fontsize=9, color=c.muted, ha="right", va="bottom")
+    fig.text(0.04, 0.075, f"Source: {source}. Pulled {pulled}.", fontsize=9, color=c.muted, ha="left", va="bottom")
+    fig.text(0.04, 0.035, f"{site}  |  {site_url}", fontsize=9, color=c.muted, ha="left", va="bottom")
 
 
 def label_last_point(ax, x, y, text: str, c: Colors, color: str | None = None) -> None:
@@ -178,11 +177,15 @@ def thousands(value: float) -> str:
     """1,234 or 1.2M for axis labels."""
     if value is None or (isinstance(value, float) and math.isnan(value)):
         return ""
+    if abs(value) >= 1_000_000_000:
+        return f"{value / 1_000_000_000:g}B"
     if abs(value) >= 1_000_000:
-        return f"{value / 1_000_000:,.1f}M"
+        return f"{value / 1_000_000:g}M"
     if abs(value) >= 10_000:
-        return f"{value / 1_000:,.0f}k"
-    return f"{value:,.0f}"
+        return f"{value / 1_000:g}k"
+    if abs(value) >= 100:
+        return f"{value:,.0f}"
+    return f"{value:g}"
 
 
 def render_chart(
