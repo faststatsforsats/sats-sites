@@ -1,0 +1,63 @@
+# The Daily Build: every morning at 09:00 UTC (5am Eastern in summer, 4am in winter) and on demand.
+# Pulls the public data sources, writes data/, draws charts/, refreshes the chart pages, commits,
+# and posts the chart of the day to Nostr. The commit rebuilds the Stats site on Cloudflare Pages.
+name: Daily Build
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install
+        run: python3 -m pip install -r requirements-daily.txt
+
+      - name: Pull data, draw charts, refresh chart pages
+        env:
+          BLS_KEY: ${{ secrets.BLS_KEY }}
+          FRED_KEY: ${{ secrets.FRED_KEY }}
+          SITE_API: https://api.faststatsforsats.com
+        run: python3 scripts/daily_build.py
+
+      - name: Check that the sites still build
+        run: python3 build.py all --strict
+
+      - name: Commit and push
+        id: commit
+        run: |
+          git config user.name "Daily Build"
+          git config user.email "daily-build@faststatsforsats.com"
+          git add data charts content/stats/charts
+          if git diff --cached --quiet; then
+            echo "nothing changed"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Daily build $(date -u +%Y-%m-%d)"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Post the chart of the day to Nostr
+        if: steps.commit.outputs.changed == 'true'
+        continue-on-error: true
+        env:
+          NOSTR_NSEC: ${{ secrets.NOSTR_NSEC }}
+        run: python3 scripts/nostr_post.py
