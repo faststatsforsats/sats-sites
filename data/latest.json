@@ -1,9 +1,191 @@
 {
-  "updated": null,
-  "note": "Placeholder. The Daily Build (step 16) fills this file every morning at 09:00 UTC.",
-  "price": {"usd": null, "eur": null, "gbp": null, "updated": null, "source": {"name": "CoinGecko", "url": "https://www.coingecko.com"}},
-  "sats_per_dollar": null,
-  "fees": {"fast": null, "medium": null, "slow": null, "unit": "sat/vB", "updated": null, "source": {"name": "mempool.space", "url": "https://mempool.space"}},
-  "fear_greed": {"value": null, "label": null, "updated": null, "source": {"name": "alternative.me", "url": "https://alternative.me/crypto/fear-and-greed-index/"}},
-  "cpi": {"value": null, "period": null, "series": "CUUR0000SA0", "source": {"name": "U.S. Bureau of Labor Statistics", "url": "https://www.bls.gov"}}
+ "updated": "2026-10-01T20:54:07+00:00",
+ "price": {
+  "usd": 84621.52013907106,
+  "prices": {
+   "usd": 84621.52013907106,
+   "eur": 75272.02686498566,
+   "gbp": 64126.35720442832,
+   "jpy": 13375658.270022199,
+   "cad": 120364.46554453272,
+   "aud": 122095.144874417,
+   "chf": 70286.55000599228,
+   "cny": 567361.9060764298,
+   "inr": 8147982.265648863,
+   "brl": 441673.5622138675,
+   "mxn": 1548189.5522220489,
+   "krw": 115054741.27582623,
+   "sgd": 108369.78817242009,
+   "hkd": 663900.6748966861,
+   "nzd": 150929.58937572493,
+   "sek": 850688.6334313424,
+   "nok": 815002.2998228539,
+   "dkk": 562680.8974468968,
+   "pln": 329340.27128117357,
+   "czk": 1840881.9355613936,
+   "huf": 27768210.808910005,
+   "try": 4149353.535472926,
+   "zar": 1412088.3610633337,
+   "aed": 310814.843470808,
+   "sar": 317854.7615957377,
+   "ils": 261163.16652920807,
+   "thb": 2847598.7741998807,
+   "php": 5314443.44164161,
+   "idr": 1518419720.7308302,
+   "ars": 129038103.6615714
+  },
+  "sats_per": {
+   "usd": 1182,
+   "eur": 1329,
+   "gbp": 1559,
+   "jpy": 7,
+   "cad": 831,
+   "aud": 819,
+   "chf": 1423,
+   "cny": 176,
+   "inr": 12,
+   "brl": 226,
+   "mxn": 65,
+   "krw": 1,
+   "sgd": 923,
+   "hkd": 151,
+   "nzd": 663,
+   "sek": 118,
+   "nok": 123,
+   "dkk": 178,
+   "pln": 304,
+   "czk": 54,
+   "huf": 4,
+   "try": 24,
+   "zar": 71,
+   "aed": 322,
+   "sar": 315,
+   "ils": 383,
+   "thb": 35,
+   "php": 19,
+   "idr": 0,
+   "ars": 1
+  },
+  "change_24h": {
+   "usd": 1.25,
+   "eur": 2.01,
+   "gbp": 1.74,
+   "jpy": 1.68,
+   "cad": 1.2,
+   "aud": 1.45,
+   "chf": 0.64,
+   "cny": 1.24,
+   "inr": 1.61,
+   "brl": 2.17,
+   "mxn": 2.5,
+   "krw": 1.44,
+   "sgd": 1.46,
+   "hkd": 1.23,
+   "nzd": 1.74,
+   "sek": 1.61,
+   "nok": 1.31,
+   "dkk": 2,
+   "pln": 2.28,
+   "czk": 2.1,
+   "huf": 2.67,
+   "try": 1.28,
+   "zar": 2.84,
+   "aed": 1.25,
+   "sar": 1.26,
+   "ils": 1.66,
+   "thb": 1.39,
+   "php": 1.14,
+   "idr": 1.38,
+   "ars": 1.24
+  },
+  "updated": "2026-10-01T20:01:09.068Z",
+  "source": {
+   "name": "CoinGecko",
+   "url": "https://www.coingecko.com",
+   "attribution": "Data provided by CoinGecko"
+  }
+ },
+ "price_daily_average": {
+  "date": "2026-10-01",
+  "usd": 83570.96,
+  "source": {
+   "name": "blockchain.com",
+   "url": "https://www.blockchain.com/explorer/charts"
+  }
+ },
+ "sats_per_dollar": 1182,
+ "fees": {
+  "fast": 4,
+  "medium": 3,
+  "slow": 1,
+  "unit": "sat/vB",
+  "height": 969492,
+  "updated": "2026-10-01T20:51:08.921Z",
+  "source": {
+   "name": "mempool.space",
+   "url": "https://mempool.space"
+  }
+ },
+ "charts": {
+  "sats-per-dollar": {
+   "date": "2026-10-01",
+   "value": 1197,
+   "text": "1,197 sats",
+   "finding": "A dollar bought 1,197 sats on October 1, 2026"
+  },
+  "price-usd": {
+   "date": "2026-10-01",
+   "value": 83570.96,
+   "text": "$83,571",
+   "finding": "One bitcoin cost $83,571 on October 1, 2026"
+  },
+  "eggs-in-sats": {
+   "date": "2026-08-01",
+   "value": 3294,
+   "text": "3,294 sats",
+   "finding": "A dozen eggs cost 3,294 sats in August 2026"
+  },
+  "gold-in-sats": {
+   "date": "2026-08-01",
+   "value": 6394777,
+   "text": "6,394,777 sats",
+   "finding": "An ounce of gold cost 6,394,777 sats in August 2026"
+  },
+  "home-in-bitcoin": {
+   "date": "2026-04-01",
+   "value": 5.72,
+   "text": "5.72 bitcoin",
+   "finding": "A median new home cost 5.7 bitcoin in Q2 2026"
+  },
+  "fear-greed": {
+   "date": "2026-10-01",
+   "value": 74,
+   "text": "74 (Greed)",
+   "finding": "Fear and Greed read 74 (Greed) on October 1, 2026"
+  },
+  "hashrate": {
+   "date": "2026-09-30",
+   "value": 930.5,
+   "text": "931 EH/s",
+   "finding": "The network ran at 931 EH/s on September 30, 2026"
+  }
+ },
+ "fear_greed": {
+  "value": 74,
+  "label": "Greed",
+  "date": "2026-10-01",
+  "source": {
+   "name": "alternative.me",
+   "url": "https://alternative.me/crypto/fear-and-greed-index/"
+  }
+ },
+ "cpi": {
+  "value": 334.98,
+  "period": "2026-08",
+  "series": "CUUR0000SA0",
+  "source": {
+   "name": "U.S. Bureau of Labor Statistics",
+   "url": "https://www.bls.gov"
+  }
+ }
 }
