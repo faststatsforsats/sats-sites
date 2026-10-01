@@ -1,4 +1,7 @@
-# Daily Build (GitHub Actions, step 16): everything the site build needs plus data and charts
+# Daily Build (GitHub Actions, step 16): everything the site build needs plus data, charts, and the Nostr post
 -r requirements.txt
 matplotlib>=3.8,<4
 requests>=2.31,<3
+openpyxl>=3.1,<4
+coincurve>=19,<22
+websockets>=12,<18

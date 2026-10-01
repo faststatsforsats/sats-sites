@@ -1,0 +1,1 @@
+{"updated": "2026-10-01T19:56:43.508037+00:00", "source": {"name": "mempool.space", "url": "https://mempool.space"}, "unit": "sat/vB", "fees": {"fast": 4, "medium": 4, "slow": 3, "economy": 2, "minimum": 1}, "height": 969477, "mempool": {"count": 86126, "vsize_mb": 46.35}}

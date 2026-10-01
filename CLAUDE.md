@@ -12,7 +12,8 @@ This repository builds three sites for Jim Shaver: Fast Stats for Sats (faststat
 
 - A page is a Markdown file under `content/<site>/<section>/<slug>.md`. Front matter fields are documented at the top of `lib/content.py`. Sections are declared in `sites/<site>/site.yml`; add a section there before adding a folder.
 - Templates: `shared/templates/`. Styles: `shared/static/site.css`. Chart style: `lib/chartstyle.py`. Redirects: `go/redirects.csv`.
-- Data and charts are written only by the Daily Build. Do not edit `data/` or `charts/` by hand.
+- Data and charts are written only by the Daily Build (`scripts/daily_build.py`, 09:00 UTC). Do not edit `data/` or `charts/` by hand.
+- Chart pages under `content/stats/charts/` are shared with the Daily Build: it owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`. Write the explainer below the end marker and it is kept.
 
 ## Writing rules (from the style guide)
 
