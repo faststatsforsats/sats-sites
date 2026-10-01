@@ -1,0 +1,4 @@
+# Site build (Cloudflare Pages installs these before each build)
+Jinja2>=3.1,<4
+Markdown>=3.5,<4
+PyYAML>=6,<7

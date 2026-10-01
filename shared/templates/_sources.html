@@ -1,0 +1,8 @@
+{% if sources is defined and sources %}
+<section class="sources" aria-label="Sources">
+  <h2>Sources</h2>
+  <ul>
+    {% for source in sources %}<li><a href="{{ source.url }}" rel="noopener">{{ source.name }}</a>{% if source.get('note') %}: {{ source.get('note') }}{% endif %}</li>{% endfor %}
+  </ul>
+</section>
+{% endif %}

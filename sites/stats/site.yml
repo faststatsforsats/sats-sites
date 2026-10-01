@@ -1,0 +1,24 @@
+# Fast Stats for Sats: graphics and easy-to-understand details about the value of sats and bitcoin
+key: stats
+name: Fast Stats for Sats
+short_name: Stats
+domain: faststatsforsats.com
+url: https://faststatsforsats.com
+tagline: Charts and plain details about the value of sats and bitcoin
+description: Free charts and plain-language details about the value of sats and bitcoin, updated every day.
+role: value
+
+# This site publishes the shared data and chart files at /data/ and /charts/.
+serves_data: true
+
+# The live-numbers API (step 15). Pages read it with shared/static/live.js and fall back to the daily figures.
+api_url: https://api.faststatsforsats.com
+
+# Footer line required on every page (style guide, Compliance)
+disclaimer: Not financial advice. Fast Stats for Sats is an information site.
+
+# Sections that appear in the header nav once they have pages (slug: label)
+sections:
+  charts: Charts
+  value: Value explainers
+  tools: Tools

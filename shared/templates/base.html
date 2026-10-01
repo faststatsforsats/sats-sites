@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block head_title %}{{ title }} | {{ site.name }}{% endblock %}</title>
+{% set description = (page.meta.get('description') if page and page.meta.get('description') else site.description) %}
+{% set chart_slug = (chart.get('slug') if (chart is defined and chart) else None) %}
+<meta name="description" content="{{ description }}">
+{% if canonical %}<link rel="canonical" href="{{ canonical }}">{% endif %}
+<meta property="og:site_name" content="{{ site.name }}">
+<meta property="og:title" content="{{ title }}">
+<meta property="og:description" content="{{ description }}">
+<meta property="og:type" content="{% if page and page.url != '/' %}article{% else %}website{% endif %}">
+{% if canonical %}<meta property="og:url" content="{{ canonical }}">{% endif %}
+{% if chart_slug %}<meta property="og:image" content="https://faststatsforsats.com/charts/{{ chart_slug }}.png">{% endif %}
+<meta name="twitter:card" content="{% if chart_slug %}summary_large_image{% else %}summary{% endif %}">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/static/site.css">
+<link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="/feed.xml">
+</head>
+<body data-site="{{ site.key }}" data-api="{{ site.api_url }}">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <div class="family" aria-label="The three Sats sites">
+      {% for entry in sites %}
+        {% if entry.key == site.key %}<span class="family-current">{{ entry.short_name }}</span>{% else %}<a href="{{ entry.url }}/">{{ entry.short_name }}</a>{% endif %}{% if not loop.last %}<span class="family-sep" aria-hidden="true">/</span>{% endif %}
+      {% endfor %}
+      <span class="family-note">for Sats</span>
+    </div>
+    <div class="masthead">
+      <a class="brand" href="/">{{ site.name }}</a>
+      <p class="tagline">{{ site.tagline }}</p>
+    </div>
+    {% if nav %}
+    <nav class="site-nav" aria-label="Sections">
+      {% for item in nav %}<a href="{{ item.url }}"{% if section and item.url == '/' ~ section ~ '/' %} aria-current="true"{% endif %}>{{ item.label }}</a>{% endfor %}
+    </nav>
+    {% endif %}
+  </div>
+</header>
+
+<main id="main" class="wrap">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="sats-line">{{ sats_line }}</p>
+    {% if attribution is defined and attribution %}
+    <ul class="attribution">
+      {% for line in attribution %}<li><a href="{{ line.url }}" rel="noopener">{{ line.text }}</a></li>{% endfor %}
+    </ul>
+    {% endif %}
+    <p class="disclaimer">{{ site.disclaimer }}</p>
+    <p class="family-footer">
+      {% for entry in sites %}<a href="{{ entry.url }}/">{{ entry.name }}</a>: {{ entry.what }}.{% if not loop.last %} {% endif %}{% endfor %}
+    </p>
+    <p class="colophon">&copy; {{ year }} {{ site.name }}. Built {{ build_date | date }}.</p>
+  </div>
+</footer>
+<script src="/static/live.js" defer></script>
+</body>
+</html>

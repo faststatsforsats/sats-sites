@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose chart-page">
+  <header class="page-head">
+    {% if section_label %}<p class="eyebrow"><a href="/{{ section }}/">{{ section_label }}</a></p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {% if chart and chart.get('slug') %}
+  {% set png = "/charts/" ~ chart.get('slug') ~ ".png" %}
+  {% set png_dark = "/charts/" ~ chart.get('slug') ~ "-dark.png" %}
+  {% set abs_png = "https://faststatsforsats.com" ~ png %}
+  {% set alt = chart.get('alt') or page.title %}
+  <figure class="chart">
+    <picture>
+      <source srcset="{{ png_dark }}" media="(prefers-color-scheme: dark)">
+      <img src="{{ png }}" alt="{{ alt }}" width="1600" height="900" loading="eager">
+    </picture>
+    <figcaption>
+      {% if chart.get('source') %}Source: {{ chart.get('source') }}.{% endif %}
+      {% if chart.get('pulled') %}Pulled {{ chart.get('pulled') }}.{% endif %}
+      <a href="{{ png }}">Open the image</a>{% if chart.get('data') %} or <a href="{{ chart.get('data') }}">the data</a>{% endif %}.
+    </figcaption>
+  </figure>
+  <details class="embed">
+    <summary>Embed this chart (free, with a link back)</summary>
+    <p>Paste this where you want the chart. It updates by itself every day.</p>
+    <pre><code>&lt;a href="{{ canonical }}"&gt;&lt;img src="{{ abs_png }}" alt="{{ alt }}" width="800" style="max-width:100%;height:auto"&gt;&lt;/a&gt;
+&lt;p&gt;Chart by &lt;a href="{{ canonical }}"&gt;{{ site.name }}&lt;/a&gt;&lt;/p&gt;</code></pre>
+  </details>
+  {% endif %}
+  {% if has_affiliate_links %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
+  {{ page.body_html | safe }}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

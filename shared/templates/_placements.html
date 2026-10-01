@@ -1,0 +1,11 @@
+{% if placements %}
+<section class="placements" aria-label="Products mentioned">
+  {% for box in placements %}
+  <div class="placement">
+    <p class="placement-head"><a href="{{ box.url }}" rel="sponsored nofollow noopener">{{ box.get('headline') or box.program }}</a></p>
+    {% if box.get('text') %}<p>{{ box.get('text') }}</p>{% endif %}
+    <p class="placement-cta"><a href="{{ box.url }}" rel="sponsored nofollow noopener">Visit {{ box.program }}</a> <span class="placement-tag">affiliate link</span></p>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}

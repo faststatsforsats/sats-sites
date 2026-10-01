@@ -1,0 +1,24 @@
+# Cloudflare Pages headers (copied into every site's output by build.py)
+# Format: a path pattern, then indented "Header: value" lines. "!" removes a header set by a broader rule.
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: SAMEORIGIN
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Charts and data are meant to be embedded and fetched from other sites
+/charts/*
+  ! X-Frame-Options
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
+/data/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=600
+
+/static/*
+  Cache-Control: public, max-age=86400
+
+/go/*
+  X-Robots-Tag: noindex

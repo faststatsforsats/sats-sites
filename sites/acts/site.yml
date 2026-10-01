@@ -1,0 +1,21 @@
+# Fast Acts for Sats: how to buy, earn, store, secure, and use bitcoin
+key: acts
+name: Fast Acts for Sats
+short_name: Acts
+domain: fastactsforsats.com
+url: https://fastactsforsats.com
+tagline: How to buy, earn, store, secure, and use bitcoin
+description: Step-by-step guides on how to buy, earn, store, secure, and use bitcoin, with a free checklist.
+role: action
+
+serves_data: false
+api_url: https://api.faststatsforsats.com
+disclaimer: Not financial advice. Fast Acts for Sats is an information site.
+
+# The five sections, in Jim's order. Every guide lives under one of them.
+sections:
+  buy: Buy
+  earn: Earn
+  store: Store
+  secure: Secure
+  use: Use

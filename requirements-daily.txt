@@ -1,0 +1,4 @@
+# Daily Build (GitHub Actions, step 16): everything the site build needs plus data and charts
+-r requirements.txt
+matplotlib>=3.8,<4
+requests>=2.31,<3

@@ -1,0 +1,17 @@
+# The three sites, in the order they appear in every header and footer.
+# Each site reads its own sites/<key>/site.yml; this file is only for cross-linking.
+- key: stats
+  name: Fast Stats for Sats
+  short_name: Stats
+  url: https://faststatsforsats.com
+  what: the value of sats and bitcoin
+- key: facts
+  name: Fast Facts for Sats
+  short_name: Facts
+  url: https://fastfactsforsats.com
+  what: how bitcoin works
+- key: acts
+  name: Fast Acts for Sats
+  short_name: Acts
+  url: https://fastactsforsats.com
+  what: how to buy, earn, store, secure, and use bitcoin

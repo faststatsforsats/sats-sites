@@ -1,0 +1,20 @@
+# Fast Facts for Sats: how bitcoin works
+key: facts
+name: Fast Facts for Sats
+short_name: Facts
+domain: fastfactsforsats.com
+url: https://fastfactsforsats.com
+tagline: How bitcoin works, in plain language
+description: Plain-language explainers on how bitcoin works, from sats and halvings to fees, nodes, and the tax rules.
+role: how-it-works
+
+serves_data: false
+api_url: https://api.faststatsforsats.com
+disclaimer: Not financial advice. Fast Facts for Sats is an information site.
+
+sections:
+  basics: The basics
+  network: The network
+  money: Money and markets
+  rules: Rules and taxes
+  safety: Safety

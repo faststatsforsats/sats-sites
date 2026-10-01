@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    <h1>{{ title }}</h1>
+  </header>
+  <ul class="page-list">
+    {% for item in listed %}<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.meta.get('description') %}<span class="page-list-desc">{{ item.meta.get('description') }}</span>{% endif %}</li>{% endfor %}
+  </ul>
+</article>
+{% endblock %}

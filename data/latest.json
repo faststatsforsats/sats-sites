@@ -1,0 +1,9 @@
+{
+  "updated": null,
+  "note": "Placeholder. The Daily Build (step 16) fills this file every morning at 09:00 UTC.",
+  "price": {"usd": null, "eur": null, "gbp": null, "updated": null, "source": {"name": "CoinGecko", "url": "https://www.coingecko.com"}},
+  "sats_per_dollar": null,
+  "fees": {"fast": null, "medium": null, "slow": null, "unit": "sat/vB", "updated": null, "source": {"name": "mempool.space", "url": "https://mempool.space"}},
+  "fear_greed": {"value": null, "label": null, "updated": null, "source": {"name": "alternative.me", "url": "https://alternative.me/crypto/fear-and-greed-index/"}},
+  "cpi": {"value": null, "period": null, "series": "CUUR0000SA0", "source": {"name": "U.S. Bureau of Labor Statistics", "url": "https://www.bls.gov"}}
+}

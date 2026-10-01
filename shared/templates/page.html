@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    {% if section_label %}<p class="eyebrow"><a href="/{{ section }}/">{{ section_label }}</a></p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {% if has_affiliate_links %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
+  {{ page.body_html | safe }}
+  {% if listed %}
+  <ul class="page-list">
+    {% for item in listed %}<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.meta.get('description') %}<span class="page-list-desc">{{ item.meta.get('description') }}</span>{% endif %}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}
