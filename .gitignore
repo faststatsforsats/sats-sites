@@ -1,0 +1,14 @@
+# Build output (Cloudflare Pages builds it; never commit it)
+sites/*/dist/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local scratch
+.DS_Store
+Thumbs.db
+*.log
+.env
