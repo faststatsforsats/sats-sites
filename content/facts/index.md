@@ -10,7 +10,7 @@ updated: 2026-10-01
 
 ## Opening October 13, 2026
 
-The first eight explainers cover the basics: what a sat is, how a transaction gets confirmed, what miners do, how a wallet works, the halving schedule, the 21 million cap, how fees are set, and how bitcoin is taxed in the United States. Until launch, this page is a placeholder. Fast Facts carries no price predictions, only how things work
+The first eight explainers cover the basics: what a sat is, how a transaction gets confirmed, what miners do, how a wallet works, the halving schedule, the 21 million cap, how fees are set, and how bitcoin is taxed in the United States. Until launch, this page is a placeholder. Fast Facts carries no price predictions, only how things work.
 
 ## The sections
 
