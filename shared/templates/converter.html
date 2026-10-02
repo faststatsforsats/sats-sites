@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    {% if section_label %}<p class="eyebrow"><a href="/{{ section }}/">{{ section_label }}</a></p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {% if stats and stats.available %}
+  <form class="converter" id="converter" data-live-want="price" data-prices='{{ stats.prices | tojson }}' data-updated="{{ stats.updated }}" onsubmit="return false">
+    <div class="converter-row">
+      <label for="conv-amount">Amount</label>
+      <input id="conv-amount" type="number" inputmode="decimal" min="0" step="any" value="100">
+      <select id="conv-currency" aria-label="Currency">
+        {% for cur in ['usd','eur','gbp','cad','aud','chf','jpy','inr','brl','mxn'] if stats.prices.get(cur) %}
+        <option value="{{ cur }}">{{ cur | upper }}</option>
+        {% endfor %}
+        {% for cur in stats.prices if cur not in ['usd','eur','gbp','cad','aud','chf','jpy','inr','brl','mxn'] %}
+        <option value="{{ cur }}">{{ cur | upper }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="converter-out">
+      <div><span class="big-label">is</span><output id="conv-sats" for="conv-amount">…</output></div>
+      <div><span class="big-label">or</span><output id="conv-btc" for="conv-amount">…</output></div>
+    </div>
+    <div class="converter-row">
+      <label for="conv-sats-in">Sats</label>
+      <input id="conv-sats-in" type="number" inputmode="numeric" min="0" step="1" value="100000">
+      <output id="conv-money" for="conv-sats-in"></output>
+    </div>
+    <p class="small" id="conv-note">Price <span id="conv-price"></span>, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. <a href="https://www.coingecko.com" rel="noopener">Data provided by CoinGecko</a>.</p>
+  </form>
+  <script src="/static/converter.js" defer></script>
+  {% else %}
+  <p>The converter switches on after the first Daily Build publishes the data.</p>
+  {% endif %}
+  {{ page.body_html | safe }}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

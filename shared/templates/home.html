@@ -1,8 +1,48 @@
 {% extends "base.html" %}
-{% block head_title %}{{ site.name }}: {{ site.tagline }}{% endblock %}
+{% block head_title %}{% if page.title and page.title != site.name %}{{ page.title }} | {{ site.name }}{% else %}{{ site.name }}: {{ site.tagline }}{% endif %}{% endblock %}
 {% block content %}
+{% if site.key == 'stats' and stats and stats.available %}
+{% include "_bignumber.html" %}
 <article class="prose home">
   {{ page.body_html | safe }}
 </article>
+{% set basket = stats.basket() %}
+{% if basket %}
+<section class="home-block">
+  <h2>Everyday prices in sats</h2>
+  {% set months = basket[:6]|map(attribute='month')|unique|list %}
+  {% set one_month = months|length == 1 %}
+  <table class="numbers">
+    <thead><tr><th>Item</th><th>Price{% if one_month %}, {{ months[0] }}{% endif %}</th><th class="num">In sats</th><th class="num hide-sm">A year ago</th></tr></thead>
+    <tbody>
+    {% for row in basket[:6] %}
+      <tr><td><a href="{{ row.url }}">{{ row.name }}</a></td><td>{{ row.usd_text }}{% if not one_month %} ({{ row.month }}){% endif %}</td><td class="num">{{ row.sats_text }}</td><td class="num hide-sm">{{ row.sats_ago_text }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="more"><a href="/value/everyday-prices/">All {{ basket|length }} items, with the chart and the sources</a></p>
+</section>
+{% endif %}
+<section class="home-block">
+  <h2>The charts</h2>
+  {% with cards = stats.gallery()[:3] %}{% include "_gallery.html" %}{% endwith %}
+  <p class="more"><a href="/charts/">All {{ stats.gallery()|length }} charts, each with embed code</a></p>
+</section>
+<section class="home-block">
+  <h2>Try the numbers yourself</h2>
+  <ul class="link-row">
+    <li><a href="/tools/sats-converter/">Sats converter</a></li>
+    <li><a href="/sats/">Dollars, euros, and pounds in sats</a></li>
+    <li><a href="/items/">Everyday items in sats</a></li>
+    <li><a href="/value/comparisons/">Gold, homes, and the S&amp;P 500 in sats</a></li>
+    <li><a href="/network/">The network today</a></li>
+    <li><a href="/history/">Every year since 2011</a></li>
+  </ul>
+</section>
+{% else %}
+<article class="prose home">
+  {{ page.body_html | safe }}
+</article>
+{% endif %}
 {% include "_sources.html" %}
 {% endblock %}

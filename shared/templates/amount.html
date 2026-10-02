@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block head_title %}{{ entry.title }} | {{ site.name }}{% endblock %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    <p class="eyebrow"><a href="/sats/">Dollars in sats</a></p>
+    <h1>{{ entry.heading }}</h1>
+  </header>
+  <p class="lead">{{ entry.money }} is <strong class="live" data-live="sats-for" data-amount="{{ entry.amount }}" data-currency="{{ entry.currency }}">{{ entry.sats_text }}</strong>, or {{ entry.btc_text }}, at a bitcoin price of <span class="live" data-live="price" data-currency="{{ entry.currency }}">{{ entry.price_text }}</span> <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.</p>
+  <p>The number above refreshes every hour from the site's price feed (<a href="https://www.coingecko.com" rel="noopener">Data provided by CoinGecko</a>). To convert any other amount, use the <a href="/tools/sats-converter/">sats converter</a>.</p>
+
+  <h2>Nearby amounts</h2>
+  <table class="numbers">
+    <thead><tr><th>Amount</th><th class="num">In sats</th></tr></thead>
+    <tbody>
+    {% for row in entry.nearby %}<tr><td><a href="{{ row.url }}">{{ row.money }}</a></td><td class="num">{{ row.sats_text }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+
+  {% if entry.yearly %}
+  <h2>What {{ entry.money }} bought each January</h2>
+  <table class="numbers">
+    <thead><tr><th>January</th><th class="num">Bitcoin price</th><th class="num">{{ entry.money }} in sats</th></tr></thead>
+    <tbody>
+    {% for row in entry.yearly %}<tr><td>{{ row.year }}</td><td class="num">{{ row.price_text }}</td><td class="num">{{ row.sats_text }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  <p class="small">Prices are the daily average across major exchanges on the first recorded day of each January (<a href="https://www.blockchain.com/explorer/charts/market-price" rel="noopener">blockchain.com</a>). The full series is on the <a href="/charts/sats-per-dollar/">sats per dollar chart</a>.</p>
+  {% else %}
+  <p class="small">The year-by-year table is on the <a href="/sats/{{ entry.amount }}-usd/">US dollar page for this amount</a>; the price history behind it is kept in dollars.</p>
+  {% endif %}
+
+  {% if entry.other_currencies %}
+  <p>The same amount in other currencies: {% for row in entry.other_currencies %}<a href="{{ row.url }}">{{ row.money }}</a>{% if not loop.last %}, {% endif %}{% endfor %}.</p>
+  {% endif %}
+</article>
+{% endblock %}

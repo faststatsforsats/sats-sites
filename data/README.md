@@ -17,7 +17,7 @@ Every series file has the same shape:
 | `network.json` | blockchain.com | Estimated hash rate, TH/s, daily since 2010 |
 | `fear-greed.json` | alternative.me | Daily index with its label, since 2018 (points are `[date, value, label]`) |
 | `cpi.json` | BLS (CUUR0000SA0) | CPI-U all items, monthly |
-| `eggs.json`, `gasoline.json`, `ground_beef.json`, `milk.json`, `bread.json`, `coffee.json`, `electricity.json` | BLS average prices | USD per unit, monthly, U.S. city average |
+| `eggs.json`, `gasoline.json`, `ground_beef.json`, `milk.json`, `bread.json`, `coffee.json`, `electricity.json`, and one file per item in `scripts/sources/bls.py` SERIES (bananas, chicken, bacon, flour, rice, sugar, butter, potatoes, tomatoes, oranges, apples, wheat_bread, diesel, premium_gas, natural_gas, fuel_oil, beer, wine) | BLS average prices | USD per unit, monthly, U.S. city average. Each file carries `bls_series_id`; the Stats site builds `/items/<slug>/` from every file that has one. |
 | `homes.json` | FRED (MSPUS) | Median sales price of new houses sold, quarterly |
 | `sp500.json` | FRED (SP500) | S&P 500 daily close, last 10 years |
 | `gold.json` | World Bank Pink Sheet | Gold, USD per troy ounce, monthly average |

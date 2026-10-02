@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block head_title %}{{ entry.title }} | {{ site.name }}{% endblock %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    <p class="eyebrow"><a href="/items/">Items in sats</a></p>
+    <h1>{{ entry.heading }}</h1>
+    <p class="updated">Data through {{ entry.month }}</p>
+  </header>
+  <p class="lead">{{ entry.finding }} A year earlier it was {{ entry.sats_ago_text or "not in the data" }}{% if entry.change_pct is not none %}, so in sats it is {{ "%+.0f"|format(entry.change_pct) }}% on the year{% endif %}. Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.</p>
+  {% if entry.chart_entry %}
+  {% with cards = [entry.chart_entry] %}{% include "_gallery.html" %}{% endwith %}
+  {% endif %}
+  {% if entry.yearly %}
+  <h2>Each January since 2011</h2>
+  <table class="numbers">
+    <thead><tr><th>January</th><th class="num">Dollar price</th><th class="num">In sats</th></tr></thead>
+    <tbody>
+    {% for row in entry.yearly %}<tr><td>{{ row.year }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+  <h2>Where the numbers come from</h2>
+  <p>The dollar price is the U.S. Bureau of Labor Statistics average price for U.S. cities, series {{ entry.series_id }} ({{ entry.series_title }}), for the month shown. The sats figure divides that price by the month's average bitcoin price from <a href="https://www.blockchain.com/explorer/charts/market-price" rel="noopener">blockchain.com</a>. The data is free to reuse: <a href="{{ entry.data_file }}">{{ entry.data_file }}</a>.</p>
+  <p>See the whole basket on <a href="/value/everyday-prices/">everyday prices in sats</a>, or convert any amount with the <a href="/tools/sats-converter/">sats converter</a>.</p>
+</article>
+{% endblock %}

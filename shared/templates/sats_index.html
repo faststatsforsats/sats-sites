@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head"><h1>{{ title }}</h1></header>
+  <p class="lead">How many sats a given amount of money buys, for {{ groups|length }} currencies and {{ groups[0].amounts|length }} amounts each, at the price <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Each page refreshes hourly and shows what the amount bought each January since 2011. Sats means satoshis, the smallest unit of bitcoin.</p>
+  <p>For any other amount, use the <a href="/tools/sats-converter/">sats converter</a>.</p>
+  {% for group in groups %}
+  <h2>{{ group.name[0] | upper }}{{ group.name[1:] }}: {{ group.sats_per_unit }} per {{ group.symbol }}1</h2>
+  <ul class="amount-grid">
+    {% for row in group.amounts %}<li><a href="{{ row.url }}">{{ row.money }}</a> <span>{{ row.sats_text }}</span></li>{% endfor %}
+  </ul>
+  {% endfor %}
+</article>
+{% endblock %}

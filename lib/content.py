@@ -7,6 +7,8 @@ A page file looks like this:
     description: Under 155 characters for search results.
     template: guide            # page | guide | chart | home (default: page; guide for Acts and Facts)
     updated: 2026-10-13
+    nav: true                  # top-level pages only: add to the header nav
+    nav_label: Network         # short nav name (default: the title)
     understand_first:          # Acts guides only: the Facts explainer behind this guide
       text: What a sat is and why bitcoin is divisible
       url: https://fastfactsforsats.com/basics/what-is-a-sat/
@@ -79,6 +81,11 @@ class Page:
     @property
     def in_nav(self) -> bool:
         return bool(self.meta.get("nav", False))
+
+    @property
+    def nav_label(self) -> str:
+        """Short name for the header nav; falls back to the title."""
+        return str(self.meta.get("nav_label") or self.title)
 
     @property
     def out_path(self) -> str:

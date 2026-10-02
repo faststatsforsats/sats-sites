@@ -77,6 +77,23 @@ def load_series(name: str) -> S.Series | None:
         return None
 
 
+def collect_offline(log: list[str]) -> dict:
+    """The series the charts need, read from the data/ files written by an earlier run (no network)."""
+    saved = read_json(DATA_DIR / "fear-greed.json")
+    data = {
+        "price_daily": load_series("price-daily"),
+        "hashrate_daily": load_series("network"),
+        "fear_greed": [(str(d), int(v), str(label)) for d, v, label in saved["series"]["points"]] if saved else None,
+        "bls": {name: load_series(name) for name in bls.SERIES if load_series(name)},
+        "fred": {"home_price": load_series("homes"), "sp500": load_series("sp500")},
+        "gold_monthly": load_series("gold"),
+        "live_price": None,
+        "live_fees": None,
+    }
+    log.append("ok    offline: series read from data/")
+    return data
+
+
 def collect(when: dt.datetime, log: list[str]) -> dict:
     """Pull every source; write its data file; return the series the charts need."""
     data: dict = {}
@@ -187,6 +204,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--fixtures", action="store_true", help="read scripts/fixtures/ instead of the network")
     parser.add_argument("--only", default="", help="comma-separated chart slugs to draw (default: all)")
     parser.add_argument("--skip-pages", action="store_true", help="do not touch content/stats/charts/")
+    parser.add_argument("--offline", action="store_true", help="redraw the charts from the saved data/ files without touching any source (data/latest.json is left alone)")
     args = parser.parse_args(argv)
     if args.fixtures:
         os.environ["SATS_FIXTURES"] = "1"
@@ -194,7 +212,16 @@ def main(argv: list[str]) -> int:
     when = now_utc()
     today = when.date()
     log: list[str] = []
-    data = collect(when, log)
+    if args.offline:
+        data = collect_offline(log)
+        saved = read_json(DATA_DIR / "price-daily.json") or {}
+        try:
+            when = dt.datetime.fromisoformat(saved["updated"])
+        except (KeyError, TypeError, ValueError):
+            pass
+        today = when.date()
+    else:
+        data = collect(when, log)
 
     wanted = {s.strip() for s in args.only.split(",") if s.strip()}
     entries: list[dict] = []
@@ -230,7 +257,8 @@ def main(argv: list[str]) -> int:
     ordered += [e for s, e in kept.items() if e not in ordered]
     index = {"updated": when.isoformat(), "site": chartbook.STATS_URL, "charts": ordered}
     write_json(CHARTS_DIR / "index.json", index)
-    write_latest(data, ordered, when)
+    if not args.offline:
+        write_latest(data, ordered, when)
 
     print("Daily Build", when.isoformat())
     for line in log:

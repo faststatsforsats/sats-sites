@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    {% if section_label %}<p class="eyebrow"><a href="/{{ section }}/">{{ section_label }}</a></p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {{ page.body_html | safe }}
+  {% if stats and stats.available %}
+  {% set basket = stats.basket() %}
+  {% set months = basket|map(attribute='month')|unique|list %}
+  {% set one_month = months|length == 1 %}
+  <table class="numbers">
+    <thead><tr><th>Item</th><th>Price{% if one_month %}, {{ months[0] }}{% endif %}</th><th class="num">In sats</th><th class="num hide-sm">A year ago</th><th class="num">Change</th></tr></thead>
+    <tbody>
+    {% for row in basket %}
+      <tr>
+        <td><a href="{{ row.url }}">{{ row.name }}</a></td>
+        <td>{{ row.usd_text }}{% if not one_month %} ({{ row.month }}){% endif %}</td>
+        <td class="num">{{ row.sats_text }}</td>
+        <td class="num hide-sm">{{ row.sats_ago_text }}</td>
+        <td class="num">{% if row.change_pct is not none %}{{ "%+.0f"|format(row.change_pct) }}%{% endif %}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="small">The dollar price is the Bureau of Labor Statistics average for U.S. cities in the month shown. Sats are that price divided by the month's average bitcoin price. "A year ago" and the change compare the same month a year earlier. The numbers refresh every morning; the data files behind them are linked from each item's page.</p>
+  {% if stats.chart_by_slug.get('eggs-in-sats') %}
+  {% with cards = [stats.chart_by_slug['eggs-in-sats']] %}{% include "_gallery.html" %}{% endwith %}
+  {% endif %}
+  {% else %}
+  <p>The table appears after the first Daily Build publishes the data.</p>
+  {% endif %}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

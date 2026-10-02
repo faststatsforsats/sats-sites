@@ -4,8 +4,13 @@
   <header class="page-head">
     <h1>{{ title }}</h1>
   </header>
+  {% if section == 'charts' and stats and stats.available %}
+  <p class="lead">Every chart is redrawn each morning from public data. The title states the finding; the footer carries the source, the pull time, and the site name. Open a chart for the numbers behind it and a snippet to embed it on your own site, free, with a link back.</p>
+  {% with cards = stats.gallery() %}{% include "_gallery.html" %}{% endwith %}
+  {% else %}
   <ul class="page-list">
     {% for item in listed %}<li><a href="{{ item.url }}">{{ item.title }}</a>{% if item.meta.get('description') %}<span class="page-list-desc">{{ item.meta.get('description') }}</span>{% endif %}</li>{% endfor %}
   </ul>
+  {% endif %}
 </article>
 {% endblock %}

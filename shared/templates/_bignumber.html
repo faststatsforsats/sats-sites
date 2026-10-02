@@ -1,0 +1,16 @@
+{# The headline figures on the Stats site: today's price, sats per dollar, 24h change. live.js refreshes them. #}
+{% if stats and stats.available %}
+<section class="bignumber" aria-label="Today's numbers">
+  <div class="big">
+    <span class="big-label">One US dollar buys</span>
+    <span class="big-value live" data-live="sats-per-dollar">{{ "{:,}".format(stats.sats_per_dollar) }} sats</span>
+  </div>
+  <div class="big-row">
+    <div><span class="big-label">Bitcoin price</span><span class="live" data-live="price" data-currency="usd">${{ "{:,.0f}".format(stats.price_usd) }}</span></div>
+    {% if stats.change_24h.get('usd') is not none %}<div><span class="big-label">24 hours</span><span class="live" data-live="change" data-currency="usd">{{ "%+.1f"|format(stats.change_24h.get('usd')) }}%</span></div>{% endif %}
+    {% if stats.fear_greed %}<div><span class="big-label">Fear and Greed</span><a href="/charts/fear-greed/">{{ stats.fear_greed.value }} ({{ stats.fear_greed.label }})</a></div>{% endif %}
+    {% if stats.fees.get('medium') %}<div><span class="big-label">Fee, next hour</span><span class="live" data-live="fees" data-tier="medium">{{ stats.fees.medium }} sat/vB</span></div>{% endif %}
+  </div>
+  <p class="big-when"><span class="live-when" data-live-when="price">As of {{ stats.updated_text }}</span>. Price: <a href="https://www.coingecko.com" rel="noopener">Data provided by CoinGecko</a>; refreshed hourly.</p>
+</section>
+{% endif %}

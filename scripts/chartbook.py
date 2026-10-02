@@ -12,12 +12,119 @@ from __future__ import annotations
 import datetime as dt
 from pathlib import Path
 
-from lib.chartstyle import date_axis, label_last_point, render_chart, thousands
+from lib.chartstyle import area_wash, date_axis, event_lines, glow_line, latest_pill, mark_point, remember_label, render_chart, thousands
 from scripts import series as S
 from scripts.sources import alternative_me, blockchain_com, worldbank
 
 START = "2011-01-01"
 STATS_URL = "https://faststatsforsats.com"
+
+# Block 210,000, 420,000, 630,000, and 840,000 (dates in UTC)
+HALVINGS = [dt.date(2012, 11, 28), dt.date(2016, 7, 9), dt.date(2020, 5, 11), dt.date(2024, 4, 20)]
+
+
+def _short_date(day: str) -> str:
+    d = S.parse(day)
+    return f"{d.strftime('%b')} {d.day}, {d.year}"
+
+
+def _extreme(series: S.Series, kind: str, since: str | None = None) -> tuple[str, float] | None:
+    pool = [(d, v) for d, v in series if (since is None or d >= since)]
+    if not pool:
+        return None
+    pick = min if kind == "min" else max
+    return pick(pool, key=lambda p: p[1])
+
+
+def _years_ago(series: S.Series, years: int) -> str:
+    last = S.parse(series[-1][0])
+    return last.replace(year=last.year - years).isoformat()
+
+
+def _lower_side(series: S.Series, day: str) -> str:
+    """Which side of a point the line runs lower on ("left" or "right"), so a label can sit over free space."""
+    days = [d for d, _ in series]
+    try:
+        idx = days.index(day)
+    except ValueError:
+        return "right"
+    window = max(3, len(series) // 12)
+    left = [v for _, v in series[max(0, idx - window):idx]]
+    right = [v for _, v in series[idx + 1:idx + 1 + window]]
+    if not right:
+        return "left"
+    if not left:
+        return "right"
+    return "right" if sum(right) / len(right) < sum(left) / len(left) else "left"
+
+
+def _draw_series(ax, c, series: S.Series, slot: int, latest_text: str, ylabel: str, marks=(), events_label: str | None = None, log: bool = True) -> None:
+    """One series with the house look: thick glowing line, a wash beneath, dated event lines, marked extremes, the latest value as a pill."""
+    import math
+
+    xs, ys = _dates(series), [v for _, v in series]
+    color = c.series[slot]
+    if log:
+        _log_axis(ax, ylabel)
+    else:
+        ax.set_ylabel(ylabel)
+    glow_line(ax, xs, ys, color, c)
+    date_axis(ax)
+    ax.margins(x=0.01, y=0.18)
+    if any(side == "below" for _, _, _, side in marks):
+        # room under the line for a label beneath the lowest point
+        lo, hi = ax.get_ylim()
+        if log:
+            llo, lhi = math.log10(lo), math.log10(hi)
+            ax.set_ylim(10 ** (llo - 0.32 * (lhi - llo)), hi)
+        else:
+            ax.set_ylim(lo - 0.32 * (hi - lo), hi)
+    area_wash(ax, xs, ys, color, c)
+    if events_label:
+        event_lines(ax, HALVINGS, "Halvings", c, where=events_label)
+    latest_pill(ax, xs[-1], ys[-1], latest_text, color, c)   # first, so the marks keep clear of it
+    import matplotlib.dates as mdates
+    import numpy as np
+    x0, x1 = ax.get_xlim()
+    obstacles = ax.transData.transform(np.column_stack([mdates.date2num(xs), ys]))
+    for day, value, text, side in marks:
+        fx = (mdates.date2num(S.parse(day)) - x0) / (x1 - x0)
+        if side == "above":
+            lower = _lower_side(series, day)
+            align = "left" if lower == "right" else "right"
+            if fx > 0.78:
+                align = "right"
+            elif fx < 0.22:
+                align = "left"
+        else:
+            align = "right" if fx > 0.5 else "left"
+        mark_point(ax, S.parse(day), value, text, color, c, side=side, align=align, obstacles=obstacles)
+
+
+def _sats_label(v: float) -> str:
+    """25,056 sats, or 10.6M sats above a million (the exact figure is in the page's table)."""
+    if v >= 1_000_000:
+        return f"{v / 1_000_000:.3g}M sats" if v < 100_000_000 else f"{v / 1_000_000:,.0f}M sats"
+    return f"{v:,.0f} sats"
+
+
+def _short_month(day: str) -> str:
+    d = S.parse(day)
+    return f"{d.strftime('%b')} {d.year}"
+
+
+def _value_marks(series: S.Series, fmt, when, low_word: str = "Low", peak_years: int = 5) -> list[tuple[str, float, str, str]]:
+    """The all-time low (cheapest in sats) and the highest point of the last few years, skipping the latest point itself."""
+    marks = []
+    last_day = series[-1][0]
+    since = _years_ago(series, peak_years)
+    peak = _extreme(series, "max", since)
+    low = _extreme(series, "min")
+    if peak and peak[0] != last_day and (not low or peak[0] != low[0]):
+        marks.append((peak[0], peak[1], f"High since {since[:4]}\n{fmt(peak[1])}, {when(peak[0])}", "above"))
+    if low and low[0] != last_day:
+        marks.append((low[0], low[1], f"{low_word}\n{fmt(low[1])}, {when(low[0])}", "below"))
+    return marks
 
 
 def _log_axis(ax, unit_label: str) -> None:
@@ -32,13 +139,6 @@ def _log_axis(ax, unit_label: str) -> None:
 
 def _dates(series: S.Series) -> list[dt.date]:
     return [S.parse(d) for d, _ in series]
-
-
-def _line(ax, c, series: S.Series, label_text: str, slot: int = 0) -> None:
-    xs, ys = _dates(series), [v for _, v in series]
-    ax.plot(xs, ys, color=c.series[slot], linewidth=1.6 if len(series) > 2000 else 2)
-    date_axis(ax)
-    label_last_point(ax, xs[-1], ys[-1], label_text, c, c.series[slot])
 
 
 def _quarter(day: str) -> str:
@@ -69,12 +169,17 @@ def sats_per_dollar(data, out_dir: Path, pulled: str):
     day, sats = series[-1]
     title = f"A dollar bought {sats:,.0f} sats on {S.long_date(day)}"
 
+    low = _extreme(series, "min")
+    marks = []
+    if low and low[0] != day:
+        marks.append((low[0], low[1], f"Fewest ever\n{low[1]:,.0f} sats, {_short_date(low[0])}", "below"))
+
     def draw(ax, c):
-        _line(ax, c, series, f"{sats:,.0f}")
-        _log_axis(ax, "sats per US dollar (log scale)")
+        _draw_series(ax, c, series, 0, f"{sats:,.0f} sats", "sats per US dollar (log scale)", marks, events_label="bottom")
 
     render_chart("sats-per-dollar", title, draw, "blockchain.com market price", pulled, out_dir,
-                 subtitle="Sats one US dollar buys, from the daily average bitcoin price, since 2011")
+                 subtitle="Sats one US dollar buys, from the daily average bitcoin price, since 2011",
+                 highlight=f"{sats:,.0f} sats", slot=0)
     return {
         "slug": "sats-per-dollar", "title": title,
         "heading": "Sats per dollar since 2011",
@@ -97,12 +202,17 @@ def price_usd(data, out_dir: Path, pulled: str):
     day, usd = series[-1]
     title = f"One bitcoin cost {S.fmt_usd(usd)} on {S.long_date(day)}"
 
+    high = _extreme(series, "max")
+    marks = []
+    if high and high[0] != day:
+        marks.append((high[0], high[1], f"All-time high\n{S.fmt_usd(high[1])}, {_short_date(high[0])}", "above"))
+
     def draw(ax, c):
-        _line(ax, c, series, S.fmt_usd(usd))
-        _log_axis(ax, "US dollars per bitcoin (log scale)")
+        _draw_series(ax, c, series, 0, S.fmt_usd(usd), "US dollars per bitcoin (log scale)", marks, events_label="top")
 
     render_chart("price-usd", title, draw, "blockchain.com market price", pulled, out_dir,
-                 subtitle="Daily average price across major exchanges, since 2011")
+                 subtitle="Daily average price across major exchanges, since 2011",
+                 highlight=S.fmt_usd(usd), slot=0)
     return {
         "slug": "price-usd", "title": title,
         "heading": "Bitcoin price in dollars since 2011",
@@ -127,12 +237,14 @@ def eggs_in_sats(data, out_dir: Path, pulled: str):
     day, sats = series[-1]
     title = f"A dozen eggs cost {sats:,.0f} sats in {S.month_name(day)}"
 
+    marks = _value_marks(series, _sats_label, _short_month)
+
     def draw(ax, c):
-        _line(ax, c, series, f"{sats:,.0f}", slot=1)
-        _log_axis(ax, "sats per dozen (log scale)")
+        _draw_series(ax, c, series, 1, f"{sats:,.0f} sats", "sats per dozen (log scale)", marks)
 
     render_chart("eggs-in-sats", title, draw, "U.S. Bureau of Labor Statistics (eggs), blockchain.com (price)", pulled, out_dir,
-                 subtitle="Sats for a dozen grade A large eggs, U.S. city average, monthly since 2011")
+                 subtitle="Sats for a dozen grade A large eggs, U.S. city average, monthly since 2011",
+                 highlight=f"{sats:,.0f} sats", slot=1)
     return {
         "slug": "eggs-in-sats", "title": title,
         "heading": "A dozen eggs priced in sats",
@@ -159,12 +271,14 @@ def gold_in_sats(data, out_dir: Path, pulled: str):
     day, sats = series[-1]
     title = f"An ounce of gold cost {sats:,.0f} sats in {S.month_name(day)}"
 
+    marks = _value_marks(series, _sats_label, _short_month)
+
     def draw(ax, c):
-        _line(ax, c, series, f"{sats:,.0f}", slot=3)
-        _log_axis(ax, "sats per troy ounce (log scale)")
+        _draw_series(ax, c, series, 3, f"{sats:,.0f} sats", "sats per troy ounce (log scale)", marks)
 
     render_chart("gold-in-sats", title, draw, "World Bank Pink Sheet (gold), blockchain.com (price)", pulled, out_dir,
-                 subtitle="Sats per troy ounce of gold, monthly average prices, since 2011")
+                 subtitle="Sats per troy ounce of gold, monthly average prices, since 2011",
+                 highlight=f"{sats:,.0f} sats", slot=3)
     return {
         "slug": "gold-in-sats", "title": title,
         "heading": "Gold priced in sats",
@@ -194,15 +308,17 @@ def home_in_bitcoin(data, out_dir: Path, pulled: str):
     when = f"Q{q} {S.parse(day).year}"
     title = f"A median new home cost {btc:,.1f} bitcoin in {when}"
 
-    def draw(ax, c):
-        _line(ax, c, series, f"{btc:,.1f}", slot=2)
-        _log_axis(ax, "bitcoin per median new home (log scale)")
-
-    render_chart("home-in-bitcoin", title, draw, "FRED (MSPUS), blockchain.com (price)", pulled, out_dir,
-                 subtitle="Median sales price of new houses sold in the United States, in bitcoin, quarterly since 2011")
-
     def fmt(v):
         return f"{v:,.1f} bitcoin" if v >= 10 else f"{v:,.2f} bitcoin"
+
+    marks = _value_marks(series, fmt, _quarter)
+
+    def draw(ax, c):
+        _draw_series(ax, c, series, 2, fmt(btc), "bitcoin per median new home (log scale)", marks)
+
+    render_chart("home-in-bitcoin", title, draw, "FRED (MSPUS), blockchain.com (price)", pulled, out_dir,
+                 subtitle="Median sales price of new houses sold in the United States, in bitcoin, quarterly since 2011",
+                 highlight=f"{btc:,.1f} bitcoin", slot=2)
 
     return {
         "slug": "home-in-bitcoin", "title": title,
@@ -231,20 +347,41 @@ def fear_greed(data, out_dir: Path, pulled: str):
     day, value, label = fng[-1]
     title = f"Fear and Greed read {value} ({label}) on {S.long_date(day)}"
 
+    high, low = _extreme(recent, "max"), _extreme(recent, "min")
+    marks = []
+    if high and high[0] != day:
+        marks.append((high[0], high[1], f"Greediest\n{high[1]:.0f}, {_short_date(high[0])}", "above"))
+    if low and low[0] != day:
+        marks.append((low[0], low[1], f"Most fearful\n{low[1]:.0f}, {_short_date(low[0])}", "below"))
+
     def draw(ax, c):
         xs, ys = _dates(recent), [v for _, v in recent]
-        for level, text in ((25, "extreme fear below 25"), (50, ""), (75, "extreme greed above 75")):
-            ax.axhline(level, color=c.axis, linewidth=0.8, linestyle=(0, (3, 3)))
-            if text:
-                ax.text(xs[0], level + 1.5, text, fontsize=8, color=c.muted, va="bottom", bbox={"fc": c.surface, "ec": "none", "pad": 1.5})
-        ax.plot(xs, ys, color=c.series[6], linewidth=2)
+        color = c.series[6]
         ax.set_ylim(0, 100)
         ax.set_ylabel("index, 0 to 100")
+        ax.axhspan(0, 25, color=c.critical, alpha=0.09, linewidth=0, zorder=0.5)
+        ax.axhspan(75, 100, color=c.good, alpha=0.09, linewidth=0, zorder=0.5)
+        tag = {"fc": c.surface, "ec": "none", "alpha": 0.75, "pad": 2}
+        zone_tags = [
+            ax.text(0.012, 0.125, "Extreme fear", transform=ax.transAxes, fontsize=10, color=c.muted, va="center", ha="left", zorder=4.5, bbox=tag),
+            ax.text(0.012, 0.875, "Extreme greed", transform=ax.transAxes, fontsize=10, color=c.muted, va="center", ha="left", zorder=4.5, bbox=tag),
+        ]
+        renderer = ax.figure.canvas.get_renderer()
+        for zone_tag in zone_tags:
+            remember_label(ax, zone_tag.get_window_extent(renderer=renderer).padded(6))
+        glow_line(ax, xs, ys, color, c, linewidth=2.6)
         date_axis(ax)
-        label_last_point(ax, xs[-1], ys[-1], f"{value} {label}", c, c.series[6])
+        ax.margins(x=0.01)
+        latest_pill(ax, xs[-1], ys[-1], f"{value} ({label})", color, c)
+        import matplotlib.dates as mdates
+        import numpy as np
+        obstacles = ax.transData.transform(np.column_stack([mdates.date2num(xs), ys]))
+        for d, v, text, side in marks:
+            mark_point(ax, S.parse(d), v, text, color, c, side=side, obstacles=obstacles)
 
     render_chart("fear-greed", title, draw, "alternative.me Crypto Fear & Greed Index", pulled, out_dir,
-                 subtitle="Daily readings, last 12 months")
+                 subtitle="Daily readings, last 12 months",
+                 highlight=f"{value} ({label})", slot=6)
     labels = (("now", {}), ("a month ago", {"months": 1}), ("a year ago", {"years": 1}))
     simple = [(d, float(v)) for d, v, _ in fng]
     return {
@@ -269,12 +406,32 @@ def hashrate(data, out_dir: Path, pulled: str):
     day, ehs = series[-1]
     title = f"The network ran at {ehs:,.0f} EH/s on {S.long_date(day)}"
 
+    def hash_label(v, _=None):
+        # The axis runs from gigahashes in 2011 to exahashes today; name each decade in its own unit
+        if v >= 1000:
+            return f"{v / 1000:g} ZH/s"
+        if v >= 1:
+            return f"{v:g} EH/s"
+        if v >= 1e-3:
+            return f"{v * 1e3:g} PH/s"
+        if v >= 1e-6:
+            return f"{v * 1e6:g} TH/s"
+        return f"{v * 1e9:g} GH/s"
+
+    record = _extreme(series, "max")
+    marks = []
+    if record and record[0] != day and (S.parse(day) - S.parse(record[0])).days > 45:
+        marks.append((record[0], record[1], f"Record\n{record[1]:,.0f} EH/s, {_short_date(record[0])}", "above"))
+
     def draw(ax, c):
-        _line(ax, c, series, f"{ehs:,.0f} EH/s", slot=5)
-        _log_axis(ax, "exahashes per second (log scale)")
+        import matplotlib.ticker as mt
+
+        _draw_series(ax, c, series, 5, f"{ehs:,.0f} EH/s", "hash rate (log scale)", marks, events_label="top")
+        ax.yaxis.set_major_formatter(mt.FuncFormatter(hash_label))
 
     render_chart("hashrate", title, draw, "blockchain.com hash rate", pulled, out_dir,
-                 subtitle="Estimated network hash rate, daily since 2011")
+                 subtitle="Estimated network hash rate, daily since 2011",
+                 highlight=f"{ehs:,.0f} EH/s", slot=5)
     return {
         "slug": "hashrate", "title": title,
         "heading": "Bitcoin hash rate since 2011",

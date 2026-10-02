@@ -1,28 +1,24 @@
 ---
-title: Fast Stats for Sats
-description: Free charts and plain details about the value of sats and bitcoin, redrawn from public data every day.
+title: What is a sat worth today?
+description: What a sat is worth today in dollars, eggs, gold, and homes. Free charts redrawn every morning from public data, with the numbers behind them.
 template: home
-updated: 2026-10-01
+updated: 2026-10-02
+sources:
+  - name: blockchain.com, market price and hash rate
+    url: https://www.blockchain.com/explorer/charts
+  - name: CoinGecko, today's price in 30 currencies
+    url: https://www.coingecko.com
+  - name: U.S. Bureau of Labor Statistics, average prices
+    url: https://www.bls.gov/cpi/
+  - name: FRED, Federal Reserve Bank of St. Louis
+    url: https://fred.stlouisfed.org
+  - name: World Bank Commodity Price Data (The Pink Sheet)
+    url: https://www.worldbank.org/en/research/commodity-markets
+  - name: alternative.me Crypto Fear & Greed Index
+    url: https://alternative.me/crypto/fear-and-greed-index/
 ---
-# Charts and plain details about the value of sats and bitcoin
+# What is a sat worth today?
 
-<p class="lead">What is a sat worth today, in dollars, eggs, gold, or a house? This site answers with a chart first and a short explanation beside it. Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.</p>
+<p class="lead">A sat is one hundred-millionth of a bitcoin, and the number above says how many of them a dollar buys right now. The rest of this site turns that number into things you can picture: a dozen eggs, an ounce of gold, a new home, a year of history.</p>
 
-## Opening October 13, 2026
-
-Scripts redraw every chart from public data each morning, so the numbers you see are from today, not from the day the page was written. The first set covers sats per dollar since 2011, a dozen eggs priced in sats, bitcoin against gold, and the Fear and Greed gauge. Until launch, this page is a placeholder.
-
-## What will be here
-
-- **Charts.** One finding per chart, the source and pull time in the footer, and an embed snippet so you can put any chart on your own site with a link back.
-- **Value explainers.** Under 400 words each, written to be read beside the chart.
-- **Tools.** A sats converter and a weekly-buy versus lump-sum comparison.
-- **Data.** Every chart's numbers, free, at <code>/data/latest.json</code> and <code>/charts/index.json</code>.
-
-## The three sites
-
-<ul class="cards">
-  <li><strong>Fast Stats for Sats</strong>The value of sats and bitcoin, in charts. You are here.</li>
-  <li><strong><a href="https://fastfactsforsats.com/">Fast Facts for Sats</a></strong>How bitcoin works, in plain language.</li>
-  <li><strong><a href="https://fastactsforsats.com/">Fast Acts for Sats</a></strong>How to buy, earn, store, secure, and use bitcoin.</li>
-</ul>
+Everything here is drawn by scripts from public data, every morning, with the source and the pull time printed on each chart. Nothing is estimated, and nothing predicts a price. If you want to understand why the numbers behave the way they do, [Fast Facts for Sats](https://fastfactsforsats.com/) explains how bitcoin works; if you want to act, [Fast Acts for Sats](https://fastactsforsats.com/) covers how to buy, earn, store, secure, and use it.

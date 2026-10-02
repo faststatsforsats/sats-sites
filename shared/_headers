@@ -22,3 +22,8 @@
 
 /go/*
   X-Robots-Tag: noindex
+
+# NIP-05 identity file must be readable from Nostr clients on other origins
+/.well-known/*
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600

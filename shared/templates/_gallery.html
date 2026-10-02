@@ -1,0 +1,17 @@
+{# Chart cards. `cards` is a list of charts/index.json entries. #}
+{% if cards %}
+<ul class="gallery">
+  {% for c in cards %}
+  <li>
+    <a href="{{ c.page }}">
+      <picture>
+        <source srcset="{{ c.png_dark }}" media="(prefers-color-scheme: dark)">
+        <img src="{{ c.png }}" alt="{{ c.title }}" width="1600" height="900" loading="lazy">
+      </picture>
+      <strong>{{ c.heading }}</strong>
+    </a>
+    <p>{{ c.title }}.</p>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head"><h1>{{ title }}</h1></header>
+  <p class="lead">Each item is a U.S. Bureau of Labor Statistics average price, turned into sats with the month's average bitcoin price. One page per item, with the price each January since 2011. Sats means satoshis, the smallest unit of bitcoin.</p>
+  <table class="numbers">
+    <thead><tr><th>Item</th><th>U.S. city average</th><th class="num">In sats</th><th class="num">A year ago</th></tr></thead>
+    <tbody>
+    {% for row in items %}
+      <tr><td><a href="{{ row.url }}">{{ row.name }}</a></td><td>{{ row.usd_text }} {{ row.unit }}, {{ row.month }}</td><td class="num">{{ row.sats_text }}</td><td class="num">{{ row.sats_ago_text }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p>The same table with the chart and the method is on <a href="/value/everyday-prices/">everyday prices in sats</a>.</p>
+</article>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    {% if section_label %}<p class="eyebrow"><a href="/{{ section }}/">{{ section_label }}</a></p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {{ page.body_html | safe }}
+  {% if stats and stats.available %}
+  <table class="numbers">
+    <thead><tr><th>What</th><th>Dollar figure</th><th class="num">In bitcoin terms</th><th class="num">A year earlier</th></tr></thead>
+    <tbody>
+    {% for row in stats.comparisons() %}
+      <tr>
+        <td>{% if row.chart %}<a href="/charts/{{ row.chart }}/">{{ row.name }}</a>{% else %}{{ row.name }}{% endif %}</td>
+        <td>{{ row.usd_text }}, {{ row.when }}</td>
+        <td class="num">{{ row.value_text }}</td>
+        <td class="num">{{ row.ago_text }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="small">Gold and home prices are divided by the average bitcoin price of the same month or quarter; the S&amp;P 500 uses the daily average price on the same day. Sources on each row: {% for row in stats.comparisons() %}{{ row.source }}{% if not loop.last %}; {% endif %}{% endfor %}.</p>
+  {% with cards = [stats.chart_by_slug.get('gold-in-sats'), stats.chart_by_slug.get('home-in-bitcoin')] | select | list %}{% include "_gallery.html" %}{% endwith %}
+  {% else %}
+  <p>The table appears after the first Daily Build publishes the data.</p>
+  {% endif %}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

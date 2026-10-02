@@ -18,6 +18,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 from .content import Page, load_pages
 from .redirects import load_redirects, render_redirects_file
+from .stats_data import StatsData
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_KEYS = ("stats", "facts", "acts")
@@ -146,7 +147,13 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         if page.section:
             section_pages[page.section].append(page)
     nav = [{"label": label, "url": f"/{name}/"} for name, label in sections.items() if section_pages.get(name)]
-    nav += [{"label": page.title, "url": page.url} for page in pages if page.in_nav and not page.section and page.url != "/"]
+    nav += [{"label": page.nav_label, "url": page.url} for page in pages if page.in_nav and not page.section and page.url != "/"]
+
+    # The Stats site reads data/ and charts/ at build time (None on the other two sites)
+    stats = StatsData(ROOT) if key == "stats" else None
+    if stats and stats.available:
+        for item in site.get("nav_generated") or []:
+            nav.append({"label": item["label"], "url": item["url"]})
 
     env = jinja_env()
     common = {
@@ -154,6 +161,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         "sites": sites,
         "sister_sites": [entry for entry in sites if entry["key"] != key],
         "nav": nav,
+        "stats": stats,
         "sats_line": SATS_LINE,
         "disclosure_line": DISCLOSURE_LINE,
         "build_date": today,
@@ -166,7 +174,9 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         if listed and f"/{name}/" not in seen:
             html = env.get_template("section.html").render(
                 page=None, title=label, section=name, canonical=site["url"].rstrip("/") + f"/{name}/",
-                listed=[p for p in listed if p.url != f"/{name}/"], **common
+                listed=[p for p in listed if p.url != f"/{name}/"],
+                attribution=[{"text": ATTRIBUTION_LINES[c]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES[c]["url"]} for c in (["blockchain", "bls", "fred", "worldbank", "altme"] if (name == "charts" and stats and stats.available) else [])],
+                **common
             )
             target = dist / name / "index.html"
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -175,7 +185,11 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
 
     # Content pages
     for page in pages:
-        template_name = {"home": "home.html", "page": "page.html", "guide": "guide.html", "chart": "chart.html"}.get(page.template)
+        template_name = {
+            "home": "home.html", "page": "page.html", "guide": "guide.html", "chart": "chart.html",
+            "basket": "basket.html", "comparisons": "comparisons.html", "converter": "converter.html",
+            "network": "network.html", "history": "history.html",
+        }.get(page.template)
         if template_name is None:
             report.error(f"{page.source}: unknown template {page.template!r}")
             continue
@@ -219,6 +233,37 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         target.write_text(html, encoding="utf-8")
         report.pages += 1
 
+    # Programmatic pages (Stats only): /sats/<amount>-<currency>/ and /items/<slug>/
+    generated: list[tuple[str, str]] = []   # (url, lastmod)
+    if stats and stats.available:
+        base = site["url"].rstrip("/")
+        amount_pages = stats.amount_pages()
+        for entry in amount_pages:
+            html = env.get_template("amount.html").render(page=None, title=entry["title"], section="sats", canonical=base + entry["url"], entry=entry, **common)
+            target = dist / entry["url"].strip("/") / "index.html"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(html, encoding="utf-8")
+            generated.append((entry["url"], today.isoformat()))
+        html = env.get_template("sats_index.html").render(page=None, title="Dollars, euros, and pounds in sats", section="sats", canonical=base + "/sats/", groups=stats.amount_index(), **common)
+        (dist / "sats").mkdir(parents=True, exist_ok=True)
+        (dist / "sats" / "index.html").write_text(html, encoding="utf-8")
+        generated.append(("/sats/", today.isoformat()))
+        item_pages = stats.item_pages()
+        for entry in item_pages:
+            html = env.get_template("item.html").render(page=None, title=entry["title"], section="items", canonical=base + entry["url"], entry=entry,
+                                                        attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]},
+                                                                     {"text": ATTRIBUTION_LINES["blockchain"]["text"], "url": ATTRIBUTION_LINES["blockchain"]["url"]}], **common)
+            target = dist / entry["url"].strip("/") / "index.html"
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(html, encoding="utf-8")
+            generated.append((entry["url"], entry["date"]))
+        html = env.get_template("items_index.html").render(page=None, title="Everyday items priced in sats", section="items", canonical=base + "/items/", items=item_pages,
+                                                           attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]}], **common)
+        (dist / "items").mkdir(parents=True, exist_ok=True)
+        (dist / "items" / "index.html").write_text(html, encoding="utf-8")
+        generated.append(("/items/", today.isoformat()))
+        report.pages += len(amount_pages) + len(item_pages) + 2
+
     # 404 page
     (dist / "404.html").write_text(
         env.get_template("404.html").render(page=None, title="Page not found", section="", canonical=None, **common),
@@ -245,6 +290,8 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     for url in urls:
         page = seen.get(url)
         lastmod = (page.updated if page and page.updated else today).isoformat()
+        entries.append(f"  <url><loc>{site['url']}{url}</loc><lastmod>{lastmod}</lastmod></url>")
+    for url, lastmod in generated:
         entries.append(f"  <url><loc>{site['url']}{url}</loc><lastmod>{lastmod}</lastmod></url>")
     sitemap = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + "\n".join(entries) + "\n</urlset>\n"
     (dist / "sitemap.xml").write_text(sitemap, encoding="utf-8")

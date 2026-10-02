@@ -13,7 +13,14 @@ This repository builds three sites for Jim Shaver: Fast Stats for Sats (faststat
 - A page is a Markdown file under `content/<site>/<section>/<slug>.md`. Front matter fields are documented at the top of `lib/content.py`. Sections are declared in `sites/<site>/site.yml`; add a section there before adding a folder.
 - Templates: `shared/templates/`. Styles: `shared/static/site.css`. Chart style: `lib/chartstyle.py`. Redirects: `go/redirects.csv`.
 - Data and charts are written only by the Daily Build (`scripts/daily_build.py`, 09:00 UTC). Do not edit `data/` or `charts/` by hand.
+- The Stats site reads `data/` and `charts/` at build time through `lib/stats_data.py` (the `stats` object in templates) and generates `/sats/<amount>-<currency>/` and `/items/<slug>/` pages from them in `lib/site.py`. A top-level page joins the header nav with `nav: true` and a short `nav_label`.
 - Chart pages under `content/stats/charts/` are shared with the Daily Build: it owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`. Write the explainer below the end marker and it is kept.
+
+## Brand
+
+- Jim's logos are the three coin renders (B plus a bar chart, a document, a lightning bolt) and the wordmarks "Fast Stats for Sats", "Fast Facts for Sats", "Fast Acts for Sats" with the middle word in orange. The header shows the coin and the wordmark image; never retype the site name as text in the header.
+- Colors (tokens in `shared/static/site.css`): navy `#071829` for the header and footer band (the logo background), wordmark orange `#f97e1b` as the accent, `#b85300` when orange must read as small text on white, link blue `#0b63b5`; dark mode uses navy `#0b1a2b` pages with `#ffa14a` and `#5cc3ff`. Charts use the same palette (`lib/chartstyle.py`): orange first, blue second, and the Stats coin in the footer corner. The chart look (highlighted figure in the title, glow line and wash, latest-value pill, marked highs and lows, halving lines) lives in `lib/chartstyle.py` and `scripts/chartbook.py`; redraw from saved data with `python3 scripts/daily_build.py --offline`.
+- Assets: `shared/static/brand/<site>-coin.png` (112 px, transparent, used by every site for the family links), `sites/<site>/static/brand/` (wordmark.png, og.png 1200 by 630, coin-512.png for profiles), and the favicons in `sites/<site>/static/`. The source renders live with Jim; ask before redrawing anything.
 
 ## Writing rules (from the style guide)
 

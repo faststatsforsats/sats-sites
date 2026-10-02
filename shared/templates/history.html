@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose">
+  <header class="page-head">
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {{ page.body_html | safe }}
+  {% if stats and stats.available %}
+  <table class="numbers">
+    <thead><tr><th>January</th><th>Date</th><th class="num">Price</th><th class="num">Sats per dollar</th></tr></thead>
+    <tbody>
+    {% for row in stats.history() %}
+      <tr{% if row.year == 'now' %} class="now"{% endif %}><td>{{ row.year }}</td><td>{{ row.date }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="small">Each row is the first day of January with a recorded price (daily average across major exchanges, blockchain.com). The last row is the latest day in the data.</p>
+  {% with cards = [stats.chart_by_slug.get('sats-per-dollar'), stats.chart_by_slug.get('price-usd')] | select | list %}{% include "_gallery.html" %}{% endwith %}
+  {% endif %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

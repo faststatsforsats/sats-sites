@@ -20,5 +20,12 @@ disclaimer: Not financial advice. Fast Stats for Sats is an information site.
 # Sections that appear in the header nav once they have pages (slug: label)
 sections:
   charts: Charts
-  value: Value explainers
+  value: Value
   tools: Tools
+
+# Pages the build generates from data/ (added to the nav once the data exists)
+nav_generated:
+  - label: Dollars in sats
+    url: /sats/
+  - label: Items in sats
+    url: /items/

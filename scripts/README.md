@@ -18,7 +18,7 @@
 | --- | --- | --- | --- |
 | blockchain.com charts | daily price (USD) and hash rate since 2009 | none | `sources/blockchain_com.py` |
 | alternative.me | Crypto Fear & Greed Index, daily since 2018 | none | `sources/alternative_me.py` |
-| U.S. Bureau of Labor Statistics API v2 | CPI and average prices (eggs, gasoline, ground beef, milk, bread, coffee, electricity), monthly | `BLS_KEY` | `sources/bls.py` |
+| U.S. Bureau of Labor Statistics API v2 | CPI and 25 average prices (eggs, gasoline, milk, bread, coffee, beer, diesel, and more; the list is `SERIES` in the module), monthly, fetched in batches of 50 | `BLS_KEY` | `sources/bls.py` |
 | FRED | median new-home price (MSPUS, quarterly), S&P 500 (daily, last 10 years) | `FRED_KEY` | `sources/fred.py` |
 | World Bank Pink Sheet | gold, USD per troy ounce, monthly since 1960 (FRED removed the daily LBMA gold series in 2022) | none | `sources/worldbank.py` |
 | api.faststatsforsats.com | today's price in 30 currencies (CoinGecko, via the Worker) and the fee tiers | none | `sources/live_api.py` |
@@ -34,6 +34,7 @@ The runner keeps yesterday's data file for that source, draws what it can, and p
 ```
 python3 -m pip install -r requirements-daily.txt
 python3 scripts/daily_build.py --fixtures      # offline, synthetic data
+python3 scripts/daily_build.py --offline       # redraw the charts from the saved data/ files (no sources touched; latest.json left alone)
 BLS_KEY=... FRED_KEY=... python3 scripts/daily_build.py   # the real thing
 python3 scripts/nostr_post.py --dry-run         # print today's note without posting
 python3 scripts/nostr_post.py --self-test       # key handling and signing checks
@@ -42,3 +43,5 @@ python3 scripts/nostr_post.py --self-test       # key handling and signing check
 ## The charts (October 2026)
 
 sats-per-dollar, price-usd, eggs-in-sats, gold-in-sats, home-in-bitcoin, fear-greed, hashrate. Each writes a light PNG, a dark PNG, and an SVG into `charts/`, an entry in `charts/index.json`, and a page at `/charts/<slug>/` on the Stats site.
+
+The look (lib/chartstyle.py): the key figure in the title is set in the series color; the line is 3 px with a soft halo and a wash fading beneath it; the latest value sits in a bold pill at the line's end; the all-time low and the high of the last five years (or the all-time high, the record, the greediest and most fearful days) are marked with a dot and a two-line tag; the halvings are thin vertical lines on the price, sats-per-dollar, and hash rate charts; the Stats coin sits in the footer corner. Tags are placed by scoring each candidate spot against the line, the other tags, and the figure's edges (`SATS_LABEL_DEBUG=1` prints the scores). The SVG keeps only the line (no halo or wash) so it stays small.
