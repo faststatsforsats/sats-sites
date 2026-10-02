@@ -33,9 +33,9 @@ section_descriptions:
   value: "Compare everyday US prices, gold, new homes, and the S&P 500 in bitcoin terms. See the dates, calculations, and public sources behind each figure."
   tools: "Convert money to sats and bitcoin, or sats back to money. Check amounts in 30 currencies using an hourly price feed."
 
-# The page shown for an address that does not exist: its search description, and the sentence before the home page link
+# The search description of the page shown for an address that does not exist (its heading and sentence are shared
+# by the three sites: shared/templates/404.html)
 not_found_description: "The page could not be found. Return to Fast Stats for Sats to explore Bitcoin charts, values, and the sats converter."
-not_found_text: "That address may contain a typo, or the page may have moved."
 
 # Pages the build generates from data/ (added to the nav once the data exists)
 nav_generated:
