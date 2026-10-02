@@ -14,6 +14,8 @@ This repository builds three sites for Jim Shaver: Fast Stats for Sats (faststat
 - Templates: `shared/templates/`. Styles: `shared/static/site.css`. Chart style: `lib/chartstyle.py`. Redirects: `go/redirects.csv`.
 - Data and charts are written only by the Daily Build (`scripts/daily_build.py`, 09:00 UTC). Do not edit `data/` or `charts/` by hand.
 - The Stats site reads `data/` and `charts/` at build time through `lib/stats_data.py` (the `stats` object in templates) and generates `/sats/<amount>-<currency>/` and `/items/<slug>/` pages from them in `lib/site.py`. A top-level page joins the header nav with `nav: true` and a short `nav_label`.
+- A page can show today's figure with a token in its Markdown: `[[live:sats-per-dollar]]`, `[[live:price]]`, `[[live:sats-for:100:usd]]`, `[[live:money-for:100000]]`, `[[live:fee:fast]]`, `[[live:height]]`, `[[live:to-halving]]`, `[[live:supply]]`, `[[live:when]]` (or `[[live:when:fees]]`), `[[live:cpi]]`, `[[live:gold]]`. The build bakes the number from `data/latest.json` and `shared/static/live.js` refreshes it from the Worker; the full list is `expand_live` in `lib/site.py`.
+- Placement boxes (`placements:` in front matter) may name a program before it is approved; the box and the disclosure line appear only once `go/redirects.csv` says `approved`. A `/go/` link written in the body must already be approved or the strict build fails.
 - Chart pages under `content/stats/charts/` are shared with the Daily Build: it owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`. Write the explainer below the end marker and it is kept.
 
 ## Brand

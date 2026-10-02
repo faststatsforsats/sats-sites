@@ -8,9 +8,12 @@
      price            data-currency (usd, eur, ...)
      sats-per-dollar
      sats-for         data-amount and data-currency: how many sats that amount buys
+     money-for        data-sats and data-currency: what that many sats are worth
      change           data-currency: 24-hour change in percent
      fees             data-tier: fast, medium, slow
      height           the latest block height
+     to-halving       blocks left until the next halving (from the height)
+     supply           bitcoin issued so far, in millions (from the height)
    An element with data-live-want="price" asks for the price fetch (and the "sats:price" event) without showing a number. */
 (function () {
   var body = document.body;
@@ -34,6 +37,12 @@
     if (n >= 10) return fmt(n, 1) + " sats";
     return fmt(n, 2) + " sats";
   }
+  function minedSupply(height) {
+    // bitcoin issued by the block subsidy through this height (block 0 included)
+    var total = 0, subsidy = 50, blocks = height + 1;
+    while (blocks > 0) { var n = Math.min(blocks, 210000); total += n * subsidy; blocks -= n; subsidy /= 2; }
+    return total;
+  }
   function stamp(key, when) {
     var marks = document.querySelectorAll('[data-live-when="' + key + '"]');
     if (!when) return;
@@ -46,8 +55,8 @@
   var needPrice = !!wantsPrice, needFees = false;
   for (var i = 0; i < nodes.length; i++) {
     var k = nodes[i].getAttribute("data-live");
-    if (k === "price" || k === "sats-per-dollar" || k === "sats-for" || k === "change") needPrice = true;
-    if (k === "fees" || k === "height") needFees = true;
+    if (k === "price" || k === "sats-per-dollar" || k === "sats-for" || k === "money-for" || k === "change") needPrice = true;
+    if (k === "fees" || k === "height" || k === "to-halving" || k === "supply") needFees = true;
   }
 
   if (needPrice) {
@@ -64,6 +73,9 @@
         } else if (key === "sats-for" && p) {
           var amount = parseFloat(el.getAttribute("data-amount") || "0");
           el.textContent = sats(amount / p * 100000000);
+        } else if (key === "money-for" && p) {
+          var n = parseFloat(el.getAttribute("data-sats") || "0");
+          el.textContent = money(n / 100000000 * p, cur);
         } else if (key === "change" && data.change_24h && data.change_24h[cur] !== undefined) {
           var c = data.change_24h[cur];
           el.textContent = (c >= 0 ? "+" : "") + fmt(c, 1) + "%";
@@ -80,6 +92,8 @@
       for (var i = 0; i < nodes.length; i++) {
         var el = nodes[i], key = el.getAttribute("data-live");
         if (key === "height" && data.height) { el.textContent = fmt(data.height); continue; }
+        if (key === "to-halving" && data.height) { el.textContent = fmt((Math.floor(data.height / 210000) + 1) * 210000 - data.height); continue; }
+        if (key === "supply" && data.height) { el.textContent = fmt(minedSupply(data.height) / 1000000, 2) + " million"; continue; }
         if (key !== "fees") continue;
         var tier = el.getAttribute("data-tier") || "medium";
         if (data.fees[tier] !== undefined) el.textContent = fmt(data.fees[tier]) + " sat/vB";

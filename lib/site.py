@@ -6,6 +6,8 @@ Cloudflare Pages runs the same command for each project; see README.md, "Cloudfl
 
 from __future__ import annotations
 
+import re
+
 import datetime as _dt
 import json
 import shutil
@@ -92,6 +94,105 @@ def copy_tree(src: Path, dst: Path, skip_names: set[str] | None = None) -> int:
     return count
 
 
+LIVE_TOKEN = re.compile(r"\[\[live:([a-z-]+)((?::[^\]:]+)*)\]\]")
+HALVING_INTERVAL = 210_000
+
+
+def mined_supply(height: int) -> float:
+    """Bitcoin issued by the block subsidy through this height (block 0 included)."""
+    total, subsidy, blocks = 0.0, 50.0, height + 1
+    while blocks > 0:
+        n = min(blocks, HALVING_INTERVAL)
+        total += n * subsidy
+        blocks -= n
+        subsidy /= 2
+    return total
+
+
+def expand_live(html: str, stats, report, page) -> str:
+    """Replace [[live:key(:arg)*]] tokens in a page body with the baked figure wrapped for live.js.
+
+    Keys: sats-per-dollar, price[:cur], sats-for:amount[:cur], money-for:sats[:cur], fee[:fast|medium|slow], height, to-halving, supply,
+    when[:fees] (the price or fee feed's time stamp), cpi, gold (the last monthly figures, not live)."""
+    from .stats_data import CURRENCIES, fmt_money, fmt_sats, month_name
+
+    def missing(key: str) -> str:
+        report.warn(f"{page.source}: [[live:{key}]] has no figure yet (the Daily Build has not written data/latest.json)")
+        return "<span class=\"live\">(figure arrives with the first Daily Build)</span>"
+
+    def repl(match):
+        key, raw = match.group(1), match.group(2)
+        args = [a for a in raw.split(":") if a]
+        ok = stats is not None and stats.available
+        if key == "sats-per-dollar":
+            if not ok or not stats.sats_per_dollar:
+                return missing(key)
+            return f'<span class="live" data-live="sats-per-dollar">{stats.sats_per_dollar:,} sats</span>'
+        if key == "price":
+            cur = (args[0] if args else "usd").lower()
+            price = stats.prices.get(cur) if ok else None
+            if not price:
+                return missing(key)
+            symbol = CURRENCIES.get(cur, {}).get("symbol", cur.upper() + " ")
+            return f'<span class="live" data-live="price" data-currency="{cur}">{fmt_money(price, symbol)}</span>'
+        if key == "sats-for":
+            amount = float(args[0]) if args else 100.0
+            cur = (args[1] if len(args) > 1 else "usd").lower()
+            price = stats.prices.get(cur) if ok else None
+            if not price:
+                return missing(key)
+            return f'<span class="live" data-live="sats-for" data-amount="{amount:g}" data-currency="{cur}">{fmt_sats(amount / price * 1e8)}</span>'
+        if key == "money-for":
+            sats = float(args[0]) if args else 100_000.0
+            cur = (args[1] if len(args) > 1 else "usd").lower()
+            price = stats.prices.get(cur) if ok else None
+            if not price:
+                return missing(key)
+            symbol = CURRENCIES.get(cur, {}).get("symbol", cur.upper() + " ")
+            return f'<span class="live" data-live="money-for" data-sats="{sats:g}" data-currency="{cur}">{fmt_money(sats / 1e8 * price, symbol)}</span>'
+        if key == "fee":
+            tier = args[0] if args else "medium"
+            value = (stats.fees or {}).get(tier) if ok else None
+            if value is None:
+                return missing(key)
+            return f'<span class="live" data-live="fees" data-tier="{tier}">{value:g} sat/vB</span>'
+        if key == "height":
+            height = (stats.fees or {}).get("height") if ok else None
+            if not height:
+                return missing(key)
+            return f'<span class="live" data-live="height">{int(height):,}</span>'
+        if key == "to-halving":
+            height = (stats.fees or {}).get("height") if ok else None
+            if not height:
+                return missing(key)
+            next_block = (int(height) // HALVING_INTERVAL + 1) * HALVING_INTERVAL
+            return f'<span class="live" data-live="to-halving">{next_block - int(height):,}</span>'
+        if key == "supply":
+            height = (stats.fees or {}).get("height") if ok else None
+            if not height:
+                return missing(key)
+            return f'<span class="live" data-live="supply">{mined_supply(int(height)) / 1e6:.2f} million</span>'
+        if key == "when":
+            if not ok:
+                return missing(key)
+            feed = "fees" if args and args[0] == "fees" else "price"
+            return f'<span class="live-when" data-live-when="{feed}">as of {stats.updated_text}</span>'
+        if key == "cpi":
+            cpi = stats.cpi if ok else None
+            if not cpi:
+                return missing(key)
+            return f'{cpi["value"]:.1f} ({month_name(cpi["period"] + "-01")})'
+        if key == "gold":
+            if not ok or not stats.gold:
+                return missing(key)
+            day, usd = stats.gold[-1]
+            return f'{fmt_money(usd)} an ounce ({month_name(day)})'
+        report.error(f"{page.source}: unknown live token [[live:{key}]]")
+        return match.group(0)
+
+    return LIVE_TOKEN.sub(repl, html)
+
+
 def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> Report:
     if key not in SITE_KEYS:
         raise SystemExit(f"unknown site {key!r}; choose one of {', '.join(SITE_KEYS)} or all")
@@ -135,6 +236,9 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
                 report.error(f"{page.source}: links to /go/{slug} but go/redirects.csv has no such slug")
             elif not redirects[slug].approved:
                 report.warn(f"{page.source}: /go/{slug} ({redirects[slug].program}) has status {redirects[slug].status!r}; the style guide allows affiliate links only for approved programs")
+        for slug in page.placement_slugs:
+            if slug not in redirects:
+                report.error(f"{page.source}: placement {slug!r} is not in go/redirects.csv")
         if key == "acts" and page.template == "guide" and not page.meta.get("understand_first"):
             report.warn(f"{page.source}: an Acts guide opens with an \"Understand first\" line; add understand_first to the front matter")
         if "—" in page.body_md or "—" in page.title:
@@ -149,9 +253,10 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     nav = [{"label": label, "url": f"/{name}/"} for name, label in sections.items() if section_pages.get(name)]
     nav += [{"label": page.nav_label, "url": page.url} for page in pages if page.in_nav and not page.section and page.url != "/"]
 
-    # The Stats site reads data/ and charts/ at build time (None on the other two sites)
-    stats = StatsData(ROOT) if key == "stats" else None
-    if stats and stats.available:
+    # Every site reads data/ and charts/ at build time: Stats builds pages from them, Facts and Acts bake
+    # the figures behind [[live:...]] tokens (the browser refreshes those from the API through live.js)
+    stats = StatsData(ROOT)
+    if stats.available and key == "stats":
         for item in site.get("nav_generated") or []:
             nav.append({"label": item["label"], "url": item["url"]})
 
@@ -213,6 +318,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
                 (p for p in section_pages.get(page.section, []) if p.url != page.url),
                 key=lambda p: (p.meta.get("order", 999), p.title),
             )
+        page.body_html = expand_live(page.body_html, stats, report, page)
         html = env.get_template(template_name).render(
             page=page,
             title=page.title,
@@ -235,7 +341,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
 
     # Programmatic pages (Stats only): /sats/<amount>-<currency>/ and /items/<slug>/
     generated: list[tuple[str, str]] = []   # (url, lastmod)
-    if stats and stats.available:
+    if key == "stats" and stats.available:
         base = site["url"].rstrip("/")
         amount_pages = stats.amount_pages()
         for entry in amount_pages:

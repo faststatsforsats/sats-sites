@@ -9,7 +9,7 @@
   {% if understand_first %}
   <p class="understand-first"><strong>Understand first:</strong> <a href="{{ understand_first.url }}">{{ understand_first.text }}</a></p>
   {% endif %}
-  {% if has_affiliate_links %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
+  {% if page and page.go_slugs %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
   {{ page.body_html | safe }}
   {% include "_placements.html" %}
 </article>

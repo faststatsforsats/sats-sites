@@ -1,5 +1,6 @@
 {% if placements %}
 <section class="placements" aria-label="Products mentioned">
+  {% if not (page and page.go_slugs) %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
   {% for box in placements %}
   <div class="placement">
     <p class="placement-head"><a href="{{ box.url }}" rel="sponsored nofollow noopener">{{ box.get('headline') or box.program }}</a></p>

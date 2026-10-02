@@ -16,7 +16,8 @@ A page file looks like this:
     sources:
       - name: Kraken fee schedule
         url: https://www.kraken.com/features/fee-schedule
-    placements:                # affiliate boxes; slug must be in go/redirects.csv with status approved
+    placements:                # affiliate boxes; slug must be in go/redirects.csv; a box renders only once the status is approved
+    live: true                 # optional note that the body uses [[live:...]] figures (see lib/site.py LIVE_TOKEN)
       - slug: kraken
         headline: Kraken
         text: One sentence on what it is and who it suits.
@@ -53,7 +54,8 @@ class Page:
     body_md: str
     body_html: str = ""
     toc_html: str = ""
-    go_slugs: list[str] = field(default_factory=list)
+    go_slugs: list[str] = field(default_factory=list)          # /go/ links written in the body (must be approved)
+    placement_slugs: list[str] = field(default_factory=list)   # placement boxes; they render only once the program is approved
 
     @property
     def title(self) -> str:
@@ -130,10 +132,7 @@ def load_page(content_root: Path, source: Path) -> Page:
     page = Page(source=source, url=url, section=section, meta=meta, body_md=body)
     page.body_html, page.toc_html = render_markdown(body)
     page.go_slugs = sorted(set(GO_LINK.findall(body)))
-    for placement in meta.get("placements") or []:
-        slug = str(placement.get("slug", "")).strip()
-        if slug and slug not in page.go_slugs:
-            page.go_slugs.append(slug)
+    page.placement_slugs = [str(pl.get("slug", "")).strip() for pl in (meta.get("placements") or []) if str(pl.get("slug", "")).strip()]
     return page
 
 
