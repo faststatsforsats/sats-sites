@@ -2,12 +2,12 @@
 title: A dozen eggs priced in sats
 description: What a dozen large eggs costs in sats each month since 2011, from the BLS average price and the monthly average bitcoin price.
 template: chart
-updated: '2026-10-01'
+updated: '2026-10-02'
 chart:
   slug: eggs-in-sats
   alt: A dozen eggs cost 3,294 sats in August 2026
   source: BLS average price, eggs, grade A, large, per dozen (APU0000708111), blockchain.com, market price (USD)
-  pulled: October 1, 2026, 20:54 UTC
+  pulled: October 2, 2026, 09:09 UTC
   data: /data/eggs.json
 attribution:
 - bls

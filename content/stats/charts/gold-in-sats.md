@@ -2,12 +2,12 @@
 title: Gold priced in sats
 description: How many sats a troy ounce of gold costs, month by month since 2011, from the World Bank gold price and the average bitcoin price.
 template: chart
-updated: '2026-10-01'
+updated: '2026-10-02'
 chart:
   slug: gold-in-sats
   alt: An ounce of gold cost 6,394,777 sats in August 2026
   source: World Bank Commodity Price Data (The Pink Sheet), gold, blockchain.com, market price (USD)
-  pulled: October 1, 2026, 20:54 UTC
+  pulled: October 2, 2026, 09:09 UTC
   data: /data/gold.json
 attribution:
 - worldbank

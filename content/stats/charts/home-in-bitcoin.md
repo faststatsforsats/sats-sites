@@ -2,12 +2,12 @@
 title: A new home priced in bitcoin
 description: The median price of a new house sold in the United States, converted to bitcoin each quarter since 2011, from the Census Bureau figure on FRED.
 template: chart
-updated: '2026-10-01'
+updated: '2026-10-02'
 chart:
   slug: home-in-bitcoin
   alt: A median new home cost 5.7 bitcoin in Q2 2026
   source: FRED, Median Sales Price of New Houses Sold (MSPUS), blockchain.com, market price (USD)
-  pulled: October 1, 2026, 20:54 UTC
+  pulled: October 2, 2026, 09:09 UTC
   data: /data/homes.json
 attribution:
 - fred
