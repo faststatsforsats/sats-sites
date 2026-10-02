@@ -21,7 +21,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 from .content import Page, load_pages
 from .redirects import load_redirects, render_redirects_file
-from .stats_data import StatsData
+from .stats_data import WITHDRAWN_DATA, StatsData
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_KEYS = ("stats", "facts", "acts")
@@ -167,8 +167,7 @@ def expand_live(html: str, stats, report, page) -> str:
 
     Keys: sats-per-dollar, price[:cur], sats-for:amount[:cur], money-for:sats[:cur], fee[:fast|medium|slow], height, to-halving, supply,
     when[:fees] (the price or fee feed's time stamp), cpi, gold (the last monthly figures, not live),
-    items (how many everyday items the basket holds), sp500, sp500-usd, sp500-sats (the S&P 500 row of the comparisons
-    table: the index level, the same number as dollars, and that number in sats; baked, not live)."""
+    items (how many everyday items the basket holds; baked, not live)."""
     from .stats_data import CURRENCIES, fmt_money, fmt_sats, month_name
 
     def missing(key: str) -> str:
@@ -245,11 +244,6 @@ def expand_live(html: str, stats, report, page) -> str:
         if key == "items":
             count = len(stats.basket()) if ok else 0
             return str(count) if count else missing(key)
-        if key in ("sp500", "sp500-usd", "sp500-sats"):
-            row = stats.sp500_row() if ok else None
-            if not row:
-                return missing(key)
-            return {"sp500": row["level_text"], "sp500-usd": row["dollars_text"], "sp500-sats": row["value_text"]}[key]
         report.error(f"{page.source}: unknown live token [[live:{key}]]")
         return match.group(0)
 
@@ -539,7 +533,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
 
     # Data and charts are published by the Stats site only
     if site.get("serves_data"):
-        copy_tree(ROOT / "data", dist / "data", skip_names={"README.md"})
+        copy_tree(ROOT / "data", dist / "data", skip_names={"README.md", *WITHDRAWN_DATA})   # a withdrawn file is never published
         copy_tree(ROOT / "charts", dist / "charts", skip_names={"README.md"})
 
     # Cloudflare files

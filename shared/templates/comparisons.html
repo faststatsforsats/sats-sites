@@ -9,8 +9,10 @@
   {{ page.body_html | safe }}
   {% if stats and stats.available %}
   <table class="numbers">
-    {# the second column holds dollar prices and, for the S&P 500, index points #}
-    <thead><tr><th>What</th><th>Price or index level</th><th class="num">In bitcoin terms</th><th class="num">A year earlier</th></tr></thead>
+    {# Jim's heading for the second column was "Price or index level" while the table had an S&P 500 row; that row came
+       off on October 2, 2026 (WITHDRAWN_DATA in lib/stats_data.py), and the heading and the note below lost only the
+       words about it #}
+    <thead><tr><th>What</th><th>Price</th><th class="num">In bitcoin terms</th><th class="num">A year earlier</th></tr></thead>
     <tbody>
     {% for row in stats.comparisons() %}
       <tr>
@@ -22,7 +24,7 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="small">Each row uses its own reporting period: monthly for gold, quarterly for homes, and daily for the S&amp;P 500. Compare the dates as well as the amounts.</p>
+  <p class="small">Each row uses its own reporting period: monthly for gold and quarterly for homes. Compare the dates as well as the amounts.</p>
   {% with cards = [stats.chart_by_slug.get('gold-in-sats'), stats.chart_by_slug.get('home-in-bitcoin')] | select | list %}{% include "_gallery.html" %}{% endwith %}
   {% else %}
   <p>Price data is temporarily unavailable. Please check again later.</p>

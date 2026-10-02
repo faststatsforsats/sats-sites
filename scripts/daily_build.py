@@ -7,7 +7,7 @@
 
 What it does, in order:
   1. Pull the sources: blockchain.com (price and hash rate since 2009), alternative.me (Fear & Greed),
-     BLS (CPI and average prices), FRED (new-home price, S&P 500), the World Bank Pink Sheet (gold),
+     BLS (CPI and average prices), FRED (new-home price), the World Bank Pink Sheet (gold),
      and the site's own live API (today's price in 30 currencies, fees, block height).
   2. Write data/*.json. A source that fails keeps yesterday's file and is listed in the summary.
   3. Draw every chart in scripts/chartbook.py (light PNG, dark PNG, SVG) into charts/.
@@ -32,6 +32,7 @@ sys.path.insert(0, str(ROOT))
 from scripts import chartbook, pages, series as S  # noqa: E402
 from scripts.sources import alternative_me, blockchain_com, bls, fred, live_api, worldbank  # noqa: E402
 from scripts.sources.http import SourceError  # noqa: E402
+from lib.stats_data import WITHDRAWN_DATA  # noqa: E402
 
 DATA_DIR = ROOT / "data"
 CHARTS_DIR = ROOT / "charts"
@@ -85,7 +86,7 @@ def collect_offline(log: list[str]) -> dict:
         "hashrate_daily": load_series("network"),
         "fear_greed": [(str(d), int(v), str(label)) for d, v, label in saved["series"]["points"]] if saved else None,
         "bls": {name: load_series(name) for name in bls.SERIES if load_series(name)},
-        "fred": {"home_price": load_series("homes"), "sp500": load_series("sp500")},
+        "fred": {"home_price": load_series("homes")},
         "gold_monthly": load_series("gold"),
         "live_price": None,
         "live_fees": None,
@@ -161,7 +162,15 @@ def collect(when: dt.datetime, log: list[str]) -> dict:
                         extra={"fred_series_id": spec["id"]})
         data["fred"] = fred_series
     else:
-        data["fred"] = {"home_price": load_series("homes"), "sp500": load_series("sp500")}
+        data["fred"] = {"home_price": load_series("homes")}
+
+    # A file that has been withdrawn from the site (lib/stats_data.py WITHDRAWN_DATA) is deleted, whether or not its
+    # source answered today, so the repository stops carrying it too
+    for name in WITHDRAWN_DATA:
+        path = DATA_DIR / name
+        if path.exists():
+            path.unlink()
+            log.append(f"ok    removed data/{name}: withdrawn from the site")
 
     # World Bank gold
     gold = step("World Bank Pink Sheet gold", worldbank.gold_monthly)

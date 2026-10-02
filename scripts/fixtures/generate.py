@@ -87,6 +87,8 @@ while q <= TODAY:
     homes.append({"realtime_start": TODAY.isoformat(), "realtime_end": TODAY.isoformat(), "date": q.isoformat(), "value": f"{value:.0f}"})
     q = dt.date(q.year + (q.month + 3 > 12), (q.month + 2) % 12 + 1, 1)
 write("fred_MSPUS.json", {"observations": homes})
+# Made-up S&P 500 values. Nothing asks for this file since October 2, 2026, when the real series came off the site
+# (WITHDRAWN_DATA in lib/stats_data.py); it stays so the test set is ready if S&P gives permission.
 sp = [{"realtime_start": TODAY.isoformat(), "realtime_end": TODAY.isoformat(), "date": d.isoformat(), "value": f"{2000 * (1.12 ** ((d - (TODAY - dt.timedelta(days=3650))).days / 365.25)) * random.uniform(0.98, 1.02):.2f}"} for d in days(TODAY - dt.timedelta(days=3650), step=3)]
 sp.insert(5, {"realtime_start": TODAY.isoformat(), "realtime_end": TODAY.isoformat(), "date": "2017-01-02", "value": "."})
 write("fred_SP500.json", {"observations": sp})

@@ -19,7 +19,7 @@
 | blockchain.com charts | daily price (USD) and hash rate since 2009 (the hash rate is saved to nine significant figures, so the fractions of a terahash of the first years are kept) | none | `sources/blockchain_com.py` |
 | alternative.me | Crypto Fear & Greed Index, daily since 2018 | none | `sources/alternative_me.py` |
 | U.S. Bureau of Labor Statistics API v2 | CPI and 24 average prices (eggs, gasoline, milk, bread, coffee, beer, wine, diesel, and more), monthly, fetched in batches of 50. The items are defined once, in `ITEMS` in `lib/stats_data.py` (series id, BLS's item name, and the names the pages use); check a new id against [BLS's item list](https://download.bls.gov/pub/time.series/ap/ap.item) before adding it | `BLS_KEY` | `sources/bls.py` |
-| FRED | median new-home price (MSPUS, quarterly), S&P 500 (daily, last 10 years) | `FRED_KEY` | `sources/fred.py` |
+| FRED | median new-home price (MSPUS, quarterly). The S&P 500 was fetched until October 2, 2026; S&P Dow Jones Indices owns that series and FRED's page says it needs S&P's written permission, so it is off until S&P answers | `FRED_KEY` | `sources/fred.py` |
 | World Bank Pink Sheet | gold, USD per troy ounce, monthly since 1960 (FRED removed the daily LBMA gold series in 2022) | none | `sources/worldbank.py` |
 | api.faststatsforsats.com | today's price in 30 currencies (CoinGecko, via the Worker) and the fee tiers | none | `sources/live_api.py` |
 

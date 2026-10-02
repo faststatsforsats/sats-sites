@@ -30,7 +30,7 @@ sections:
 # The search description of each section's list page (a list page has no Markdown file of its own)
 section_descriptions:
   charts: "Free Bitcoin charts with plain explanations, source data, and daily updates. Compare prices, purchasing power, market sentiment, and the network."
-  value: "Compare everyday US prices, gold, new homes, and the S&P 500 in bitcoin terms. See the dates, calculations, and public sources behind each figure."
+  value: "Compare everyday US prices, gold, and new homes in bitcoin terms. See the dates, calculations, and public sources behind each figure."
   tools: "Convert money to sats and bitcoin, or sats back to money. Check amounts in 30 currencies using an hourly price feed."
 
 # The search description of the page shown for an address that does not exist (its heading and sentence are shared

@@ -21,6 +21,14 @@ CHARTS = ROOT / "charts"
 
 START_YEAR = 2011
 
+# Data files that are no longer published. The Stats build leaves them out of the site even while a copy is still in
+# data/, and the Daily Build deletes that copy on its next run (scripts/daily_build.py).
+# sp500.json: the S&P 500 series belongs to S&P Dow Jones Indices, and FRED's page for it says it may not be
+# reproduced without S&P's written permission. The comparisons page's S&P 500 row and this file came off the site on
+# October 2, 2026, at Jim's call, until S&P answers. To bring them back: take the name out of this list, put the
+# series back in scripts/sources/fred.py, and restore the row and Jim's wording (claude/stats-review-baseline.md).
+WITHDRAWN_DATA = ("sp500.json",)
+
 # 54 amounts x 5 currencies = 270 "in sats" pages
 AMOUNTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 15, 20, 25, 30, 40, 50, 60, 70, 75, 80, 90, 100, 120, 125, 150, 175, 200,
            250, 300, 350, 400, 450, 500, 600, 700, 750, 800, 900, 1000, 1200, 1500, 2000, 2500, 3000, 4000, 5000, 7500,
@@ -216,7 +224,6 @@ class StatsData:
         self.network = _points(_read(root / "data" / "network.json"))
         self.gold = _points(_read(root / "data" / "gold.json"))
         self.homes = _points(_read(root / "data" / "homes.json"))
-        self.sp500 = _points(_read(root / "data" / "sp500.json"))
         self.items_data = self._load_items()
 
         self.monthly_avg = self._monthly_average(self.price_daily)
@@ -353,27 +360,7 @@ class StatsData:
                 ago_btc = ago[1] / self.quarterly_avg[ago[0]] if ago and self.quarterly_avg.get(ago[0]) else None
                 rows.append({"name": "US median new-home sale price", "when": quarter(day), "usd_text": fmt_money(usd), "value_text": fmt_btc(usd / btc),
                              "ago_text": fmt_btc(ago_btc) if ago_btc else "", "chart": "home-in-bitcoin", "source": "FRED (MSPUS), blockchain.com (price)", "data_file": "/data/homes.json"})
-        if self.sp500:
-            day, level = self.sp500[-1]
-            btc = self.price_on(day)
-            if btc:
-                ago = _year_ago(self.sp500, day)
-                ago_btc_price = self.price_on(ago[0]) if ago else None
-                ago_sats = ago[1] / ago_btc_price * 1e8 if ago and ago_btc_price else None
-                rows.append({"name": "S&P 500 whole index level, converted for comparison", "when": long_date(day), "usd_text": f"{level:,.0f} points", "value_text": fmt_sats(level / btc * 1e8),
-                             "ago_text": fmt_sats(ago_sats) if ago_sats else "", "chart": None, "source": "FRED (SP500), blockchain.com (price)", "data_file": "/data/sp500.json"})
         return rows
-
-    def sp500_row(self) -> dict | None:
-        """The figures the comparisons page quotes in its text: the index level, the same number written as dollars,
-        and that number converted to sats at the day's average bitcoin price (the table's S&P 500 row)."""
-        if not self.sp500:
-            return None
-        day, level = self.sp500[-1]
-        btc = self.price_on(day)
-        if not btc:
-            return None
-        return {"date": long_date(day), "level_text": f"{level:,.0f}", "dollars_text": f"${level:,.0f}", "value_text": fmt_sats(level / btc * 1e8)}
 
     def history(self) -> list[dict]:
         rows = []

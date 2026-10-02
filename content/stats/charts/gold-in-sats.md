@@ -44,4 +44,4 @@ When gold rises faster than bitcoin in dollar terms, the sats cost rises. When b
 
 The logarithmic scale shows equal multiples at equal distances. Use the table for exact comparisons, and check both rising and falling stretches before drawing a conclusion from the long history.
 
-This is a comparison of prices, rather than the full costs or returns of owning either asset. [Bitcoin and gold](https://fastfactsforsats.com/money/bitcoin-and-gold/) explains their other differences. For a wider comparison, see [Gold, homes, and the S&P 500 in bitcoin terms](/value/comparisons/).
+This is a comparison of prices, rather than the full costs or returns of owning either asset. [Bitcoin and gold](https://fastfactsforsats.com/money/bitcoin-and-gold/) explains their other differences. For a wider comparison, see [Gold and homes in bitcoin terms](/value/comparisons/).

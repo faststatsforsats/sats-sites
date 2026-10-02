@@ -3,7 +3,12 @@
 Docs: https://fred.stlouisfed.org/docs/api/fred/series_observations.html
 Shape: {"observations":[{"realtime_start":"...","realtime_end":"...","date":"2026-09-30","value":"7651.54"}, ...]}
 A missing value is the string ".". Required attribution is in lib/site.py (ATTRIBUTION_LINES["fred"]).
-Note: FRED's S&P 500 series carries the last 10 years only, by agreement with the index owner.
+
+Before adding a series, open its page on fred.stlouisfed.org and read the notes. FRED's API terms say a series owned
+by a third party needs the owner's permission for anything beyond personal use. The S&P 500 (SP500) is one: it belongs
+to S&P Dow Jones Indices, and its page says it may not be reproduced without S&P's written permission. It was fetched
+here until October 2, 2026 and came off at Jim's call until S&P answers (see WITHDRAWN_DATA in lib/stats_data.py).
+MSPUS, the new-home price, comes from the Census Bureau and HUD.
 """
 
 from __future__ import annotations
@@ -16,7 +21,6 @@ SOURCE = {"name": "FRED, Federal Reserve Bank of St. Louis", "url": "https://fre
 
 SERIES = {
     "home_price": {"id": "MSPUS", "title": "Median sales price of new houses sold in the United States", "unit": "USD", "frequency": "quarterly"},
-    "sp500": {"id": "SP500", "title": "S&P 500 index, daily close", "unit": "index", "frequency": "daily"},
 }
 
 

@@ -108,6 +108,6 @@ Gold offers thousands of years of history.
 
 Bitcoin offers mathematically fixed scarcity and digital portability.
 
-The market gets to argue about the rest. The [gold in sats chart](https://faststatsforsats.com/charts/gold-in-sats/) on Fast Stats shows how that argument has gone month by month since 2011, and the [comparisons page](https://faststatsforsats.com/value/comparisons/) puts gold, a new home, and the S&P 500 in sats on one table.
+The market gets to argue about the rest. The [gold in sats chart](https://faststatsforsats.com/charts/gold-in-sats/) on Fast Stats shows how that argument has gone month by month since 2011, and the [comparisons page](https://faststatsforsats.com/value/comparisons/) puts gold and a new home in sats on one table.
 
 Old gold has wrinkles. Young Bitcoin has bruises. Both have survived a few fights.
