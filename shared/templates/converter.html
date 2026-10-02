@@ -31,7 +31,7 @@
     </div>
     <p class="small" id="conv-note">Price <span id="conv-price"></span>, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>.</p>
   </form>
-  <script src="/static/converter.js" defer></script>
+  <script src="{{ static_url('converter.js') }}" defer></script>
   {% else %}
   <p>Conversion data is temporarily unavailable. Please check again later.</p>
   {% endif %}

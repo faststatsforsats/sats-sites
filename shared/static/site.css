@@ -131,6 +131,17 @@ details.embed { margin: 0 0 24px; font-size: 15px; }
 details.embed summary { cursor: pointer; color: var(--accent); }
 details.embed pre { font-size: 13px; }
 
+/* Embeds: what another site would show, the code for it, and the copy button */
+.embed-preview { margin: 0 0 12px; padding: 14px; background: var(--surface); border: 1px dashed var(--rule); border-radius: 8px; overflow-wrap: anywhere; }
+.embed-preview p { margin: 8px 0 0; }
+.embed-form { margin-bottom: 12px; }
+.embed-form .converter-row:last-child { margin-bottom: 0; }
+.embed-form input[type="text"] { width: 280px; }
+.copy-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.copy { font: inherit; font-size: 15px; font-weight: 600; padding: 7px 14px; border: 1px solid var(--rule); border-radius: 8px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+.copy-done { color: var(--good); font-size: 14px; }
+
 /* Affiliate placement boxes */
 .placements { margin: 28px 0; display: grid; gap: 12px; }
 .placement { background: var(--placement); border: 1px solid var(--hairline); border-radius: 8px; padding: 12px 16px; }
@@ -158,6 +169,8 @@ details.embed pre { font-size: 13px; }
 .family-footer a { display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: var(--navy-ink); font-weight: 600; }
 .family-footer a:hover { text-decoration: underline; }
 .family-footer span { color: var(--navy-muted); font-weight: 400; }
+.footer-links { list-style: none; display: flex; flex-wrap: wrap; gap: 6px 20px; margin: 0 0 10px; padding: 0; }   /* privacy, affiliate disclosure, terms, contact */
+.footer-links li { margin: 0; }
 .colophon { color: var(--navy-muted); opacity: 0.85; }
 
 @media (max-width: 600px) {

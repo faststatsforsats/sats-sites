@@ -13,7 +13,7 @@ Sats means satoshis, the smallest unit of bitcoin. Every page says so, and no pa
 ## How it works
 
 1. Pages are Markdown files under `content/<site>/`. The folder a file sits in is its section.
-2. `python3 build.py <site>` renders them with the shared templates and stylesheet into `sites/<site>/dist/`, along with Cloudflare's `_redirects` (the `/go/` affiliate links), `_headers`, `robots.txt`, `sitemap.xml`, `feed.xml`, and a `404.html`.
+2. `python3 build.py <site>` renders them with the shared templates and stylesheet into `sites/<site>/dist/`, along with Cloudflare's `_redirects` (the `/go/` links of approved programs), a "not live" page for every other `/go/` link, `_headers`, `robots.txt`, `sitemap.xml`, `feed.xml`, and a `404.html`. Four pages are written once in `content/shared/` and built into all three sites: the privacy policy, the affiliate disclosure, the terms of use, and the contact page. Every footer links them.
 3. Cloudflare Pages runs that command for each site on every push to `main` and on every pull request (which gets a preview address). Settings are below.
 4. Every morning the Daily Build (GitHub Actions, step 16) pulls the public data sources, writes `data/`, draws `charts/`, and commits. That commit rebuilds the Stats site, which serves both folders.
 5. Live numbers (price, fees) come from a Cloudflare Worker at api.faststatsforsats.com (step 15); `shared/static/live.js` swaps them into any page that asks, and leaves the daily figure in place when the API is unreachable.
@@ -23,12 +23,13 @@ Sats means satoshis, the smallest unit of bitcoin. Every page says so, and no pa
 | Path | What is in it |
 | --- | --- |
 | `content/stats/`, `content/facts/`, `content/acts/` | The pages, one Markdown file each, with front matter (documented at the top of `lib/content.py`) |
+| `content/shared/` | Pages every site carries at the same address: `/privacy/`, `/affiliate-disclosure/`, `/terms/`, `/contact/` |
 | `sites/<site>/site.yml` | Each site's name, domain, tagline, sections, and settings |
-| `sites/<site>/static/` | Files copied as-is into that site's root (favicon, images) |
+| `sites/<site>/static/` | Files copied as-is into that site's root (favicon, images). On Stats this includes `embed.js`, the sats badge script other sites load from https://faststatsforsats.com/embed.js |
 | `sites/<site>/dist/` | Build output. Never committed; Cloudflare builds it |
 | `shared/templates/` | Jinja2 templates shared by the three sites (`base`, `home`, `page`, `guide`, `chart`, `section`, `404`) |
-| `shared/static/` | `site.css` and `live.js`, served at `/static/` on every site |
-| `shared/_headers` | Cloudflare headers: open CORS and caching for `/charts/` and `/data/`, security headers elsewhere |
+| `shared/static/` | `site.css`, `live.js`, `converter.js`, and `embeds.js` (copy buttons and the badge form), served at `/static/` on every site |
+| `shared/_headers` | Cloudflare headers: open CORS and caching for `/charts/`, `/data/`, and `/embed.js`, security headers elsewhere, and `noindex` on the pages.dev addresses so only the real domains reach search results |
 | `shared/sites.yml` | The three sites, for the header and footer cross-links |
 | `go/redirects.csv` | The `/go/{slug}` affiliate redirect table. See `go/README.md` |
 | `data/` | JSON written by the Daily Build. See `data/README.md` |
@@ -63,7 +64,16 @@ After the first deployment, set the build watch paths so a change to one site do
 
 The Acts list includes `charts/*` because a campaign page (`template: campaign`) shows one Stats chart as its hook and the build copies that chart's images from `charts/`; without it the chart on the campaign page would refresh only when something else on the Acts site changed. The daily data commit therefore rebuilds Stats and Acts, about 60 of the 500 free builds a month.
 
-Then, for each project: Metrics, Enable Web Analytics. Custom domains are added in step 20 of the Build Recipe, after the pages.dev addresses have been reviewed.
+Then, for each project: Metrics, Enable Web Analytics. Custom domains are added in step 20 of the Build Recipe, after the pages.dev addresses have been reviewed: in each project, Custom domains, Set up a domain, the bare domain and then `www.` in front of it. The pages.dev addresses keep working afterwards; `shared/_headers` marks them `noindex`.
+
+## Embeds
+
+Other sites can show two things from Stats, and https://faststatsforsats.com/tools/embed/ shows both the way another site would, with the code to copy:
+
+- A chart: an `<img>` of `https://faststatsforsats.com/charts/<slug>.png` inside a link to the chart's page, with the credit line "Chart by Fast Stats for Sats". Each chart page offers its own code; the one definition is `chart_snippet` in `shared/templates/_embed.html`.
+- The sats badge: a link with `class="sats-badge"`, `data-amount`, `data-currency`, and an optional `data-label`, followed by `<script async src="https://faststatsforsats.com/embed.js">`. The script (`sites/stats/static/embed.js`) reads the hourly price from api.faststatsforsats.com and turns the link into a badge with the amount in sats, the time of the price, and the credits. It sets no cookies and stores nothing; if the price cannot be reached the plain link stays. The embed page's form writes the code, and `?amount=4.5&currency=usd&label=Flat%20white` on its address opens it on that price.
+
+`embed.js` is a public address that other sites depend on. Keep the markup it reads (`a.sats-badge` and the three `data-` attributes) working when you change it.
 
 If a build log ever says `externally-managed-environment`, add `--break-system-packages` after `install` in the build command. If it shows Python 3.11 or older, set the environment variable `PYTHON_VERSION` to `3.13` in the project's settings; the code runs on 3.10 and newer either way.
 
@@ -85,4 +95,4 @@ Every affiliate link on every page is written as `/go/{slug}`, with the slug tak
 
 Claude opens a pull request for each change; Cloudflare adds a preview link to the pull request and the build check adds a green check mark. Open the preview, read the page, and select Merge pull request, then Confirm merge. The sites rebuild from `main` within a few minutes.
 
-Code in this repository is under the MIT license (see `LICENSE`). The guides and charts carry the terms on each site's About page.
+Code in this repository is under the MIT license (see `LICENSE`). The text, charts, and badge carry the terms on each site's `/terms/` page (`content/shared/terms.md`).

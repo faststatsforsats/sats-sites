@@ -9,6 +9,7 @@ from __future__ import annotations
 import re
 
 import datetime as _dt
+import hashlib
 import json
 import shutil
 import sys
@@ -52,11 +53,28 @@ def credit_lines(codes, today) -> list[dict]:
 SATS_LINE = "Sats means satoshis, the smallest unit of bitcoin."
 DISCLOSURE_LINE = "Some links here are affiliate links. If you buy through them, this site earns a commission at no cost to you."
 
+# The templates that print the disclosure line above a /go/ link written in a page body. The affiliate disclosure
+# page tells readers that a page with affiliate links always shows that line, so a body link anywhere else is an error.
+DISCLOSING_TEMPLATES = {"page", "guide", "chart", "campaign"}
+
+# [[programs]] on the affiliate disclosure page: the programs whose status is approved in go/redirects.csv, as of the
+# day of the build. The three sentences are drafted for Jim's review; change them with him.
+PROGRAMS_TOKEN = "[[programs]]"
+PROGRAMS_NONE = "As of {date}, no program is active, so no link on these sites pays a commission."
+PROGRAMS_ONE = "As of {date}, one program is active: {names}."
+PROGRAMS_MANY = "As of {date}, the active programs are {names}."
+
+# [[embed:badge]] and [[embed:chart:<slug>]]: the sats badge and one chart, shown the way another site would embed
+# them, each with its code (shared/templates/_embed_badge.html and _embed_chart.html). A token on a line of its own
+# arrives from Markdown wrapped in a paragraph; the whole paragraph is replaced.
+EMBED_TOKEN = re.compile(r"(?:<p>\s*)?\[\[embed:(badge|chart)(?::([a-z0-9-]+))?\]\](?:\s*</p>)?")
+
 
 @dataclass
 class Report:
     site: str
     pages: int = 0
+    go_pages: int = 0             # /go/<slug>/ "not live" pages, counted apart from the site's pages
     warnings: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
@@ -71,6 +89,18 @@ def _xml(text: str) -> str:
     return (text or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
 
 
+def programs_sentence(redirects, today) -> str:
+    """The sentence [[programs]] stands for: which affiliate programs are approved today (each program once, however many links it has)."""
+    names = sorted({target.program for target in redirects.values() if target.approved and target.program}, key=str.lower)
+    date = long_date(today)
+    if not names:
+        return PROGRAMS_NONE.format(date=date)
+    if len(names) == 1:
+        return PROGRAMS_ONE.format(date=date, names=_xml(names[0]))
+    listed = " and ".join(names) if len(names) == 2 else ", ".join(names[:-1]) + ", and " + names[-1]
+    return PROGRAMS_MANY.format(date=date, names=_xml(listed))
+
+
 def load_yaml(path: Path):
     with path.open(encoding="utf-8") as handle:
         return yaml.safe_load(handle)
@@ -79,6 +109,14 @@ def load_yaml(path: Path):
 def long_date(value) -> str:
     """October 1, 2026 (portable; strftime's %-d is not available everywhere)."""
     return f"{value:%B} {value.day}, {value.year}" if value else ""
+
+
+def static_url(name: str) -> str:
+    """The address of a file in shared/static/ with a short fingerprint of its contents: /static/site.css?v=1a2b3c4d.
+    Browsers keep /static/ files for a day (shared/_headers); the fingerprint changes when the file does, so a reader
+    who was here yesterday gets today's stylesheet with today's page, not yesterday's."""
+    digest = hashlib.sha256((ROOT / "shared" / "static" / name).read_bytes()).hexdigest()[:8]
+    return f"/static/{name}?v={digest}"
 
 
 def jinja_env() -> Environment:
@@ -91,6 +129,7 @@ def jinja_env() -> Environment:
     )
     env.filters["date"] = long_date
     env.filters["isodate"] = lambda value: value.isoformat() if value else ""
+    env.globals["static_url"] = static_url
     return env
 
 
@@ -238,6 +277,19 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     if not any(page.url == "/" for page in pages):
         report.error(f"content/{key}/index.md is missing; every site needs a home page")
 
+    # Pages every site carries (privacy, affiliate disclosure, terms, contact) live once, in content/shared/.
+    # A page of the site's own at the same address wins.
+    shared_root = ROOT / "content" / "shared"
+    own_urls = {page.url for page in pages}
+    for page in (load_pages(shared_root) if shared_root.exists() else []):
+        if page.is_draft or page.url in own_urls:
+            continue
+        page.shared = True
+        if page.section:
+            report.error(f"{page.source}: a shared page sits at the top level of content/shared/, not in a folder")
+            continue
+        pages.append(page)
+
     # Validate pages
     seen: dict[str, Page] = {}
     for page in pages:
@@ -263,6 +315,9 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         for slug in page.placement_slugs:
             if slug not in redirects:
                 report.error(f"{page.source}: placement {slug!r} is not in go/redirects.csv")
+        if page.go_slugs and page.template not in DISCLOSING_TEMPLATES:
+            report.error(f"{page.source}: template {page.template!r} has no place for the disclosure line above a /go/ link; "
+                         f"use a placement box, or one of the templates {sorted(DISCLOSING_TEMPLATES)}")
         if key == "acts" and page.template == "guide" and not page.meta.get("understand_first"):
             report.warn(f"{page.source}: an Acts guide opens with an \"Understand first\" line; add understand_first to the front matter")
         if "\u2014" in page.body_md or "\u2014" in page.title:
@@ -292,18 +347,40 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
             report.error(f"{url}: description contains an em dash; use a comma, colon, semicolon, or period")
         return text
 
+    # The row of links in every footer: pages that carry footer_label, in their order
+    footer_pages = sorted((page for page in pages if page.footer_label), key=lambda p: (p.meta.get("order", 999), p.footer_label))
+    footer_links = [{"label": page.footer_label, "url": page.url} for page in footer_pages]
+
     env = jinja_env()
     common = {
         "site": site,
         "sites": sites,
         "sister_sites": [entry for entry in sites if entry["key"] != key],
         "nav": nav,
+        "footer_links": footer_links,
         "stats": stats,
         "sats_line": SATS_LINE,
         "disclosure_line": DISCLOSURE_LINE,
         "build_date": today,
         "year": today.year,
     }
+    stats_site = next(entry for entry in sites if entry["key"] == "stats")   # the embeds always load from the Stats site
+
+    def expand_embeds(html: str, page) -> str:
+        """Replace [[embed:badge]] and [[embed:chart:<slug>]] with the live embed and its code."""
+        def repl(match):
+            kind, slug = match.group(1), match.group(2)
+            if not (stats and stats.available):
+                report.warn(f"{page.source}: [[embed:{kind}]] has nothing to show yet (the Daily Build has not written data/ and charts/)")
+                return "<p>Conversion data is temporarily unavailable. Please check again later.</p>"
+            if kind == "badge":
+                return env.get_template("_embed_badge.html").render(stats_site=stats_site, **common)
+            card = next((c for c in stats.gallery() if c.get("slug") == slug), None)
+            if card is None:
+                report.error(f"{page.source}: [[embed:chart:{slug}]] names a chart that charts/index.json does not list")
+                return match.group(0)
+            return env.get_template("_embed_chart.html").render(stats_site=stats_site, card=card, **common)
+        return EMBED_TOKEN.sub(repl, html)
 
     # Section index pages that have no index.md of their own
     for name, label in sections.items():
@@ -353,6 +430,10 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
                 key=lambda p: (p.meta.get("order", 999), p.title),
             )
         page.body_html = expand_live(page.body_html, stats, report, page)
+        if PROGRAMS_TOKEN in page.body_html:
+            page.body_html = page.body_html.replace(PROGRAMS_TOKEN, programs_sentence(redirects, today))
+        if "[[embed:" in page.body_html:
+            page.body_html = expand_embeds(page.body_html, page)
         hook = page.meta.get("hook_chart") if page.template == "campaign" else None
         if hook:
             # A campaign page shows one Stats chart as its hook. The image files travel with this site's build
@@ -373,7 +454,6 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
             section=page.section,
             section_label=sections.get(page.section, ""),
             placements=placements,
-            has_affiliate_links=bool(placements or page.go_slugs),
             attribution=attribution,
             sources=page.meta.get("sources") or [],
             understand_first=page.meta.get("understand_first"),
@@ -440,6 +520,19 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         encoding="utf-8",
     )
 
+    # /go/<slug>/ for a program with no link to follow: a small page that says so. Approved and closed programs
+    # redirect instead (lib/redirects.py); Cloudflare follows a redirect even when a file exists, so each slug gets one.
+    for slug in sorted(redirects):
+        target = redirects[slug]
+        if target.forwards:
+            continue
+        heading = "This link is not live yet" if target.expected else "This link is not live"
+        html = env.get_template("go_pending.html").render(page=None, title=heading, section="", canonical=None, entry=target, noindex=True, **common)
+        out = dist / "go" / slug / "index.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(html, encoding="utf-8")
+        report.go_pages += 1
+
     # Static files: shared first, then the site's own (which may override)
     copy_tree(ROOT / "shared" / "static", dist / "static")
     copy_tree(site_dir / "static", dist)
@@ -467,7 +560,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     (dist / "sitemap.xml").write_text(sitemap, encoding="utf-8")
 
     # RSS feed: guides and chart pages with an updated date, newest first
-    dated = sorted((p for p in pages if p.updated and p.url != "/" and p.url != f"/{p.section}/"), key=lambda p: p.updated, reverse=True)[:30]
+    dated = sorted((p for p in pages if p.updated and not p.shared and p.url != "/" and p.url != f"/{p.section}/"), key=lambda p: p.updated, reverse=True)[:30]
     items = []
     for page in dated:
         link = site["url"].rstrip("/") + page.url
@@ -517,6 +610,8 @@ def main(argv: list[str]) -> int:
     for key in keys:
         report = build_site(key, out_dir=out_dir if len(keys) == 1 else None, strict=strict)
         print(f"[{key}] {report.pages} pages -> {out_dir or ROOT / 'sites' / key / 'dist'}")
+        if report.go_pages:
+            print(f"[{key}] {report.go_pages} /go/ links are not live; each shows the \"not live\" page")
         for warning in report.warnings:
             print(f"[{key}] warning: {warning}")
         for error in report.errors:

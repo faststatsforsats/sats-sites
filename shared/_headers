@@ -20,6 +20,11 @@
 /static/*
   Cache-Control: public, max-age=86400
 
+# The sats badge script (Stats site): other sites load it, so any origin may read it and it may be kept for an hour
+/embed.js
+  Access-Control-Allow-Origin: *
+  Cache-Control: public, max-age=3600
+
 /go/*
   X-Robots-Tag: noindex
 
@@ -27,3 +32,11 @@
 /.well-known/*
   Access-Control-Allow-Origin: *
   Cache-Control: public, max-age=3600
+
+# The pages.dev addresses stay up for previews, but only the real domains belong in search results
+# (the rule and its placeholders are Cloudflare's own example)
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex

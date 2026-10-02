@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+{# /go/<slug>/ for a program that is not approved (lib/redirects.py). entry is the row of go/redirects.csv.
+   "yet" shows while a link may still arrive (not applied, applied) and drops for a declined program.
+   The words are drafted for Jim's review; change them with him. #}
+<article class="prose">
+  <header class="page-head"><h1>{{ title }}</h1></header>
+  <p>This address is set aside for a link to {{ entry.program }}. No link is in place{% if entry.expected %} yet{% endif %}, so there is nowhere to send you.</p>
+  <p><a href="/">Start from the home page</a>.</p>
+</article>
+{% endblock %}

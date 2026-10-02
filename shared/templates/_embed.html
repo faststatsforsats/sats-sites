@@ -1,0 +1,11 @@
+{# The code another site pastes to show a chart or the sats badge. One definition serves the chart pages, the embed
+   page, and the code boxes, so what a page shows is what its code box says. Print a snippet as code with
+   "| forceescape"; print it bare to show the embed itself. #}
+{% macro chart_snippet(page_url, png_url, alt, site_name) -%}
+<a href="{{ page_url }}"><img src="{{ png_url }}" alt="{{ alt }}" width="800" style="max-width:100%;height:auto"></a>
+<p>Chart by <a href="{{ page_url }}">{{ site_name }}</a></p>
+{%- endmacro %}
+{% macro badge_snippet(stats_url, amount, currency, text) -%}
+<a class="sats-badge" href="{{ stats_url }}/tools/sats-converter/" data-amount="{{ amount }}" data-currency="{{ currency }}">{{ text }}</a>
+<script async src="{{ stats_url }}/embed.js"></script>
+{%- endmacro %}

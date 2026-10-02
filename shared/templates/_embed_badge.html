@@ -1,0 +1,31 @@
+{# [[embed:badge]]: the sats badge shown the way another site would embed it, a small form that rewrites it, and its
+   code. The first badge and code are written here, so the block reads correctly before any script runs;
+   shared/static/embeds.js redraws both as the form changes and reads ?amount=, ?currency=, and ?label= from the
+   address, so a link can open the page on someone's own price. The script address is the public one, so on a preview
+   address the badge stays a plain link until faststatsforsats.com serves the site.
+   The words are drafted for Jim's review; change them with him. #}
+{% from "_embed.html" import badge_snippet %}
+{% set first = ['usd','eur','gbp','cad','aud','chf','jpy','inr','brl','mxn'] %}
+<form class="converter embed-form" id="badge-form" data-stats-url="{{ stats_site.url }}" onsubmit="return false">
+  <div class="converter-row">
+    <label for="badge-amount">Amount</label>
+    <input id="badge-amount" type="number" inputmode="decimal" min="0" step="any" value="25">
+    <select id="badge-currency" aria-label="Currency">
+      {% for cur in first if stats.prices.get(cur) %}
+      <option value="{{ cur }}">{{ cur | upper }}</option>
+      {% endfor %}
+      {% for cur in stats.prices if cur not in first %}
+      <option value="{{ cur }}">{{ cur | upper }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="converter-row">
+    <label for="badge-label">Label</label>
+    <input id="badge-label" type="text" maxlength="40" placeholder="Optional">
+  </div>
+</form>
+<div class="embed-preview" id="badge-preview">
+{{ badge_snippet(stats_site.url, "25", "usd", "$25 in sats") }}
+</div>
+<pre><code id="badge-code">{{ badge_snippet(stats_site.url, "25", "usd", "$25 in sats") | forceescape }}</code></pre>
+<p class="copy-row"><button type="button" class="copy" data-copy="badge-code" hidden>Copy the code</button> <span class="copy-done" role="status"></span></p>

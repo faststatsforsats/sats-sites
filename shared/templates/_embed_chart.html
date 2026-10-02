@@ -1,0 +1,11 @@
+{# [[embed:chart:<slug>]]: one chart shown the way another site would embed it, with its code. card is the chart's
+   entry in charts/index.json. The image address is the public one, so on a preview address the picture appears only
+   once faststatsforsats.com serves the site. #}
+{% from "_embed.html" import chart_snippet %}
+{% set page_url = stats_site.url ~ card.page %}
+{% set png_url = stats_site.url ~ card.png %}
+<div class="embed-preview">
+{{ chart_snippet(page_url, png_url, card.heading, stats_site.name) }}
+</div>
+<pre><code id="code-{{ card.slug }}">{{ chart_snippet(page_url, png_url, card.heading, stats_site.name) | forceescape }}</code></pre>
+<p class="copy-row"><button type="button" class="copy" data-copy="code-{{ card.slug }}" hidden>Copy the code</button> <span class="copy-done" role="status"></span></p>

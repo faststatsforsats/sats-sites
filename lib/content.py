@@ -35,6 +35,19 @@ A campaign page (template: campaign) may add:
 
 The file's path sets the URL: content/acts/buy/first-bitcoin.md becomes /buy/first-bitcoin/,
 content/acts/buy/index.md becomes /buy/, and content/acts/index.md is the home page.
+
+Pages every site carries (the privacy policy, the affiliate disclosure, the terms, the contact page) live once, in
+content/shared/, and are built into all three sites at the same address. They sit at the top level (no folders) and
+may add:
+
+    footer_label: Privacy        # the page joins the row of links in every footer under this short name
+    order: 1                     # position in that row (and in a section's list, for any page)
+
+A file at the same address under content/<site>/ replaces the shared one on that site. Shared pages stay out of the feed.
+
+Three tokens can be written in a page body: [[programs]] (the sentence naming the affiliate programs that are approved
+today, for the affiliate disclosure), and on the Stats site [[embed:badge]] and [[embed:chart:<slug>]] (the sats badge
+and one chart, shown the way another site would embed them, each with its code). lib/site.py expands them.
 """
 
 from __future__ import annotations
@@ -65,6 +78,7 @@ class Page:
     toc_html: str = ""
     go_slugs: list[str] = field(default_factory=list)          # /go/ links written in the body (must be approved)
     placement_slugs: list[str] = field(default_factory=list)   # placement boxes; they render only once the program is approved
+    shared: bool = False          # True for a page from content/shared/, which every site builds
 
     @property
     def title(self) -> str:
@@ -97,6 +111,11 @@ class Page:
     def nav_label(self) -> str:
         """Short name for the header nav; falls back to the title."""
         return str(self.meta.get("nav_label") or self.title)
+
+    @property
+    def footer_label(self) -> str:
+        """Short name for the row of links in every footer; empty when the page is not listed there."""
+        return str(self.meta.get("footer_label") or "").strip()
 
     @property
     def out_path(self) -> str:

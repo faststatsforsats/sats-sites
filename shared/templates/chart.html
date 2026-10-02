@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "_embed.html" import chart_snippet %}
 {% block content %}
 <article class="prose chart-page">
   <header class="page-head">
@@ -24,11 +25,13 @@
   <details class="embed">
     <summary>Embed this chart with a link back</summary>
     <p>Paste this code into your site to display the chart. The image updates daily.</p>
-    <pre><code>&lt;a href="{{ canonical }}"&gt;&lt;img src="{{ abs_png }}" alt="{{ alt }}" width="800" style="max-width:100%;height:auto"&gt;&lt;/a&gt;
-&lt;p&gt;Chart by &lt;a href="{{ canonical }}"&gt;{{ site.name }}&lt;/a&gt;&lt;/p&gt;</code></pre>
+    {# the alt text in the code is the page's title, which stays true on someone else's page; the dated finding would not #}
+    <pre><code id="chart-code">{{ chart_snippet(canonical, abs_png, page.title, site.name) | forceescape }}</code></pre>
+    <p class="copy-row"><button type="button" class="copy" data-copy="chart-code" hidden>Copy the code</button> <span class="copy-done" role="status"></span></p>
   </details>
+  <script src="{{ static_url('embeds.js') }}" defer></script>
   {% endif %}
-  {% if has_affiliate_links %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
+  {% if page and page.go_slugs %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}{# with boxes only, _placements.html puts the line directly above them #}
   {{ page.body_html | safe }}
   {% include "_placements.html" %}
 </article>
