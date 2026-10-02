@@ -10,7 +10,7 @@ chart:
   source_links:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 12:37 UTC
+  pulled: October 2, 2026, 16:24 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain
