@@ -12,7 +12,7 @@ chart:
     url: https://data.bls.gov/timeseries/APU0000708111
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:13 UTC
+  pulled: October 2, 2026, 18:34 UTC
   data: /data/eggs.json
 attribution:
 - bls

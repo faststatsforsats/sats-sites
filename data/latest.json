@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T18:13:24+00:00",
+ "updated": "2026-10-02T18:34:38+00:00",
  "price": {
   "usd": 84784.1936054397,
   "prices": {
@@ -119,8 +119,8 @@
   "medium": 3,
   "slow": 3,
   "unit": "sat/vB",
-  "height": 969620,
-  "updated": "2026-10-02T18:11:02.910Z",
+  "height": 969621,
+  "updated": "2026-10-02T18:21:09.926Z",
   "source": {
    "name": "mempool.space",
    "url": "https://mempool.space"
