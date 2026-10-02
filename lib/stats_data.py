@@ -33,36 +33,67 @@ CURRENCIES = {
     "aud": {"symbol": "A$", "name": "Australian dollars", "one": "an Australian dollar", "adjective": "Australian dollar"},
 }
 
-# Everyday items: data file stem -> how the pages talk about it. Items in data/ that are not listed here
-# still get a page, named from the series title.
+# Everyday items, one table for both halves of the system: the BLS series the Daily Build asks for (id, BLS's item
+# name, the unit written into the data file) and how the pages talk about the item. scripts/sources/bls.py builds its
+# request from this table, and the site shows only the items listed here whose data file was written for the id given
+# here, so an item cannot be labeled in one place and defined in another.
+# Every id was checked against BLS's own item list, https://download.bls.gov/pub/time.series/ap/ap.item, on
+# October 2, 2026. Check a new item there before adding it: the series id is "APU0000" plus the item code
+# (fuel and utility items have five-digit codes, so gasoline is "APU0000" + "74714").
+# Retired: apples (APU0000711111, Red Delicious), which BLS stopped publishing after October 2017.
 ITEMS = {
-    "eggs": {"name": "A dozen eggs", "short": "a dozen large eggs", "unit": "per dozen", "chart": "eggs-in-sats"},
-    "gasoline": {"name": "A gallon of gas", "short": "a gallon of regular gasoline", "unit": "per gallon"},
-    "milk": {"name": "A gallon of milk", "short": "a gallon of whole milk", "unit": "per gallon"},
-    "bread": {"name": "A loaf of bread", "short": "a pound of white bread", "unit": "per pound"},
-    "coffee": {"name": "A pound of coffee", "short": "a pound of ground coffee", "unit": "per pound"},
-    "ground_beef": {"name": "A pound of ground beef", "short": "a pound of ground beef", "unit": "per pound"},
-    "electricity": {"name": "A kilowatt-hour of electricity", "short": "a kilowatt-hour of electricity", "unit": "per kWh"},
-    "bananas": {"name": "A pound of bananas", "short": "a pound of bananas", "unit": "per pound"},
-    "chicken": {"name": "A pound of chicken", "short": "a pound of fresh whole chicken", "unit": "per pound"},
-    "bacon": {"name": "A pound of bacon", "short": "a pound of sliced bacon", "unit": "per pound"},
-    "flour": {"name": "A pound of flour", "short": "a pound of all-purpose flour", "unit": "per pound"},
-    "rice": {"name": "A pound of rice", "short": "a pound of long-grain rice", "unit": "per pound"},
-    "sugar": {"name": "A pound of sugar", "short": "a pound of white sugar", "unit": "per pound"},
-    "butter": {"name": "A pound of butter", "short": "a pound of salted butter", "unit": "per pound"},
-    "potatoes": {"name": "A pound of potatoes", "short": "a pound of white potatoes", "unit": "per pound"},
-    "tomatoes": {"name": "A pound of tomatoes", "short": "a pound of field-grown tomatoes", "unit": "per pound"},
-    "oranges": {"name": "A pound of oranges", "short": "a pound of navel oranges", "unit": "per pound"},
-    "apples": {"name": "A pound of apples", "short": "a pound of red delicious apples", "unit": "per pound"},
-    "wheat_bread": {"name": "A loaf of whole wheat bread", "short": "a pound of whole wheat bread", "unit": "per pound"},
-    "diesel": {"name": "A gallon of diesel", "short": "a gallon of diesel", "unit": "per gallon"},
-    "premium_gas": {"name": "A gallon of premium gas", "short": "a gallon of premium gasoline", "unit": "per gallon"},
-    "natural_gas": {"name": "A therm of natural gas", "short": "a therm of piped natural gas", "unit": "per therm"},
-    "fuel_oil": {"name": "A gallon of heating oil", "short": "a gallon of No. 2 fuel oil", "unit": "per gallon"},
-    "beer": {"name": "A pint of beer", "short": "16 ounces of malt beverage", "unit": "per 16 oz"},
-    "wine": {"name": "A liter of wine", "short": "a liter of table wine", "unit": "per liter"},
+    "eggs": {"id": "APU0000708111", "title": "Eggs, grade A, large, per dozen, U.S. city average", "data_unit": "USD per dozen",
+             "name": "A dozen eggs", "short": "a dozen large eggs", "unit": "per dozen", "chart": "eggs-in-sats"},
+    "gasoline": {"id": "APU000074714", "title": "Gasoline, unleaded regular, per gallon, U.S. city average", "data_unit": "USD per gallon",
+                 "name": "A gallon of gas", "short": "a gallon of regular gasoline", "unit": "per gallon"},
+    "milk": {"id": "APU0000709112", "title": "Milk, fresh, whole, fortified, per gallon, U.S. city average", "data_unit": "USD per gallon",
+             "name": "A gallon of milk", "short": "a gallon of whole milk", "unit": "per gallon"},
+    "bread": {"id": "APU0000702111", "title": "Bread, white, pan, per pound, U.S. city average", "data_unit": "USD per pound",
+              "name": "A pound of white bread", "short": "a pound of white bread", "unit": "per pound"},
+    "coffee": {"id": "APU0000717311", "title": "Coffee, 100%, ground roast, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
+               "name": "A pound of coffee", "short": "a pound of ground coffee", "unit": "per pound"},
+    "ground_beef": {"id": "APU0000703112", "title": "Ground beef, 100% beef, per pound, U.S. city average", "data_unit": "USD per pound",
+                    "name": "A pound of ground beef", "short": "a pound of ground beef", "unit": "per pound"},
+    "electricity": {"id": "APU000072610", "title": "Electricity, per kilowatt-hour, U.S. city average", "data_unit": "USD per kWh",
+                    "name": "A kilowatt-hour of electricity", "short": "a kilowatt-hour of electricity", "unit": "per kWh"},
+    "bananas": {"id": "APU0000711211", "title": "Bananas, per pound, U.S. city average", "data_unit": "USD per pound",
+                "name": "A pound of bananas", "short": "a pound of bananas", "unit": "per pound"},
+    "chicken": {"id": "APU0000706111", "title": "Chicken, fresh, whole, per pound, U.S. city average", "data_unit": "USD per pound",
+                "name": "A pound of chicken", "short": "a pound of fresh whole chicken", "unit": "per pound"},
+    "bacon": {"id": "APU0000704111", "title": "Bacon, sliced, per pound, U.S. city average", "data_unit": "USD per pound",
+              "name": "A pound of bacon", "short": "a pound of sliced bacon", "unit": "per pound"},
+    "flour": {"id": "APU0000701111", "title": "Flour, white, all purpose, per pound, U.S. city average", "data_unit": "USD per pound",
+              "name": "A pound of flour", "short": "a pound of all-purpose flour", "unit": "per pound"},
+    "rice": {"id": "APU0000701312", "title": "Rice, white, long grain, uncooked, per pound, U.S. city average", "data_unit": "USD per pound",
+             "name": "A pound of rice", "short": "a pound of long-grain rice", "unit": "per pound"},
+    "sugar": {"id": "APU0000715211", "title": "Sugar, white, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
+              "name": "A pound of sugar", "short": "a pound of white sugar", "unit": "per pound"},
+    "butter": {"id": "APU0000FS1101", "title": "Butter, stick, per pound, U.S. city average", "data_unit": "USD per pound",
+               "name": "A pound of butter", "short": "a pound of stick butter", "unit": "per pound"},
+    "potatoes": {"id": "APU0000712112", "title": "Potatoes, white, per pound, U.S. city average", "data_unit": "USD per pound",
+                 "name": "A pound of potatoes", "short": "a pound of white potatoes", "unit": "per pound"},
+    "tomatoes": {"id": "APU0000712311", "title": "Tomatoes, field grown, per pound, U.S. city average", "data_unit": "USD per pound",
+                 "name": "A pound of tomatoes", "short": "a pound of field-grown tomatoes", "unit": "per pound"},
+    "oranges": {"id": "APU0000711311", "title": "Oranges, navel, per pound, U.S. city average", "data_unit": "USD per pound",
+                "name": "A pound of oranges", "short": "a pound of navel oranges", "unit": "per pound"},
+    "wheat_bread": {"id": "APU0000702212", "title": "Bread, whole wheat, pan, per pound, U.S. city average", "data_unit": "USD per pound",
+                    "name": "A pound of whole wheat bread", "short": "a pound of whole wheat bread", "unit": "per pound"},
+    "diesel": {"id": "APU000074717", "title": "Automotive diesel fuel, per gallon, U.S. city average", "data_unit": "USD per gallon",
+               "name": "A gallon of diesel", "short": "a gallon of diesel", "unit": "per gallon"},
+    "premium_gas": {"id": "APU000074716", "title": "Gasoline, unleaded premium, per gallon, U.S. city average", "data_unit": "USD per gallon",
+                    "name": "A gallon of premium gas", "short": "a gallon of premium gasoline", "unit": "per gallon"},
+    "natural_gas": {"id": "APU000072620", "title": "Utility (piped) gas, per therm, U.S. city average", "data_unit": "USD per therm",
+                    "name": "A therm of natural gas", "short": "a therm of piped natural gas", "unit": "per therm"},
+    "fuel_oil": {"id": "APU000072511", "title": "Fuel oil #2, per gallon, U.S. city average", "data_unit": "USD per gallon",
+                 "name": "A gallon of heating oil", "short": "a gallon of No. 2 fuel oil", "unit": "per gallon"},
+    "beer": {"id": "APU0000720111", "title": "Malt beverages, all types, all sizes, any origin, per 16 ounces, U.S. city average", "data_unit": "USD per 16 oz",
+             "name": "A pint of beer", "short": "16 ounces of beer", "unit": "per 16 oz"},
+    "wine": {"id": "APU0000720311", "title": "Wine, red and white table, all sizes, any origin, per liter, U.S. city average", "data_unit": "USD per liter",
+             "name": "A liter of wine", "short": "a liter of table wine", "unit": "per liter"},
 }
-NOT_ITEMS = {"cpi", "latest", "price-daily", "network", "fear-greed", "gold", "homes", "sp500"}
+# An item whose series stopped this many months before the newest item's month is left off the pages,
+# so an old price is never shown as this month's.
+STALE_AFTER_MONTHS = 6
 
 
 def _read(path: Path):
@@ -83,6 +114,10 @@ def _on_or_before(series, day: str):
     days = [d for d, _ in series]
     idx = bisect_right(days, day)
     return series[idx - 1] if idx else None
+
+
+def _months_between(earlier: str, later: str) -> int:
+    return (int(later[:4]) - int(earlier[:4])) * 12 + int(later[5:7]) - int(earlier[5:7])
 
 
 def _year_ago(series, day: str):
@@ -184,29 +219,31 @@ class StatsData:
     # ------------------------------------------------------------------ loading
 
     def _load_items(self) -> dict:
-        out = {}
-        for path in sorted((self.root / "data").glob("*.json")):
-            if path.stem in NOT_ITEMS:
-                continue
-            payload = _read(path)
+        """The everyday items the pages show: listed in ITEMS, with a data file written for the series id given there,
+        and current. A file written for another id (the table changed since the last Daily Build) or a series that
+        stopped long ago is left out rather than shown under the wrong name or as this month's price."""
+        loaded = {}
+        for stem, meta in ITEMS.items():
+            payload = _read(self.root / "data" / f"{stem}.json")
             points = _points(payload)
-            if not points or "bls_series_id" not in (payload or {}):
+            if not points or (payload or {}).get("bls_series_id") != meta["id"]:
                 continue
-            meta = ITEMS.get(path.stem) or {}
-            title = payload["series"].get("name", path.stem)
-            out[path.stem] = {
-                "slug": slugify(path.stem.replace("_", "-")),
-                "stem": path.stem,
-                "name": meta.get("name") or title.split(",")[0].strip().capitalize(),
-                "short": meta.get("short") or title.split(",")[0].strip().lower(),
-                "unit": meta.get("unit") or payload["series"].get("unit", ""),
+            loaded[stem] = {
+                "slug": slugify(stem.replace("_", "-")),
+                "stem": stem,
+                "name": meta["name"],
+                "short": meta["short"],
+                "unit": meta["unit"],
                 "chart": meta.get("chart"),
-                "series_title": title,
-                "series_id": payload["bls_series_id"],
+                "series_title": meta["title"],
+                "series_id": meta["id"],
                 "points": points,
-                "data_file": f"/data/{path.name}",
+                "data_file": f"/data/{stem}.json",
             }
-        return out
+        if not loaded:
+            return loaded
+        newest = max(item["points"][-1][0] for item in loaded.values())
+        return {stem: item for stem, item in loaded.items() if _months_between(item["points"][-1][0], newest) <= STALE_AFTER_MONTHS}
 
     @staticmethod
     def _monthly_average(series):
@@ -283,7 +320,9 @@ class StatsData:
                 **row,
                 "title": title if len(title) <= 60 else title[:57] + "...",
                 "heading": f"{row['name']}, priced in sats",
-                "description": f"What {row['short']} costs in sats this month and each January since 2011, from the BLS average price and the monthly average bitcoin price.",
+                "since": yearly[0]["year"] if yearly else None,
+                "description": f"See what {row['short']} costs in sats, from the latest BLS average price for U.S. cities"
+                               + (f", with January prices back to {yearly[0]['year']}." if yearly else "."),
                 "finding": f"{row['name']} cost {row['sats_text']} in {row['month']}, at the U.S. city average price of {row['usd_text']} {row['unit']}.",
                 "yearly": yearly,
                 "chart_entry": self.chart_by_slug.get(row["chart"]) if row.get("chart") else None,
@@ -363,7 +402,9 @@ class StatsData:
                     "price_text": fmt_money(price, meta["symbol"]),
                     "title": title if len(title) <= 60 else f"{money} in sats today",
                     "heading": f"How many sats is {money}?",
-                    "description": f"{money} is {sats_text} at today's price, with the live number, the price behind it, and what {money} bought in sats each January since 2011.",
+                    "description": (f"See how many sats {money} buys at the current bitcoin price, refreshed every hour, and what {money} bought in sats each January since {januaries[0][0]}."
+                                    if yearly else
+                                    f"See how many sats {money} buys at the current bitcoin price in {meta['name']}, refreshed every hour, with the same amount in other currencies."),
                     "nearby": [{"amount": a, "money": f"{meta['symbol']}{a:,}", "sats_text": fmt_sats(a / price * 1e8), "url": f"/sats/{a}-{cur}/"} for a in nearby],
                     "other_currencies": [{"currency": c, "money": f"{CURRENCIES[c]['symbol']}{amount:,}", "url": f"/sats/{amount}-{c}/"} for c in CURRENCIES if c != cur and self.prices.get(c)],
                     "yearly": yearly,

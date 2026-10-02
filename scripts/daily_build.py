@@ -141,6 +141,11 @@ def collect(when: dt.datetime, log: list[str]) -> dict:
             spec = bls.SERIES[name]
             series_file(name if name != "cpi" else "cpi", spec["title"], spec["unit"], "monthly", bls.SOURCE, points, when,
                         extra={"bls_series_id": spec["id"]}, digits=3)
+        # A BLS file whose item has left the table (lib/stats_data.py ITEMS) is removed, so data/ holds only what is defined
+        for path in sorted(DATA_DIR.glob("*.json")):
+            if path.stem not in bls.SERIES and "bls_series_id" in (read_json(path) or {}):
+                path.unlink()
+                log.append(f"ok    removed data/{path.name}: its series is no longer in the item table")
         data["bls"] = bls_series
     else:
         data["bls"] = {name: load_series(name) for name in bls.SERIES if load_series(name)}

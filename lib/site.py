@@ -20,7 +20,7 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 from .content import Page, load_pages
 from .redirects import load_redirects, render_redirects_file
-from .stats_data import StatsData
+from .stats_data import AMOUNTS, StatsData
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_KEYS = ("stats", "facts", "acts")
@@ -357,27 +357,49 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     generated: list[tuple[str, str]] = []   # (url, lastmod)
     if key == "stats" and stats.available:
         base = site["url"].rstrip("/")
+
+        def described(url: str, text: str) -> str:
+            """The description a generated page hands to the head (base.html reads page_description), held to the same rules as a written one."""
+            if len(text) > 155:
+                report.warn(f"{url}: description is {len(text)} characters; keep it under 155")
+            if "—" in text:
+                report.error(f"{url}: description contains an em dash; use a comma, colon, semicolon, or period")
+            return text
+
         amount_pages = stats.amount_pages()
         for entry in amount_pages:
-            html = env.get_template("amount.html").render(page=None, title=entry["title"], section="sats", canonical=base + entry["url"], entry=entry, **common)
+            html = env.get_template("amount.html").render(page=None, title=entry["title"], section="sats", canonical=base + entry["url"], entry=entry,
+                                                          page_description=described(entry["url"], entry["description"]), **common)
             target = dist / entry["url"].strip("/") / "index.html"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(html, encoding="utf-8")
             generated.append((entry["url"], today.isoformat()))
-        html = env.get_template("sats_index.html").render(page=None, title="Dollars, euros, and pounds in sats", section="sats", canonical=base + "/sats/", groups=stats.amount_index(), **common)
+        groups = stats.amount_index()
+        names = [group["name"] for group in groups]
+        sats_description = (f"See how many sats an amount of money buys, from {AMOUNTS[0]:,} to {AMOUNTS[-1]:,}, in "
+                            + (", ".join(names[:-1]) + ", and " + names[-1] if len(names) > 2 else " and ".join(names)) + ".")
+        html = env.get_template("sats_index.html").render(page=None, title="Dollars, euros, and pounds in sats", section="sats", canonical=base + "/sats/", groups=groups,
+                                                          page_description=described("/sats/", sats_description), **common)
         (dist / "sats").mkdir(parents=True, exist_ok=True)
         (dist / "sats" / "index.html").write_text(html, encoding="utf-8")
         generated.append(("/sats/", today.isoformat()))
         item_pages = stats.item_pages()
         for entry in item_pages:
             html = env.get_template("item.html").render(page=None, title=entry["title"], section="items", canonical=base + entry["url"], entry=entry,
+                                                        page_description=described(entry["url"], entry["description"]),
                                                         attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]},
                                                                      {"text": ATTRIBUTION_LINES["blockchain"]["text"], "url": ATTRIBUTION_LINES["blockchain"]["url"]}], **common)
             target = dist / entry["url"].strip("/") / "index.html"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(html, encoding="utf-8")
             generated.append((entry["url"], entry["date"]))
+        shown = {entry["stem"] for entry in item_pages}
+        examples = [stem for stem in ("eggs", "gasoline", "milk", "coffee", "electricity") if stem in shown]
+        rest = len(item_pages) - len(examples)
+        items_description = ((", ".join(examples).capitalize() + f", and {rest} more everyday items" if examples and rest > 0 else f"{len(item_pages)} everyday items")
+                             + " priced in sats, from BLS average prices for U.S. cities.")
         html = env.get_template("items_index.html").render(page=None, title="Everyday items priced in sats", section="items", canonical=base + "/items/", items=item_pages,
+                                                           page_description=described("/items/", items_description),
                                                            attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]}], **common)
         (dist / "items").mkdir(parents=True, exist_ok=True)
         (dist / "items" / "index.html").write_text(html, encoding="utf-8")

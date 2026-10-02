@@ -17,7 +17,7 @@ Every series file has the same shape:
 | `network.json` | blockchain.com | Estimated hash rate, TH/s, daily since 2010 |
 | `fear-greed.json` | alternative.me | Daily index with its label, since 2018 (points are `[date, value, label]`) |
 | `cpi.json` | BLS (CUUR0000SA0) | CPI-U all items, monthly |
-| `eggs.json`, `gasoline.json`, `ground_beef.json`, `milk.json`, `bread.json`, `coffee.json`, `electricity.json`, and one file per item in `scripts/sources/bls.py` SERIES (bananas, chicken, bacon, flour, rice, sugar, butter, potatoes, tomatoes, oranges, apples, wheat_bread, diesel, premium_gas, natural_gas, fuel_oil, beer, wine) | BLS average prices | USD per unit, monthly, U.S. city average. Each file carries `bls_series_id`; the Stats site builds `/items/<slug>/` from every file that has one. |
+| `eggs.json`, `gasoline.json`, `ground_beef.json`, `milk.json`, `bread.json`, `coffee.json`, `electricity.json`, and one file per item in `ITEMS` in `lib/stats_data.py` (bananas, chicken, bacon, flour, rice, sugar, butter, potatoes, tomatoes, oranges, wheat_bread, diesel, premium_gas, natural_gas, fuel_oil, beer, wine) | BLS average prices | USD per unit, monthly, U.S. city average. Each file carries `bls_series_id`. The Stats site builds `/items/<slug>/` for an item in the table when its file was written for the id the table gives and its latest month is within six months of the newest item's; the Daily Build removes the file of an item that leaves the table. |
 | `homes.json` | FRED (MSPUS) | Median sales price of new houses sold, quarterly |
 | `sp500.json` | FRED (SP500) | S&P 500 daily close, last 10 years |
 | `gold.json` | World Bank Pink Sheet | Gold, USD per troy ounce, monthly average |

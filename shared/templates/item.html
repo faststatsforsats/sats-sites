@@ -12,7 +12,7 @@
   {% with cards = [entry.chart_entry] %}{% include "_gallery.html" %}{% endwith %}
   {% endif %}
   {% if entry.yearly %}
-  <h2>Each January since 2011</h2>
+  <h2>January prices since {{ entry.since }}</h2>
   <table class="numbers">
     <thead><tr><th>January</th><th class="num">Dollar price</th><th class="num">In sats</th></tr></thead>
     <tbody>

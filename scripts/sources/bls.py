@@ -13,39 +13,17 @@ from __future__ import annotations
 import datetime as dt
 import os
 
+from lib.stats_data import ITEMS
+
 from .http import SourceError, fixtures_on, post_json
 
 SOURCE = {"name": "U.S. Bureau of Labor Statistics", "url": "https://www.bls.gov"}
 
-# Series we keep. The key is the name used in data/ files; the id is BLS's.
+# Series we keep. The key is the name used in data/ files; the id is BLS's. The everyday items come from the one
+# table the site also reads (ITEMS in lib/stats_data.py), so a series is defined and named in a single place.
 SERIES = {
     "cpi": {"id": "CUUR0000SA0", "title": "CPI-U, all items, U.S. city average, not seasonally adjusted", "unit": "index 1982-84=100"},
-    "eggs": {"id": "APU0000708111", "title": "Eggs, grade A, large, per dozen, U.S. city average", "unit": "USD per dozen"},
-    "gasoline": {"id": "APU000074714", "title": "Gasoline, unleaded regular, per gallon, U.S. city average", "unit": "USD per gallon"},
-    "ground_beef": {"id": "APU0000703112", "title": "Ground beef, 100% beef, per pound, U.S. city average", "unit": "USD per pound"},
-    "milk": {"id": "APU0000709112", "title": "Milk, fresh, whole, fortified, per gallon, U.S. city average", "unit": "USD per gallon"},
-    "bread": {"id": "APU0000702111", "title": "Bread, white, pan, per pound, U.S. city average", "unit": "USD per pound"},
-    "coffee": {"id": "APU0000717311", "title": "Coffee, 100% ground roast, per pound, U.S. city average", "unit": "USD per pound"},
-    "electricity": {"id": "APU000072610", "title": "Electricity, per kilowatt-hour, U.S. city average", "unit": "USD per kWh"},
-    # More everyday items for the Items in sats pages (step 17). A series BLS no longer publishes is skipped.
-    "bananas": {"id": "APU0000711211", "title": "Bananas, per pound, U.S. city average", "unit": "USD per pound"},
-    "chicken": {"id": "APU0000706111", "title": "Chicken, fresh, whole, per pound, U.S. city average", "unit": "USD per pound"},
-    "bacon": {"id": "APU0000704111", "title": "Bacon, sliced, per pound, U.S. city average", "unit": "USD per pound"},
-    "flour": {"id": "APU0000701111", "title": "Flour, white, all purpose, per pound, U.S. city average", "unit": "USD per pound"},
-    "rice": {"id": "APU0000701312", "title": "Rice, white, long grain, uncooked, per pound, U.S. city average", "unit": "USD per pound"},
-    "sugar": {"id": "APU0000715211", "title": "Sugar, white, all sizes, per pound, U.S. city average", "unit": "USD per pound"},
-    "butter": {"id": "APU0000FS1101", "title": "Butter, salted, grade AA, stick, per pound, U.S. city average", "unit": "USD per pound"},
-    "potatoes": {"id": "APU0000712112", "title": "Potatoes, white, per pound, U.S. city average", "unit": "USD per pound"},
-    "tomatoes": {"id": "APU0000712311", "title": "Tomatoes, field grown, per pound, U.S. city average", "unit": "USD per pound"},
-    "oranges": {"id": "APU0000711311", "title": "Oranges, navel, per pound, U.S. city average", "unit": "USD per pound"},
-    "apples": {"id": "APU0000711111", "title": "Apples, red delicious, per pound, U.S. city average", "unit": "USD per pound"},
-    "wheat_bread": {"id": "APU0000702212", "title": "Bread, whole wheat, pan, per pound, U.S. city average", "unit": "USD per pound"},
-    "diesel": {"id": "APU000074717", "title": "Automotive diesel fuel, per gallon, U.S. city average", "unit": "USD per gallon"},
-    "premium_gas": {"id": "APU000074716", "title": "Gasoline, unleaded premium, per gallon, U.S. city average", "unit": "USD per gallon"},
-    "natural_gas": {"id": "APU000072620", "title": "Utility (piped) gas, per therm, U.S. city average", "unit": "USD per therm"},
-    "fuel_oil": {"id": "APU000072511", "title": "Fuel oil #2, per gallon, U.S. city average", "unit": "USD per gallon"},
-    "beer": {"id": "APU0000720311", "title": "Malt beverages, all types, per 16 ounces, U.S. city average", "unit": "USD per 16 oz"},
-    "wine": {"id": "APU0000720211", "title": "Wine, red and white table, per liter, U.S. city average", "unit": "USD per liter"},
+    **{name: {"id": item["id"], "title": item["title"], "unit": item["data_unit"]} for name, item in ITEMS.items()},
 }
 
 # BLS answers at most 50 series per request with a registration key and 25 without.

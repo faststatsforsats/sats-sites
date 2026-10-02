@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block head_title %}{{ title }} | {{ site.name }}{% endblock %}</title>
-{% set description = (page.meta.get('description') if page and page.meta.get('description') else site.description) %}
+{% set description = (page.meta.get('description') if page and page.meta.get('description') else (page_description if page_description is defined and page_description else site.description)) %}
 {% set chart_slug = (chart.get('slug') if (chart is defined and chart) else None) %}
 <meta name="description" content="{{ description }}">
 {% if canonical %}<link rel="canonical" href="{{ canonical }}">{% endif %}
