@@ -54,7 +54,7 @@
     <p class="sats-line">{{ sats_line }}</p>
     {% if attribution is defined and attribution %}
     <ul class="attribution">
-      {% for line in attribution %}<li><a href="{{ line.url }}" rel="noopener">{{ line.text }}</a></li>{% endfor %}
+      {% for line in attribution %}<li>{{ line.before }}<a href="{{ line.url }}" rel="noopener">{{ line.link }}</a>{{ line.after }}</li>{% endfor %}
     </ul>
     {% endif %}
     <p class="disclaimer">{{ site.disclaimer }}</p>

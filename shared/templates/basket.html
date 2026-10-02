@@ -25,12 +25,12 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="small">The dollar price is the Bureau of Labor Statistics average for U.S. cities in the month shown. Sats are that price divided by the month's average bitcoin price. "A year ago" and the change compare the same month a year earlier. The numbers refresh every morning; the data files behind them are linked from each item's page.</p>
+  <p class="small">Use the month shown for each item. "A year ago" and "Change" compare its sats cost with the same month a year earlier. A lower sats cost can reflect a higher bitcoin price, a lower dollar price for the item, or both. The data is checked each morning; new figures appear when the sources publish them.</p>
   {% if stats.chart_by_slug.get('eggs-in-sats') %}
   {% with cards = [stats.chart_by_slug['eggs-in-sats']] %}{% include "_gallery.html" %}{% endwith %}
   {% endif %}
   {% else %}
-  <p>The table appears after the first Daily Build publishes the data.</p>
+  <p>Price data is temporarily unavailable. Please check again later.</p>
   {% endif %}
   {% include "_placements.html" %}
 </article>

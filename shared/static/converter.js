@@ -23,7 +23,7 @@
   function update() {
     var cur = currency.value;
     var p = prices[cur];
-    if (!p) { satsOut.textContent = "price unavailable"; btcOut.textContent = ""; return; }
+    if (!p) { satsOut.textContent = "Price unavailable"; btcOut.textContent = ""; return; }
     var amount = parseFloat(amountIn.value);
     if (isNaN(amount) || amount < 0) amount = 0;
     var btc = amount / p;

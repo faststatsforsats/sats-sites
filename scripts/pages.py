@@ -30,16 +30,21 @@ def _split(text: str) -> tuple[dict, str]:
 
 
 def _auto_block(entry: dict) -> str:
+    """The paragraph, the small table, and the data line under a chart. The words are Jim's: the finding (the chart's
+    title sentence, or the entry's own `lead`), then the entry's `detail` sentence; a `credit` line, when the source's
+    terms want one beside the reading; the table under `column`; and the line that links the data file."""
     rows = "\n".join(f"| {label} | {when} | {text} |" for label, when, text in entry["table"])
     unit = entry["unit"]
-    subtitle = entry["subtitle"]
-    if len(subtitle) > 1 and not subtitle[1].isupper():   # "Sats one dollar buys" -> "sats one dollar buys", but "US dollars" stays
-        subtitle = subtitle[0].lower() + subtitle[1:]
+    column = entry.get("column") or unit[0].upper() + unit[1:]
+    lead = entry.get("lead") or f"{entry['title']}."
+    paragraph = f"{lead} {entry.get('detail', '')}".strip()
+    credit = f"{entry['credit']}\n\n" if entry.get("credit") else ""
     return (
         f"{AUTO_START}\n"
-        f"{entry['title']}. The chart shows {subtitle}, redrawn every morning from the published data.\n\n"
-        f"| When | Date | {unit[0].upper() + unit[1:]} |\n| --- | --- | --- |\n{rows}\n\n"
-        f"The numbers behind this chart are free to use: [{entry['data_file']}]({entry['data_file']}). Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.\n"
+        f"{paragraph}\n\n"
+        f"{credit}"
+        f"| When | Date | {column} |\n| --- | --- | --- |\n{rows}\n\n"
+        f"Download the data behind this chart: [{entry['data_file']}]({entry['data_file']}). There are 100,000,000 sats in one bitcoin.\n"
         f"{AUTO_END}"
     )
 
@@ -61,6 +66,7 @@ def write_page(entry: dict, pulled_text: str, today: dt.date) -> Path:
         "slug": entry["slug"],
         "alt": entry["title"],
         "source": ", ".join(s["name"] for s in entry["sources"]),
+        "source_links": [{"name": s["name"], "url": s["url"]} for s in entry["sources"]],   # the caption links each source name
         "pulled": pulled_text,
         "data": entry["data_file"],
     }

@@ -85,7 +85,12 @@ def sats_per_unit(price_series: Series, usd_per_unit: Series) -> Series:
     return out
 
 
-def to_json(series: Series, digits: int = 2) -> list[list]:
+def to_json(series: Series, digits: int = 2, significant: int | None = None) -> list[list]:
+    """Rows for a data file. `digits` rounds to decimal places; `significant` rounds to that many significant figures
+    instead, for a series that spans many orders of magnitude (hash rate: fractions of a terahash in 2009, hundreds of
+    millions now), so its small early values are not saved as zero."""
+    if significant:
+        return [[day, float(f"{value:.{significant}g}")] for day, value in series]
     return [[day, round(value, digits)] for day, value in series]
 
 

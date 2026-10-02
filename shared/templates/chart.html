@@ -17,12 +17,13 @@
       <img src="{{ png }}" alt="{{ alt }}" width="1600" height="900" loading="eager">
     </picture>
     <figcaption>
-      {% if chart.get('source') %}Source: {{ chart.get('source') }}. {% endif %}{% if chart.get('pulled') %}Pulled {{ chart.get('pulled') }}. {% endif %}<a href="{{ png }}">Open the image</a>{% if chart.get('data') %} or <a href="{{ chart.get('data') }}">the data</a>{% endif %}.
+      {# the source names link to their pages once the Daily Build has written source_links; until then the plain names show #}
+      {% if chart.get('source') %}Source: {% if chart.get('source_links') %}{% for s in chart.get('source_links') %}<a href="{{ s.url }}" rel="noopener">{{ s.name }}</a>{% if not loop.last %}, {% endif %}{% endfor %}{% else %}{{ chart.get('source') }}{% endif %}. {% endif %}{% if chart.get('pulled') %}Retrieved {{ chart.get('pulled') }}. {% endif %}<a href="{{ png }}">Open the image</a>{% if chart.get('data') %} or <a href="{{ chart.get('data') }}">download the data</a>{% endif %}.
     </figcaption>
   </figure>
   <details class="embed">
-    <summary>Embed this chart (free, with a link back)</summary>
-    <p>Paste this where you want the chart. It updates by itself every day.</p>
+    <summary>Embed this chart with a link back</summary>
+    <p>Paste this code into your site to display the chart. The image updates daily.</p>
     <pre><code>&lt;a href="{{ canonical }}"&gt;&lt;img src="{{ abs_png }}" alt="{{ alt }}" width="800" style="max-width:100%;height:auto"&gt;&lt;/a&gt;
 &lt;p&gt;Chart by &lt;a href="{{ canonical }}"&gt;{{ site.name }}&lt;/a&gt;&lt;/p&gt;</code></pre>
   </details>

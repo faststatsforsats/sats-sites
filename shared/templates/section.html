@@ -5,7 +5,7 @@
     <h1>{{ title }}</h1>
   </header>
   {% if section == 'charts' and stats and stats.available %}
-  <p class="lead">Every chart is redrawn each morning from public data. The title states the finding; the footer carries the source, the pull time, and the site name. Open a chart for the numbers behind it and a snippet to embed it on your own site, free, with a link back.</p>
+  <p class="lead">See what changed and the numbers behind it. Each chart refreshes every morning from public data, with its source and retrieval time shown. Open a chart to explore the history, download the data, or embed it on your own site with a link back.</p>
   {% with cards = stats.gallery() %}{% include "_gallery.html" %}{% endwith %}
   {% else %}
   <ul class="page-list">

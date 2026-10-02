@@ -94,6 +94,9 @@ DARK = Colors(
 COLORS = {"light": LIGHT, "dark": DARK}
 
 WIDTH_PX, HEIGHT_PX, DPI = 1600, 900, 200   # 8 by 4.5 inches at 200 dpi
+AXES_RECT = (0.105, 0.2, 0.745, 0.57)       # the plot area: room on the right for the latest-value pill, two footer lines below
+LEFT_MARGIN_PX = 14                          # the label up the left edge stays at least this far inside the image
+PILL_MARGIN_PX = 41                          # and the latest-value pill this far from the right edge
 
 
 def colors(mode: str = "light") -> Colors:
@@ -147,7 +150,7 @@ def apply(mode: str = "light"):
     return plt, c
 
 
-def new_figure(title: str, subtitle: str | None, mode: str = "light", highlight: str | None = None, accent: str | None = None):
+def new_figure(title: str, subtitle: str | None, mode: str = "light", highlight: str | None = None, accent: str | None = None, rect=None):
     """A 1600 by 900 figure with the finding as the title and the measure as the subtitle.
 
     ``highlight`` is the part of the title to set in the series color (the key figure), so the takeaway
@@ -155,7 +158,7 @@ def new_figure(title: str, subtitle: str | None, mode: str = "light", highlight:
     plt, c = apply(mode)
     fig = plt.figure(figsize=(WIDTH_PX / DPI, HEIGHT_PX / DPI), dpi=DPI)
     # Leave room for the title block at the top and the footer at the bottom
-    ax = fig.add_axes([0.105, 0.2, 0.745, 0.57])   # room on the right for the latest-value pill, two footer lines below
+    ax = fig.add_axes(list(rect or AXES_RECT))
     _title(fig, c, title, highlight, accent or c.series[0])
     if subtitle:
         fig.text(0.04, 0.862, subtitle, fontsize=12, color=c.ink2, ha="left", va="top")
@@ -198,11 +201,11 @@ def finish(fig, ax, c: Colors, source: str, pulled: str, site: str = SITE_NAME, 
     ax.set_facecolor(c.surface)
     renderer = fig.canvas.get_renderer()
     limit = WIDTH_PX * 0.86   # keep clear of the coin in the corner
-    line1 = fig.text(0.04, 0.078, f"Source: {source}. Pulled {pulled}.", fontsize=9.5, color=c.muted, ha="left", va="bottom")
+    line1 = fig.text(0.04, 0.078, f"Source: {source}. Retrieved {pulled}.", fontsize=9.5, color=c.muted, ha="left", va="bottom")
     line2 = f"{site}  |  {site_url}"
     if line1.get_window_extent(renderer=renderer).x1 > limit:
         line1.set_text(f"Source: {source}.")
-        line2 = f"{site}  |  {site_url}  |  Pulled {pulled}"
+        line2 = f"{site}  |  {site_url}  |  Retrieved {pulled}"
     fig.text(0.04, 0.036, line2, fontsize=9.5, color=c.muted, ha="left", va="bottom")
     brand_mark(fig)
 
@@ -280,8 +283,8 @@ def _remember(ax, bbox) -> None:
 def latest_pill(ax, x, y, text: str, color: str, c: Colors) -> None:
     """The latest value as a bold pill in the series color at the end of the line, with a glowing end dot.
 
-    The plot is narrowed if the pill would otherwise run off the right edge of the figure. Call it before the
-    point marks, so they can keep clear of it."""
+    The plot is narrowed until the whole pill sits inside the image, PILL_MARGIN_PX from the right edge. Call it
+    before the point marks, so they can keep clear of it."""
     ax.plot([x], [y], marker="o", markersize=22, color=color, alpha=0.22, zorder=4, linestyle="none")
     ax.plot([x], [y], marker="o", markersize=10, color=color, markeredgecolor=c.surface, markeredgewidth=2, zorder=5, linestyle="none")
     note = ax.annotate(
@@ -290,24 +293,29 @@ def latest_pill(ax, x, y, text: str, color: str, c: Colors) -> None:
         bbox={"boxstyle": "round,pad=0.4,rounding_size=0.6", "fc": color, "ec": "none"},
     )
     fig = ax.figure
-    renderer = fig.canvas.get_renderer()
     pad = 0.4 * 12.5 * DPI / 72
-    width = note.get_window_extent(renderer=renderer).width + 2 * pad   # text plus the bbox pad
-    needed = 14 * DPI / 72 + width + 16                                  # offset, pill, margin
-    pos = ax.get_position()
-    right_px = pos.x1 * WIDTH_PX
-    if WIDTH_PX - right_px < needed:
-        new_right = max(0.68, (WIDTH_PX - needed) / WIDTH_PX)
+    box = None
+    for _ in range(4):
+        fig.canvas.draw()   # the axis limits and the text are laid out only once the figure is drawn; a measurement taken earlier can be empty
+        box = note.get_bbox_patch().get_window_extent(fig.canvas.get_renderer())   # the pill itself, pad included
+        overflow = box.x1 - (WIDTH_PX - PILL_MARGIN_PX)
+        pos = ax.get_position()
+        if overflow <= 0.5 or pos.x1 <= 0.68:
+            break
+        new_right = max(0.68, pos.x1 - (overflow + 0.5) / WIDTH_PX)
         ax.set_position([pos.x0, pos.y0, new_right - pos.x0, pos.height])
-    _remember(ax, note.get_window_extent(renderer=renderer).expanded(1.0, 1.0).padded(pad))
+    _remember(ax, box.padded(pad * 0.5))
 
 
 def mark_point(ax, x, y, text: str, color: str, c: Colors, side: str = "above", align: str = "auto", obstacles=None) -> None:
     """A labeled dot for a peak, a low, or a milestone: the dot in the series color, the words in ink on a surface tag.
 
     ``side`` and ``align`` are preferences. Every placement is scored against the line (``obstacles``, the series
-    in display pixels), the labels already placed, and the figure's edges; the cheapest one wins."""
+    in display pixels), the labels already placed, and the plot's edges; the cheapest one wins. The box that is
+    scored is the tag itself (its words plus padding), not the leader line that joins it to the dot. A tag never
+    sits on the plotted line when a clear spot exists, and never hangs below the plot into the date labels."""
     import matplotlib.dates as mdates
+    import matplotlib.text as mtext
     import numpy as np
 
     ax.plot([x], [y], marker="o", markersize=9, color=color, markeredgecolor=c.surface, markeredgewidth=2, zorder=5, linestyle="none")
@@ -324,13 +332,16 @@ def mark_point(ax, x, y, text: str, color: str, c: Colors, side: str = "above", 
         (side, align, 66), (side, other_align, 66), (side, align, 88), (side, other_align, 88),
         (other_side, align, 22), (other_side, other_align, 22), (other_side, align, 44),
         (other_side, other_align, 44), (other_side, align, 66), (other_side, other_align, 66),
+        (other_side, align, 88), (other_side, other_align, 88),
+        (side, align, 120), (side, other_align, 120), (other_side, align, 120), (other_side, other_align, 120),
     ]
     fig = ax.figure
     renderer = fig.canvas.get_renderer()
-    pad = 0.3 * 10.5 * DPI / 72
+    pad = 0.35 * 10.5 * DPI / 72 + 2          # the tag's own padding, plus the rule around it
     placed = getattr(ax, "_sats_labels", [])
     pts = np.asarray(obstacles) if obstacles is not None else np.zeros((0, 2))
-    top_limit, bottom_limit = HEIGHT_PX * 0.815, HEIGHT_PX * 0.165   # under the subtitle, above the date ticks
+    plot = ax.get_window_extent(renderer=renderer)
+    top_limit, bottom_limit = HEIGHT_PX * 0.815, plot.y0 + 6   # under the subtitle; inside the plot, clear of the date labels
     best, best_cost = None, None
     for s_side, s_align, dist in candidates:
         if s_side == "beside":
@@ -347,11 +358,13 @@ def mark_point(ax, x, y, text: str, color: str, c: Colors, side: str = "above", 
             bbox={"boxstyle": "round,pad=0.35", "fc": c.surface, "ec": c.rule_color(), "lw": 0.8, "alpha": 0.96},
             arrowprops={"arrowstyle": "-", "color": c.axis, "lw": 0.9, "shrinkA": 0, "shrinkB": 5},
         )
-        box = note.get_window_extent(renderer=renderer).padded(pad)
+        note.update_positions(renderer)   # an annotation is only placed when it is drawn; place it now so its box can be measured
+        box = mtext.Text.get_window_extent(note, renderer=renderer).padded(pad)   # the tag alone: the leader line may cross the series
         cost = 0.0
         if len(pts):
             inside = (pts[:, 0] >= box.x0 - 4) & (pts[:, 0] <= box.x1 + 4) & (pts[:, 1] >= box.y0 - 4) & (pts[:, 1] <= box.y1 + 4)
-            cost += inside.sum() * (1.0 if len(pts) < 400 else 400.0 / len(pts))
+            if inside.any():
+                cost += 200 + inside.sum() * (1.0 if len(pts) < 400 else 400.0 / len(pts))   # on the line: only when nothing else is free
         for other in placed:
             if box.overlaps(other):
                 cost += 1000           # labels never sit on each other
@@ -433,12 +446,29 @@ def render_chart(
     written = []
     global VECTOR_PASS
     import matplotlib.pyplot as plt
+    # Layout pass: draw once to see whether the scale's labels and the label up the left edge fit inside the image.
+    # If they do not (the hash rate chart names a unit on every tick), the plot's left edge moves right to make room,
+    # and every real pass below is drawn with that plot area, so tags and the pill are placed against the final layout.
+    rect = list(AXES_RECT)
+    VECTOR_PASS = True    # the layout pass needs the text, not the glow
+    try:
+        fig, ax, c = new_figure(title, subtitle, "light", highlight=highlight, accent=colors("light").series[slot], rect=rect)
+        draw(ax, c)
+        finish(fig, ax, c, source, pulled)
+        fig.canvas.draw()
+        scale = ax.yaxis.get_tightbbox(fig.canvas.get_renderer())
+        if scale is not None and scale.x0 < LEFT_MARGIN_PX:
+            shift = (LEFT_MARGIN_PX - scale.x0 + 1) / WIDTH_PX
+            rect = [rect[0] + shift, rect[1], rect[2] - shift, rect[3]]
+        plt.close(fig)
+    finally:
+        VECTOR_PASS = False
     passes = [("light", False), ("dark", False)] + ([("light", True)] if svg else [])
     for mode, vector in passes:
         VECTOR_PASS = vector
         try:
             c0 = colors(mode)
-            fig, ax, c = new_figure(title, subtitle, mode, highlight=highlight, accent=c0.series[slot])
+            fig, ax, c = new_figure(title, subtitle, mode, highlight=highlight, accent=c0.series[slot], rect=rect)
             draw(ax, c)
             finish(fig, ax, c, source, pulled)
             if vector:

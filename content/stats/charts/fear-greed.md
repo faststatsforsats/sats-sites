@@ -1,12 +1,15 @@
 ---
 title: The Fear and Greed gauge
-description: The Crypto Fear & Greed Index from alternative.me, day by day for the last year, with what the reading means and how it is built.
+description: Follow alternative.me's daily Bitcoin Fear and Greed readings over the past year. Learn what the score measures, how it is built, and its limits.
 template: chart
 updated: '2026-10-02'
 chart:
   slug: fear-greed
   alt: Fear and Greed read 72 (Greed) on October 2, 2026
   source: alternative.me Crypto Fear & Greed Index
+  source_links:
+  - name: alternative.me Crypto Fear & Greed Index
+    url: https://alternative.me/crypto/fear-and-greed-index/
   pulled: October 2, 2026, 12:37 UTC
   data: /data/fear-greed.json
 attribution:
@@ -16,13 +19,27 @@ sources:
   url: https://alternative.me/crypto/fear-and-greed-index/
 ---
 <!-- auto:start -->
-Fear and Greed read 72 (Greed) on October 2, 2026. The chart shows crypto Fear & Greed Index, daily, last 12 months, redrawn every morning from the published data.
+Fear and Greed read 72 (Greed) on October 2, 2026. The chart follows the Crypto Fear & Greed Index from [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) each day over the last 12 months.
 
-| When | Date | Index |
+Source: [alternative.me](https://alternative.me/crypto/fear-and-greed-index/)
+
+| When | Date | Index score |
 | --- | --- | --- |
-| now | October 2, 2026 | 72 |
+| latest | October 2, 2026 | 72 |
 | a month ago | September 2, 2026 | 63 |
 | a year ago | October 2, 2025 | 64 |
 
-The numbers behind this chart are free to use: [/data/fear-greed.json](/data/fear-greed.json). Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.
+Download the data behind this chart: [/data/fear-greed.json](/data/fear-greed.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->
+
+## What the reading means
+
+The index runs from 0 to 100. Lower readings indicate more fear; higher readings indicate more greed. This chart shows the daily readings from [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) over the last 12 months.
+
+## How the gauge is built
+
+Despite its Crypto name, [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) says the current index focuses on Bitcoin. Its published method combines price volatility, market momentum and trading volume, social media activity, Bitcoin's share of the crypto market, and Google search trends. Surveys are listed as paused.
+
+The score summarizes market sentiment using the provider's method. It does not measure Bitcoin's value or predict the next price move. A reading of 72 is an index score, not a 72% chance of a gain.
+
+Markets can stay fearful or greedy for a long time. Use the gauge to understand the mood, rather than as an instruction to buy or sell. Even a confident crowd can take a wrong turn.

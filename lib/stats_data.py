@@ -205,6 +205,12 @@ class StatsData:
                 self.prices["usd"] = self.price_usd
 
         self.fees = self.latest.get("fees") or {}
+        self.fees_updated_text = self.updated_text   # the build's own time when the fee feed gave none
+        try:
+            fee_time = dt.datetime.fromisoformat(str(self.fees.get("updated")).replace("Z", "+00:00")).astimezone(dt.timezone.utc)
+            self.fees_updated_text = f"{fee_time:%B} {fee_time.day}, {fee_time.year}, {fee_time:%H:%M} UTC"
+        except ValueError:
+            pass
         self.fear_greed = self.latest.get("fear_greed")
         self.cpi = self.latest.get("cpi")
         self.network = _points(_read(root / "data" / "network.json"))
@@ -319,11 +325,11 @@ class StatsData:
             pages.append({
                 **row,
                 "title": title if len(title) <= 60 else title[:57] + "...",
-                "heading": f"{row['name']}, priced in sats",
+                "heading": f"{row['name']} priced in sats",
                 "since": yearly[0]["year"] if yearly else None,
-                "description": f"See what {row['short']} costs in sats, from the latest BLS average price for U.S. cities"
-                               + (f", with January prices back to {yearly[0]['year']}." if yearly else "."),
-                "finding": f"{row['name']} cost {row['sats_text']} in {row['month']}, at the U.S. city average price of {row['usd_text']} {row['unit']}.",
+                "description": f"See the sats cost of {row['short']} using the latest BLS average price for US cities"
+                               + (f", with January history since {yearly[0]['year']}." if yearly else "."),
+                "finding": f"{row['name']} cost the equivalent of {row['sats_text']} in {row['month']}, using the US city average price of {row['usd_text']} {row['unit']}.",
                 "yearly": yearly,
                 "chart_entry": self.chart_by_slug.get(row["chart"]) if row.get("chart") else None,
             })
@@ -337,7 +343,7 @@ class StatsData:
             if btc:
                 ago = _year_ago(self.gold, day)
                 ago_sats = ago[1] / self.monthly_avg[ago[0]] * 1e8 if ago and self.monthly_avg.get(ago[0]) else None
-                rows.append({"name": "An ounce of gold", "when": month_name(day), "usd_text": fmt_money(usd), "value_text": fmt_sats(usd / btc * 1e8),
+                rows.append({"name": "A troy ounce of gold", "when": month_name(day), "usd_text": fmt_money(usd), "value_text": fmt_sats(usd / btc * 1e8),
                              "ago_text": fmt_sats(ago_sats) if ago_sats else "", "chart": "gold-in-sats", "source": "World Bank Pink Sheet (gold), blockchain.com (price)", "data_file": "/data/gold.json"})
         if self.homes:
             day, usd = self.homes[-1]
@@ -345,7 +351,7 @@ class StatsData:
             if btc:
                 ago = _year_ago(self.homes, day)
                 ago_btc = ago[1] / self.quarterly_avg[ago[0]] if ago and self.quarterly_avg.get(ago[0]) else None
-                rows.append({"name": "A median new home in the United States", "when": quarter(day), "usd_text": fmt_money(usd), "value_text": fmt_btc(usd / btc),
+                rows.append({"name": "US median new-home sale price", "when": quarter(day), "usd_text": fmt_money(usd), "value_text": fmt_btc(usd / btc),
                              "ago_text": fmt_btc(ago_btc) if ago_btc else "", "chart": "home-in-bitcoin", "source": "FRED (MSPUS), blockchain.com (price)", "data_file": "/data/homes.json"})
         if self.sp500:
             day, level = self.sp500[-1]
@@ -354,9 +360,20 @@ class StatsData:
                 ago = _year_ago(self.sp500, day)
                 ago_btc_price = self.price_on(ago[0]) if ago else None
                 ago_sats = ago[1] / ago_btc_price * 1e8 if ago and ago_btc_price else None
-                rows.append({"name": "The S&P 500 index level", "when": long_date(day), "usd_text": f"{level:,.0f} points", "value_text": fmt_sats(level / btc * 1e8),
+                rows.append({"name": "S&P 500 whole index level, converted for comparison", "when": long_date(day), "usd_text": f"{level:,.0f} points", "value_text": fmt_sats(level / btc * 1e8),
                              "ago_text": fmt_sats(ago_sats) if ago_sats else "", "chart": None, "source": "FRED (SP500), blockchain.com (price)", "data_file": "/data/sp500.json"})
         return rows
+
+    def sp500_row(self) -> dict | None:
+        """The figures the comparisons page quotes in its text: the index level, the same number written as dollars,
+        and that number converted to sats at the day's average bitcoin price (the table's S&P 500 row)."""
+        if not self.sp500:
+            return None
+        day, level = self.sp500[-1]
+        btc = self.price_on(day)
+        if not btc:
+            return None
+        return {"date": long_date(day), "level_text": f"{level:,.0f}", "dollars_text": f"${level:,.0f}", "value_text": fmt_sats(level / btc * 1e8)}
 
     def history(self) -> list[dict]:
         rows = []
@@ -364,7 +381,7 @@ class StatsData:
             rows.append({"year": year, "date": long_date(day), "usd_text": fmt_money(usd), "sats_text": fmt_sats(1e8 / usd), "sats": 1e8 / usd})
         if self.price_daily:
             day, usd = self.price_daily[-1]
-            rows.append({"year": "now", "date": long_date(day), "usd_text": fmt_money(usd), "sats_text": fmt_sats(1e8 / usd), "sats": 1e8 / usd})
+            rows.append({"year": "latest", "date": long_date(day), "usd_text": fmt_money(usd), "sats_text": fmt_sats(1e8 / usd), "sats": 1e8 / usd})
         return rows
 
     def network_summary(self) -> dict:
@@ -398,13 +415,13 @@ class StatsData:
                 title = f"{money} in sats: {sats_text} today"
                 pages.append({
                     "url": f"/sats/{amount}-{cur}/", "amount": amount, "currency": cur, "symbol": meta["symbol"], "currency_name": meta["name"],
-                    "money": money, "sats": sats, "sats_text": sats_text, "btc_text": f"{btc:,.8f} BTC".rstrip("0").rstrip("."),
+                    "money": money, "sats": sats, "sats_text": sats_text, "btc_text": f"{btc:,.8f} BTC",   # eight places, the way live.js rewrites it
                     "price_text": fmt_money(price, meta["symbol"]),
                     "title": title if len(title) <= 60 else f"{money} in sats today",
-                    "heading": f"How many sats is {money}?",
-                    "description": (f"See how many sats {money} buys at the current bitcoin price, refreshed every hour, and what {money} bought in sats each January since {januaries[0][0]}."
+                    "heading": f"How many sats does {money} buy?",
+                    "description": (f"See how many sats {money} equals at the latest checked bitcoin price, plus its January history since {januaries[0][0]}."
                                     if yearly else
-                                    f"See how many sats {money} buys at the current bitcoin price in {meta['name']}, refreshed every hour, with the same amount in other currencies."),
+                                    f"See how many sats {money} equals at the latest checked bitcoin price in {meta['name']}, with links to amounts in other currencies."),
                     "nearby": [{"amount": a, "money": f"{meta['symbol']}{a:,}", "sats_text": fmt_sats(a / price * 1e8), "url": f"/sats/{a}-{cur}/"} for a in nearby],
                     "other_currencies": [{"currency": c, "money": f"{CURRENCIES[c]['symbol']}{amount:,}", "url": f"/sats/{amount}-{c}/"} for c in CURRENCIES if c != cur and self.prices.get(c)],
                     "yearly": yearly,

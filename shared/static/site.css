@@ -182,7 +182,16 @@ details.embed pre { font-size: 13px; }
 @media (prefers-color-scheme: dark) { .big-value { color: var(--brand); } }
 .big-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px 20px; font-size: 20px; font-weight: 600; }
 .big-row a { text-decoration: none; }
+/* A long label ("Fee estimate, about an hour") must not wrap beside short ones, or its figure drops a line below the
+   others. From tablet width up the columns fit their labels in one row; on a phone the figures stack. */
+@media (min-width: 600px) {
+  .big-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 28px; }
+  .big-row .big-label { white-space: nowrap; }
+}
+@media (max-width: 599px) { .big-row { grid-template-columns: 1fr; } }
 .big-when { margin: 12px 0 0; color: var(--muted); font-size: 13px; }
+.big-credit { display: block; margin-top: 2px; font-size: 12px; font-weight: 400; color: var(--muted); }   /* a source's credit right under its figure */
+.big-row .big-credit a { text-decoration: underline; }
 
 /* Stats: tables of numbers, galleries, grids */
 .home-block { margin: 32px 0; }
@@ -203,6 +212,7 @@ table.numbers tr.now td { font-weight: 600; }
 .gallery a:hover strong { color: var(--accent); }
 .gallery p { margin: 0; font-size: 14px; color: var(--ink-2); }
 .link-row { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.rate { margin: -6px 0 10px; color: var(--ink-2); font-variant-numeric: tabular-nums; }   /* the sats-per-unit line under a currency heading */
 .amount-grid { list-style: none; padding: 0; margin: 0 0 24px; display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px 16px; font-size: 15px; }
 .amount-grid li { margin: 0; padding: 4px 0; border-bottom: 1px solid var(--hairline); display: flex; justify-content: space-between; gap: 8px; }
 .amount-grid span { color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }

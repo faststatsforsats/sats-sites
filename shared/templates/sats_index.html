@@ -2,12 +2,13 @@
 {% block content %}
 <article class="prose">
   <header class="page-head"><h1>{{ title }}</h1></header>
-  <p class="lead">How many sats a given amount of money buys, for {{ groups|length }} currencies and {{ groups[0].amounts|length }} amounts each, at the price <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Each page refreshes hourly, and the US dollar pages show what the amount bought each January since 2011. Sats means satoshis, the smallest unit of bitcoin.</p>
-  <p>For any other amount, use the <a href="/tools/sats-converter/">sats converter</a>.</p>
+  <p class="lead">Choose an amount in {{ currency_names }} to see its sats equivalent. There are {{ groups[0].amounts|length }} amounts for each of {{ groups|length }} currencies, checked hourly. Each US dollar page also shows its January history since 2011. Price <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>.</p>
+  <p>For another amount or one of the other supported currencies, use the <a href="/tools/sats-converter/">sats converter</a>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>.</p>
   {% for group in groups %}
-  <h2>{{ group.name[0] | upper }}{{ group.name[1:] }}: {{ group.sats_per_unit }} per {{ group.symbol }}1</h2>
+  <h2>{{ group.name[0] | upper }}{{ group.name[1:] }}</h2>
+  <p class="rate"><span class="live" data-live="sats-for" data-amount="1" data-currency="{{ group.currency }}">{{ group.sats_per_unit }}</span> per {{ group.symbol }}1</p>
   <ul class="amount-grid">
-    {% for row in group.amounts %}<li><a href="{{ row.url }}">{{ row.money }}</a> <span>{{ row.sats_text }}</span></li>{% endfor %}
+    {% for row in group.amounts %}<li><a href="{{ row.url }}">{{ row.money }}</a> <span class="live" data-live="sats-for" data-amount="{{ row.amount }}" data-currency="{{ group.currency }}">{{ row.sats_text }}</span></li>{% endfor %}
   </ul>
   {% endfor %}
 </article>

@@ -1,6 +1,6 @@
 ---
-title: Gold, homes, and stocks in sats
-description: An ounce of gold, a median new home, and the S&P 500 priced in sats and bitcoin, from the World Bank, the Census Bureau, and FRED.
+title: Gold, homes, and the S&P 500 in bitcoin terms
+description: Compare gold and US new-home prices in bitcoin terms, plus an S&P 500 index-level comparison. See how each figure is calculated.
 template: comparisons
 updated: 2026-10-02
 attribution: [worldbank, fred, blockchain]
@@ -14,6 +14,10 @@ sources:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
 ---
-Three big things people save for or measure wealth by, each divided by the bitcoin price of the same period. Sats means satoshis, the smallest unit of bitcoin; the home is shown in whole bitcoin because the number is large.
+See gold and new-home prices alongside a comparison of the S&P 500 index level, all expressed in bitcoin terms. Gold and the index comparison use sats. Homes use whole bitcoin for a shorter number.
 
-Gold is the World Bank's monthly average in dollars per troy ounce. The home is the median price of a new house sold in the United States, a quarterly figure from the Census Bureau published on FRED. The S&P 500 is the index level itself, not a dollar amount you can buy, so its row shows how many sats equal one point of the index on that day; it is a way to see the two move against each other, nothing more. None of this says what anyone should own.
+Gold uses the World Bank's monthly average price per troy ounce. Homes use the quarterly median price of new houses sold in the United States, published through [FRED](https://fred.stlouisfed.org/). Each is divided by the average bitcoin price for the same period.
+
+The S&P 500 row uses the whole index level as a dollar equivalent, then converts it to sats at that day's average bitcoin price. For example, a level of [[live:sp500]] points is treated as [[live:sp500-usd]] for the calculation. The resulting [[live:sp500-sats]] is the converted whole level, not the cost of one point.
+
+That dollar equivalent is only a comparison device. Index points are not dollars, and this row does not price an investment you can buy or calculate investment returns.

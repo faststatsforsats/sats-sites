@@ -29,11 +29,11 @@
       <input id="conv-sats-in" type="number" inputmode="numeric" min="0" step="1" value="100000">
       <output id="conv-money" for="conv-sats-in"></output>
     </div>
-    <p class="small" id="conv-note">Price <span id="conv-price"></span>, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. <a href="https://www.coingecko.com" rel="noopener">Data provided by CoinGecko</a>.</p>
+    <p class="small" id="conv-note">Price <span id="conv-price"></span>, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>.</p>
   </form>
   <script src="/static/converter.js" defer></script>
   {% else %}
-  <p>The converter switches on after the first Daily Build publishes the data.</p>
+  <p>Conversion data is temporarily unavailable. Please check again later.</p>
   {% endif %}
   {{ page.body_html | safe }}
   {% include "_placements.html" %}

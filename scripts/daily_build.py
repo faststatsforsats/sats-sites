@@ -57,11 +57,11 @@ def read_json(path: Path) -> dict | None:
         return None
 
 
-def series_file(name: str, title: str, unit: str, frequency: str, source: dict, points: S.Series, when: dt.datetime, extra: dict | None = None, digits: int = 2) -> None:
+def series_file(name: str, title: str, unit: str, frequency: str, source: dict, points: S.Series, when: dt.datetime, extra: dict | None = None, digits: int = 2, significant: int | None = None) -> None:
     payload = {
         "updated": when.isoformat(),
         "source": source,
-        "series": {"name": title, "unit": unit, "frequency": frequency, "points": S.to_json(points, digits)},
+        "series": {"name": title, "unit": unit, "frequency": frequency, "points": S.to_json(points, digits, significant)},
     }
     if extra:
         payload.update(extra)
@@ -118,7 +118,9 @@ def collect(when: dt.datetime, log: list[str]) -> dict:
 
     hashrate = step("blockchain.com hash-rate", lambda: blockchain_com.chart("hash-rate"))
     if hashrate:
-        series_file("network", "Estimated hash rate", "TH/s", "daily", blockchain_com.SOURCE, hashrate, when, digits=0)
+        # nine significant figures: whole terahashes today, and the fractions of a terahash of 2009 to early 2011 kept
+        # (rounded to whole numbers, those first two years were saved as zero)
+        series_file("network", "Estimated hash rate", "TH/s", "daily", blockchain_com.SOURCE, hashrate, when, significant=9)
     data["hashrate_daily"] = hashrate or load_series("network")
 
     # alternative.me

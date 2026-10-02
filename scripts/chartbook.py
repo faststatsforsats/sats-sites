@@ -1,9 +1,15 @@
 """The charts the Daily Build draws, one function each, all through lib/chartstyle.
 
 Each builder gets the fetched data (see daily_build.collect) and returns a dict for charts/index.json:
-    slug, title (the finding, for the image), heading (the page H1), description (meta, under 155 chars),
-    subtitle, unit, latest {date, value, text}, table [[label, date, text], ...],
-    data_file, attribution [codes], sources [{name, url}], frequency
+    slug, title (the finding: drawn on the image, and the card's summary and the image's description for screen
+    readers), heading (the page H1), description (meta, under 155 chars), subtitle (the line under the title on the
+    image), unit, column (the heading over the figures in the page's small table), detail (the sentence that follows
+    the finding in the paragraph under the image), lead (optional: the paragraph's first sentence when it should not
+    be the title itself), credit (optional: a credit line that must sit beside the reading, as Markdown),
+    latest {date, value, text}, table [[label, date, text], ...], data_file, attribution [codes],
+    sources [{name, url}], frequency
+The page titles, search descriptions, and every word a chart draws are Jim's own text (October 2026); change them
+only from his edits, and change a chart page's title and description in its Markdown file too.
 A builder returns None when the data it needs is missing, so one dead source never stops the others.
 """
 
@@ -149,7 +155,7 @@ def _quarter(day: str) -> str:
 WHEN = {"daily": S.long_date, "monthly": S.month_name, "quarterly": _quarter}
 
 
-def _table(series: S.Series, fmt, labels=(("now", {}), ("a year ago", {"years": 1}), ("five years ago", {"years": 5}), ("ten years ago", {"years": 10})), frequency: str = "daily") -> list[list[str]]:
+def _table(series: S.Series, fmt, labels=(("latest", {}), ("a year ago", {"years": 1}), ("five years ago", {"years": 5}), ("ten years ago", {"years": 10})), frequency: str = "daily") -> list[list[str]]:
     when = WHEN.get(frequency, S.long_date)
     rows = []
     for label, offset in labels:
@@ -183,8 +189,10 @@ def sats_per_dollar(data, out_dir: Path, pulled: str):
     return {
         "slug": "sats-per-dollar", "title": title,
         "heading": "Sats per dollar since 2011",
-        "description": "How many sats one US dollar buys, every day since 2011, drawn from the daily average bitcoin price and updated each morning.",
-        "subtitle": "Sats one US dollar buys, daily since 2011", "unit": "sats per dollar",
+        "description": "See how many sats one US dollar bought each day since 2011, using the average bitcoin price. Read the chart and explore its source data.",
+        "subtitle": "Sats one US dollar buys, from the daily average bitcoin price, since 2011", "unit": "sats per dollar",
+        "column": "Sats per dollar",
+        "detail": "Each point shows the sats one US dollar bought at that day's average bitcoin price.",
         "latest": {"date": day, "value": round(sats), "text": f"{sats:,.0f} sats"},
         "table": _table(series, lambda v: f"{v:,.0f} sats"),
         "data_file": "/data/price-daily.json", "frequency": "daily",
@@ -205,7 +213,7 @@ def price_usd(data, out_dir: Path, pulled: str):
     high = _extreme(series, "max")
     marks = []
     if high and high[0] != day:
-        marks.append((high[0], high[1], f"All-time high\n{S.fmt_usd(high[1])}, {_short_date(high[0])}", "above"))
+        marks.append((high[0], high[1], f"Highest daily average\n{S.fmt_usd(high[1])}, {_short_date(high[0])}", "above"))
 
     def draw(ax, c):
         _draw_series(ax, c, series, 0, S.fmt_usd(usd), "US dollars per bitcoin (log scale)", marks, events_label="top")
@@ -216,8 +224,10 @@ def price_usd(data, out_dir: Path, pulled: str):
     return {
         "slug": "price-usd", "title": title,
         "heading": "Bitcoin price in dollars since 2011",
-        "description": "The daily average bitcoin price in US dollars since 2011, on a log scale so early years stay readable, updated every morning.",
-        "subtitle": "US dollars per bitcoin, daily since 2011", "unit": "USD",
+        "description": "Track the daily average bitcoin price in US dollars since 2011. Learn how to read its logarithmic scale and compare dates in the data.",
+        "subtitle": "Daily average price across major exchanges, since 2011", "unit": "USD",
+        "column": "US dollars per bitcoin",
+        "detail": "Each point shows the daily average bitcoin price in US dollars.",
         "latest": {"date": day, "value": round(usd, 2), "text": S.fmt_usd(usd)},
         "table": _table(series, S.fmt_usd),
         "data_file": "/data/price-daily.json", "frequency": "daily",
@@ -248,8 +258,10 @@ def eggs_in_sats(data, out_dir: Path, pulled: str):
     return {
         "slug": "eggs-in-sats", "title": title,
         "heading": "A dozen eggs priced in sats",
-        "description": "What a dozen large eggs costs in sats each month since 2011, from the BLS average price and the monthly average bitcoin price.",
-        "subtitle": "Sats per dozen eggs, monthly since 2011", "unit": "sats per dozen",
+        "description": "See the sats cost of a dozen large eggs since 2011, using BLS monthly averages and bitcoin prices. Learn why both prices matter.",
+        "subtitle": "Sats for a dozen grade A large eggs, U.S. city average, monthly since 2011", "unit": "sats per dozen",
+        "column": "Sats per dozen",
+        "detail": "Each point converts that month's average egg price to sats.",
         "latest": {"date": day, "value": round(sats), "text": f"{sats:,.0f} sats"},
         "table": _table(series, lambda v: f"{v:,.0f} sats", frequency="monthly"),
         "data_file": "/data/eggs.json", "frequency": "monthly",
@@ -282,8 +294,10 @@ def gold_in_sats(data, out_dir: Path, pulled: str):
     return {
         "slug": "gold-in-sats", "title": title,
         "heading": "Gold priced in sats",
-        "description": "How many sats a troy ounce of gold costs, month by month since 2011, from the World Bank gold price and the average bitcoin price.",
-        "subtitle": "Sats per troy ounce of gold, monthly since 2011", "unit": "sats per ounce",
+        "description": "Compare gold with bitcoin through the sats cost of a troy ounce since 2011, using monthly averages. See the method and source data.",
+        "subtitle": "Sats per troy ounce of gold, monthly average prices, since 2011", "unit": "sats per ounce",
+        "column": "Sats per troy ounce",
+        "detail": "Each point converts that month's average gold price to sats.",
         "latest": {"date": day, "value": round(sats), "text": f"{sats:,.0f} sats"},
         "table": _table(series, lambda v: f"{v:,.0f} sats", frequency="monthly"),
         "data_file": "/data/gold.json", "frequency": "monthly",
@@ -306,25 +320,27 @@ def home_in_bitcoin(data, out_dir: Path, pulled: str):
     day, btc = series[-1]
     q = (S.parse(day).month - 1) // 3 + 1
     when = f"Q{q} {S.parse(day).year}"
-    title = f"A median new home cost {btc:,.1f} bitcoin in {when}"
-
     def fmt(v):
         return f"{v:,.1f} bitcoin" if v >= 10 else f"{v:,.2f} bitcoin"
+
+    title = f"A median new home cost {fmt(btc)} in {when}"   # the same figure, to the same precision, as the pill and the table
 
     marks = _value_marks(series, fmt, _quarter)
 
     def draw(ax, c):
-        _draw_series(ax, c, series, 2, fmt(btc), "bitcoin per median new home (log scale)", marks)
+        _draw_series(ax, c, series, 2, fmt(btc), "bitcoin per home (log scale)", marks)
 
     render_chart("home-in-bitcoin", title, draw, "FRED (MSPUS), blockchain.com (price)", pulled, out_dir,
                  subtitle="Median sales price of new houses sold in the United States, in bitcoin, quarterly since 2011",
-                 highlight=f"{btc:,.1f} bitcoin", slot=2)
+                 highlight=fmt(btc), slot=2)
 
     return {
         "slug": "home-in-bitcoin", "title": title,
         "heading": "A new home priced in bitcoin",
-        "description": "The median price of a new house sold in the United States, converted to bitcoin each quarter since 2011, from the Census Bureau figure on FRED.",
-        "subtitle": "Bitcoin per median new home, quarterly since 2011", "unit": "bitcoin",
+        "description": "See the US median new-home price in bitcoin each quarter since 2011. Learn how the housing price and bitcoin price shape the line.",
+        "subtitle": "Median sales price of new houses sold in the United States, in bitcoin, quarterly since 2011", "unit": "bitcoin",
+        "column": "Bitcoin",
+        "detail": "Each point converts that quarter's median new-home sale price to bitcoin.",
         "latest": {"date": day, "value": round(btc, 2), "text": fmt(btc)},
         "table": _table(series, fmt, frequency="quarterly"),
         "data_file": "/data/homes.json", "frequency": "quarterly",
@@ -350,9 +366,9 @@ def fear_greed(data, out_dir: Path, pulled: str):
     high, low = _extreme(recent, "max"), _extreme(recent, "min")
     marks = []
     if high and high[0] != day:
-        marks.append((high[0], high[1], f"Greediest\n{high[1]:.0f}, {_short_date(high[0])}", "above"))
+        marks.append((high[0], high[1], f"Highest reading\n{high[1]:.0f}, {_short_date(high[0])}", "above"))
     if low and low[0] != day:
-        marks.append((low[0], low[1], f"Most fearful\n{low[1]:.0f}, {_short_date(low[0])}", "below"))
+        marks.append((low[0], low[1], f"Lowest reading\n{low[1]:.0f}, {_short_date(low[0])}", "below"))
 
     def draw(ax, c):
         xs, ys = _dates(recent), [v for _, v in recent]
@@ -382,13 +398,17 @@ def fear_greed(data, out_dir: Path, pulled: str):
     render_chart("fear-greed", title, draw, "alternative.me Crypto Fear & Greed Index", pulled, out_dir,
                  subtitle="Daily readings, last 12 months",
                  highlight=f"{value} ({label})", slot=6)
-    labels = (("now", {}), ("a month ago", {"months": 1}), ("a year ago", {"years": 1}))
+    labels = (("latest", {}), ("a month ago", {"months": 1}), ("a year ago", {"years": 1}))
     simple = [(d, float(v)) for d, v, _ in fng]
     return {
         "slug": "fear-greed", "title": title,
         "heading": "The Fear and Greed gauge",
-        "description": "The Crypto Fear & Greed Index from alternative.me, day by day for the last year, with what the reading means and how it is built.",
-        "subtitle": "Crypto Fear & Greed Index, daily, last 12 months", "unit": "index",
+        "description": "Follow alternative.me's daily Bitcoin Fear and Greed readings over the past year. Learn what the score measures, how it is built, and its limits.",
+        "subtitle": "Daily readings, last 12 months", "unit": "index",
+        "column": "Index score",
+        "detail": f"The chart follows the Crypto Fear & Greed Index from [alternative.me]({alternative_me.SOURCE['url']}) each day over the last 12 months.",
+        # alternative.me's terms: the credit sits right next to wherever the reading is displayed
+        "credit": f"Source: [alternative.me]({alternative_me.SOURCE['url']})",
         "latest": {"date": day, "value": value, "text": f"{value} ({label})"},
         "table": _table(simple, lambda v: f"{v:.0f}", labels),
         "data_file": "/data/fear-greed.json", "frequency": "daily",
@@ -404,7 +424,7 @@ def hashrate(data, out_dir: Path, pulled: str):
         return None
     series = [(d, v / 1_000_000) for d, v in S.since(raw, START) if v > 0]   # TH/s -> EH/s
     day, ehs = series[-1]
-    title = f"The network ran at {ehs:,.0f} EH/s on {S.long_date(day)}"
+    title = f"Estimated hash rate was {ehs:,.0f} EH/s on {S.long_date(day)}"
 
     def hash_label(v, _=None):
         # The axis runs from gigahashes in 2011 to exahashes today; name each decade in its own unit
@@ -435,8 +455,11 @@ def hashrate(data, out_dir: Path, pulled: str):
     return {
         "slug": "hashrate", "title": title,
         "heading": "Bitcoin hash rate since 2011",
-        "description": "The estimated computing power securing Bitcoin, in exahashes per second, every day since 2011, on a log scale.",
-        "subtitle": "Exahashes per second, daily since 2011", "unit": "EH/s",
+        "description": "Explore Bitcoin's estimated hash rate since 2011. Learn what EH/s means, why daily readings vary, and what the chart can tell you.",
+        "subtitle": "Estimated network hash rate, daily since 2011", "unit": "EH/s",
+        "column": "EH/s",
+        "lead": f"The estimated network hash rate was {ehs:,.0f} EH/s on {S.long_date(day)}.",
+        "detail": "Each point shows the estimated mining calculations per second, in EH/s.",
         "latest": {"date": day, "value": round(ehs, 1), "text": f"{ehs:,.0f} EH/s"},
         "table": _table(series, lambda v: f"{v:,.1f} EH/s" if v < 10 else f"{v:,.0f} EH/s"),
         "data_file": "/data/network.json", "frequency": "daily",
@@ -500,12 +523,14 @@ def twenty_five_a_week(data, out_dir: Path, pulled: str):
     render_chart("twenty-five-a-week", title, draw, "blockchain.com market price", pulled, out_dir,
                  subtitle=f"$25 every Monday since January 2020 at that day's average price: {buys} buys, ${spent:,.0f} in all",
                  highlight=f"{sats:,.0f} sats", slot=1)
-    labels = (("now", {}), ("a year ago", {"years": 1}), ("three years ago", {"years": 3}), ("five years ago", {"years": 5}))
+    labels = (("latest", {}), ("a year ago", {"years": 1}), ("three years ago", {"years": 3}), ("five years ago", {"years": 5}))
     return {
         "slug": "twenty-five-a-week", "title": title,
         "heading": "What $25 a week since 2020 bought in sats",
-        "description": "See how many sats a $25 bitcoin purchase every Monday since January 2020 would have accumulated. Historical illustration, updated daily.",
-        "subtitle": "Sats stacked by a $25 buy every Monday since January 6, 2020", "unit": "sats stacked",
+        "description": "See the sats a weekly 25-dollar bitcoin purchase since January 2020 would have accumulated. Historical example with the method and limits explained.",
+        "subtitle": f"$25 every Monday since January 2020 at that day's average price: {buys} buys, ${spent:,.0f} in all", "unit": "sats stacked",
+        "column": "Sats stacked",
+        "detail": f"The line adds the sats from a modeled $25 purchase every Monday from {S.long_date(WEEKLY_START)}.",
         "latest": {"date": day, "value": round(sats), "text": fmt(sats), "spent": spent, "buys": buys},
         "table": _table(series, fmt, labels),
         "data_file": "/data/price-daily.json", "frequency": "weekly",

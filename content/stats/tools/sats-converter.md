@@ -1,6 +1,6 @@
 ---
 title: Sats converter
-description: Convert dollars, euros, pounds and 27 other currencies to sats and bitcoin, or sats back to money, at a price refreshed every hour.
+description: Convert money in 30 currencies to sats and bitcoin, or sats back to money. Prices are checked hourly, with the latest timestamp shown.
 template: converter
 updated: 2026-10-02
 attribution: [coingecko]
@@ -10,8 +10,8 @@ sources:
 ---
 ## How the converter works
 
-Type an amount and pick a currency; the box shows the same value in sats and in bitcoin. Type a number of sats in the second row to go the other way. Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin, so a sats figure is the bitcoin figure with the decimal point moved eight places.
+Enter an amount and choose a currency to see its equivalent in sats and bitcoin. Enter sats in the second row to convert back to money. There are 100,000,000 sats in one bitcoin.
 
-The price comes from the site's own feed, which asks CoinGecko once an hour and serves the answer to every page; the time stamp under the box says when it was last refreshed. If the feed is unreachable, the converter uses the price from the morning's build, so it never shows an empty box. Prices on exchanges differ by small amounts and move every second, so treat the result as a close figure, not a quote.
+The converter uses a [CoinGecko](https://www.coingecko.com/) price checked hourly. If the live feed cannot be reached, it uses the daily build's saved price; check the timestamp to see how recent the figure is. Exchange prices, fees, and spreads can differ, so this is an estimate rather than a purchase quote.
 
-For common amounts there are ready-made pages, each with the figure for every January since 2011: [dollars, euros, and pounds in sats](/sats/).
+For common amounts, browse [Money in sats](/sats/). Only the US dollar pages include a January-by-January table back to 2011. The other currency pages show the current conversion and link to the US dollar history.

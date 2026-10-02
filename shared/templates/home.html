@@ -20,23 +20,24 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="more"><a href="/value/everyday-prices/">All {{ basket|length }} items, with the chart and the sources</a></p>
+  <p class="more"><a href="/value/everyday-prices/">See all {{ basket|length }} everyday prices in sats</a></p>
 </section>
 {% endif %}
 <section class="home-block">
   <h2>The charts</h2>
   {% with cards = stats.gallery()[:3] %}{% include "_gallery.html" %}{% endwith %}
-  <p class="more"><a href="/charts/">All {{ stats.gallery()|length }} charts, each with embed code</a></p>
+  <p class="more"><a href="/charts/">Explore all {{ stats.gallery()|length }} charts</a></p>
 </section>
 <section class="home-block">
-  <h2>Try the numbers yourself</h2>
+  <h2>Check a value or explore the history</h2>
+  {# each link carries the title of the page it opens #}
   <ul class="link-row">
     <li><a href="/tools/sats-converter/">Sats converter</a></li>
-    <li><a href="/sats/">Dollars, euros, and pounds in sats</a></li>
-    <li><a href="/items/">Everyday items in sats</a></li>
-    <li><a href="/value/comparisons/">Gold, homes, and the S&amp;P 500 in sats</a></li>
-    <li><a href="/network/">The network today</a></li>
-    <li><a href="/history/">Every year since 2011</a></li>
+    <li><a href="/sats/">Money in sats</a></li>
+    <li><a href="/items/">Everyday items priced in sats</a></li>
+    <li><a href="/value/comparisons/">Gold, homes, and the S&amp;P 500 in bitcoin terms</a></li>
+    <li><a href="/network/">The Bitcoin network today</a></li>
+    <li><a href="/history/">Sats per dollar, every January since 2011</a></li>
   </ul>
 </section>
 {% else %}

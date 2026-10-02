@@ -1,6 +1,6 @@
 ---
 title: Everyday prices in sats
-description: A dozen eggs, a gallon of gas, a pound of coffee and more, priced in sats from this month's BLS averages and updated every morning.
+description: See eggs, gas, coffee, electricity, and more priced in sats using the latest published BLS averages and bitcoin prices for the same month.
 template: basket
 updated: 2026-10-02
 attribution: [bls, blockchain]
@@ -10,6 +10,6 @@ sources:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
 ---
-Every item below is a real government price, not a guess: the Bureau of Labor Statistics surveys stores in U.S. cities every month and publishes the average. We divide each price by that month's average bitcoin price to get the cost in sats, which are satoshis, the smallest unit of bitcoin.
+What do everyday purchases cost when you count in sats? The table converts average US prices for [[live:items]] items, from eggs and gasoline to coffee and electricity.
 
-Two things to keep in mind when you read the table. The BLS figures run about a month behind, so "this month" is the latest month published. And the year-ago column compares the same item in the same month a year earlier, so a seasonal swing (eggs around the holidays, gasoline in summer) is already built in. The explainer on the [sats per dollar chart](/charts/sats-per-dollar/) covers why a falling number here means a dollar buying fewer sats, not eggs getting cheaper.
+The dollar prices come from the Bureau of Labor Statistics. We convert each using the average bitcoin price for the same month. These are published averages, so they will not match every store or today's checkout price.

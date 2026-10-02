@@ -1,11 +1,11 @@
-# Fast Stats for Sats: graphics and easy-to-understand details about the value of sats and bitcoin
+# Fast Stats for Sats: bitcoin values in charts, with the numbers and sources behind them
 key: stats
 name: Fast Stats for Sats
 short_name: Stats
 domain: faststatsforsats.com
 url: https://faststatsforsats.com
-tagline: Charts and plain details about the value of sats and bitcoin
-description: Free charts and plain-language details about the value of sats and bitcoin, updated every day.
+tagline: Bitcoin values in charts you can understand
+description: Free Bitcoin charts and plain explanations. Explore sats values, price history, and a converter, with public sources and daily updates.
 role: value
 
 # This site publishes the shared data and chart files at /data/ and /charts/.
@@ -13,6 +13,10 @@ serves_data: true
 
 # The live-numbers API (step 15). Pages read it with shared/static/live.js and fall back to the daily figures.
 api_url: https://api.faststatsforsats.com
+
+# The line under the wordmark on the sharing card (sites/stats/static/brand/og.png). After changing it, run
+# python3 scripts/sharing_card.py stats to redraw the card.
+sharing_card_line: "See what sats are worth today and how their value has changed"
 
 # Footer line required on every page (style guide, Compliance)
 disclaimer: Not financial advice. Fast Stats for Sats is an information site.
@@ -23,9 +27,19 @@ sections:
   value: Value
   tools: Tools
 
+# The search description of each section's list page (a list page has no Markdown file of its own)
+section_descriptions:
+  charts: "Free Bitcoin charts with plain explanations, source data, and daily updates. Compare prices, purchasing power, market sentiment, and the network."
+  value: "Compare everyday US prices, gold, new homes, and the S&P 500 in bitcoin terms. See the dates, calculations, and public sources behind each figure."
+  tools: "Convert money to sats and bitcoin, or sats back to money. Check amounts in 30 currencies using an hourly price feed."
+
+# The page shown for an address that does not exist: its search description, and the sentence before the home page link
+not_found_description: "The page could not be found. Return to Fast Stats for Sats to explore Bitcoin charts, values, and the sats converter."
+not_found_text: "That address may contain a typo, or the page may have moved."
+
 # Pages the build generates from data/ (added to the nav once the data exists)
 nav_generated:
-  - label: Dollars in sats
+  - label: Money in sats
     url: /sats/
   - label: Items in sats
     url: /items/

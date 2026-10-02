@@ -1,6 +1,6 @@
 ---
 title: Sats per dollar, every January since 2011
-description: The bitcoin price and the number of sats a dollar bought on the first day of each January since 2011, in one table, with both charts.
+description: See the bitcoin price and sats one dollar bought at the start of each year since 2011, plus the latest day available and both daily charts.
 template: history
 nav: true
 nav_label: Every January
@@ -12,6 +12,6 @@ sources:
 ---
 ## One row a year
 
-In January 2011 a dollar bought more than 300 million sats, because a whole bitcoin cost about 30 cents. The table shows what it bought each January since, using the daily average price across major exchanges on the first day of the year with a recorded price. Reading down the sats column is the simplest way to see the whole story without a logarithmic axis.
+In January 2011, a dollar bought more than 300 million sats because one bitcoin cost about 30 cents. This table shows what one dollar bought at the start of each year since.
 
-The two charts underneath are the same data every day instead of once a year. For what happened in between, and why the price moves the way it does, the explainers on [Fast Facts for Sats](https://fastfactsforsats.com/) cover halvings, the 21 million cap, and what the price measures.
+Each annual row uses the daily average price on the first January day with recorded data. The final row shows the latest day available. For the days in between, explore the [sats per dollar chart](/charts/sats-per-dollar/) and [Bitcoin price in dollars since 2011](/charts/price-usd/).

@@ -6,7 +6,7 @@
 | --- | --- |
 | `daily_build.py` | The runner: pull the sources, write `data/*.json`, draw the charts, refresh the chart pages, write `charts/index.json` and `data/latest.json`, print a summary |
 | `chartbook.py` | One function per chart, all drawn through `lib/chartstyle.py`. Add a chart here |
-| `pages.py` | The programmatic chart pages under `content/stats/charts/`. The build owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`; the explainer the Content Writer adds below the markers is kept |
+| `pages.py` | The programmatic chart pages under `content/stats/charts/`. The build owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->` (the paragraph, the small table, and the data line, worded from the chart's entry in `chartbook.py`: `lead`, `detail`, `column`, `credit`); the explainer below the markers is kept |
 | `series.py` | Date-series helpers: monthly and quarterly averages, "a year ago" lookups, sats-per-unit conversions |
 | `nostr_post.py` | Posts the chart of the day as the site's Nostr account (NIP-01 note, BIP-340 signature via coincurve). Rotates through the charts by day of the year |
 | `sources/` | One module per source; each returns plain `(date, value)` lists and raises `SourceError` when the source is down |
@@ -16,7 +16,7 @@
 
 | Source | What | Key | Module |
 | --- | --- | --- | --- |
-| blockchain.com charts | daily price (USD) and hash rate since 2009 | none | `sources/blockchain_com.py` |
+| blockchain.com charts | daily price (USD) and hash rate since 2009 (the hash rate is saved to nine significant figures, so the fractions of a terahash of the first years are kept) | none | `sources/blockchain_com.py` |
 | alternative.me | Crypto Fear & Greed Index, daily since 2018 | none | `sources/alternative_me.py` |
 | U.S. Bureau of Labor Statistics API v2 | CPI and 24 average prices (eggs, gasoline, milk, bread, coffee, beer, wine, diesel, and more), monthly, fetched in batches of 50. The items are defined once, in `ITEMS` in `lib/stats_data.py` (series id, BLS's item name, and the names the pages use); check a new id against [BLS's item list](https://download.bls.gov/pub/time.series/ap/ap.item) before adding it | `BLS_KEY` | `sources/bls.py` |
 | FRED | median new-home price (MSPUS, quarterly), S&P 500 (daily, last 10 years) | `FRED_KEY` | `sources/fred.py` |
@@ -44,6 +44,8 @@ python3 scripts/nostr_post.py --self-test       # key handling and signing check
 
 sats-per-dollar, price-usd, eggs-in-sats, gold-in-sats, home-in-bitcoin, fear-greed, hashrate, twenty-five-a-week (the sats a $25 buy every Monday since January 2020 added up to; the October campaign's hook chart, also shown on the Acts page /first-100k-sats/). Each writes a light PNG, a dark PNG, and an SVG into `charts/`, an entry in `charts/index.json`, and a page at `/charts/<slug>/` on the Stats site.
 
+`scripts/sharing_card.py` is separate from the Daily Build: `python3 scripts/sharing_card.py stats` redraws a site's sharing card (`sites/<site>/static/brand/og.png`) from its coin, its wordmark, and the `sharing_card_line` in its `site.yml`. Run it by hand after the line changes; it needs `pillow`, `pyyaml`, and `matplotlib`.
+
 `scripts/checklist_pdf.py` is separate from the Daily Build: it draws the one-page Sats Stacker's Starter Checklist into `sites/acts/static/` from the words in `scripts/checklist.yml` (edit the words there, then run it by hand; it needs `reportlab`, `pyyaml`, and `pillow`, and it picks the largest type that keeps everything on one page).
 
-The look (lib/chartstyle.py): the key figure in the title is set in the series color; the line is 3 px with a soft halo and a wash fading beneath it; the latest value sits in a bold pill at the line's end; the all-time low and the high of the last five years (or the all-time high, the record, the greediest and most fearful days) are marked with a dot and a two-line tag; the halvings are thin vertical lines on the price, sats-per-dollar, and hash rate charts; the Stats coin sits in the footer corner. Tags are placed by scoring each candidate spot against the line, the other tags, and the figure's edges (`SATS_LABEL_DEBUG=1` prints the scores). The SVG keeps only the line (no halo or wash) so it stays small.
+The look (lib/chartstyle.py): the key figure in the title is set in the series color; the line is 3 px with a soft halo and a wash fading beneath it; the latest value sits in a bold pill at the line's end; the all-time low and the high of the last five years (or the highest daily average, the record, the highest and lowest readings) are marked with a dot and a two-line tag; the halvings are thin vertical lines on the price, sats-per-dollar, and hash rate charts; the Stats coin sits in the footer corner. Tags are placed by scoring each candidate spot against the line, the other tags, and the plot's edges (`SATS_LABEL_DEBUG=1` prints the scores): the tag's own box is what is scored, a spot on the line is taken only when nothing else is free, and a tag never hangs below the plot into the date labels. `render_chart` draws a layout pass first and moves the plot's left edge right when the scale's labels are wide (the hash rate chart names a unit on every tick), and the pill at the line's end is kept inside the right edge. The words on every chart, and each chart page's title and search description, are Jim's own text. The SVG keeps only the line (no halo or wash) so it stays small.

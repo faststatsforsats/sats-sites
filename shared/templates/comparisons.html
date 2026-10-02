@@ -9,7 +9,8 @@
   {{ page.body_html | safe }}
   {% if stats and stats.available %}
   <table class="numbers">
-    <thead><tr><th>What</th><th>Dollar figure</th><th class="num">In bitcoin terms</th><th class="num">A year earlier</th></tr></thead>
+    {# the second column holds dollar prices and, for the S&P 500, index points #}
+    <thead><tr><th>What</th><th>Price or index level</th><th class="num">In bitcoin terms</th><th class="num">A year earlier</th></tr></thead>
     <tbody>
     {% for row in stats.comparisons() %}
       <tr>
@@ -21,10 +22,10 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="small">Gold and home prices are divided by the average bitcoin price of the same month or quarter; the S&amp;P 500 uses the daily average price on the same day. Sources on each row: {% for row in stats.comparisons() %}{{ row.source }}{% if not loop.last %}; {% endif %}{% endfor %}.</p>
+  <p class="small">Each row uses its own reporting period: monthly for gold, quarterly for homes, and daily for the S&amp;P 500. Compare the dates as well as the amounts.</p>
   {% with cards = [stats.chart_by_slug.get('gold-in-sats'), stats.chart_by_slug.get('home-in-bitcoin')] | select | list %}{% include "_gallery.html" %}{% endwith %}
   {% else %}
-  <p>The table appears after the first Daily Build publishes the data.</p>
+  <p>Price data is temporarily unavailable. Please check again later.</p>
   {% endif %}
   {% include "_placements.html" %}
 </article>

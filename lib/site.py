@@ -20,20 +20,34 @@ from jinja2 import Environment, FileSystemLoader, StrictUndefined, select_autoes
 
 from .content import Page, load_pages
 from .redirects import load_redirects, render_redirects_file
-from .stats_data import AMOUNTS, StatsData
+from .stats_data import StatsData
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE_KEYS = ("stats", "facts", "acts")
 
+# The credit line each data source gets in the footer of a page that shows its data. The wording of the CoinGecko,
+# FRED, and BLS lines is fixed by those providers' terms; do not edit it without reading the terms again.
+# "link" is the part of the line that carries the link: the provider's name.
 ATTRIBUTION_LINES = {
-    "coingecko": {"text": "Data provided by CoinGecko", "url": "https://www.coingecko.com"},
-    "fred": {"text": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.", "url": "https://fred.stlouisfed.org"},
-    "bls": {"text": "Source: U.S. Bureau of Labor Statistics, retrieved {date}. BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov.", "url": "https://www.bls.gov"},
-    "altme": {"text": "Source: alternative.me", "url": "https://alternative.me/crypto/fear-and-greed-index/"},
-    "mempool": {"text": "Fee data: mempool.space", "url": "https://mempool.space"},
-    "blockchain": {"text": "Price and network data: blockchain.com", "url": "https://www.blockchain.com/explorer/charts"},
-    "worldbank": {"text": "Gold price: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0", "url": "https://www.worldbank.org/en/research/commodity-markets"},
+    "coingecko": {"text": "Data provided by CoinGecko", "link": "CoinGecko", "url": "https://www.coingecko.com"},
+    "fred": {"text": "This product uses the FRED® API but is not endorsed or certified by the Federal Reserve Bank of St. Louis.", "link": "FRED", "url": "https://fred.stlouisfed.org"},
+    "bls": {"text": "Source: U.S. Bureau of Labor Statistics, retrieved {date}. BLS.gov cannot vouch for the data or analyses derived from these data after the data have been retrieved from BLS.gov.", "link": "U.S. Bureau of Labor Statistics", "url": "https://www.bls.gov"},
+    "altme": {"text": "Source: alternative.me", "link": "alternative.me", "url": "https://alternative.me/crypto/fear-and-greed-index/"},
+    "mempool": {"text": "Fee data: mempool.space", "link": "mempool.space", "url": "https://mempool.space"},
+    "blockchain": {"text": "Price and network data: blockchain.com", "link": "blockchain.com", "url": "https://www.blockchain.com/explorer/charts"},
+    "worldbank": {"text": "Gold price: World Bank Commodity Price Data (The Pink Sheet), CC BY 4.0", "link": "World Bank Commodity Price Data (The Pink Sheet)", "url": "https://www.worldbank.org/en/research/commodity-markets"},
 }
+
+
+def credit_lines(codes, today) -> list[dict]:
+    """Footer credit lines for the given source codes, each split around the provider's name so only the name is linked."""
+    lines = []
+    for code in codes:
+        line = ATTRIBUTION_LINES[str(code)]
+        text = line["text"].format(date=long_date(today))
+        before, _, after = text.partition(line["link"])
+        lines.append({"text": text, "before": before, "link": line["link"], "after": after, "url": line["url"]})
+    return lines
 
 SATS_LINE = "Sats means satoshis, the smallest unit of bitcoin."
 DISCLOSURE_LINE = "Some links here are affiliate links. If you buy through them, this site earns a commission at no cost to you."
@@ -94,7 +108,7 @@ def copy_tree(src: Path, dst: Path, skip_names: set[str] | None = None) -> int:
     return count
 
 
-LIVE_TOKEN = re.compile(r"\[\[live:([a-z-]+)((?::[^\]:]+)*)\]\]")
+LIVE_TOKEN = re.compile(r"\[\[live:([a-z0-9-]+)((?::[^\]:]+)*)\]\]")
 HALVING_INTERVAL = 210_000
 
 
@@ -113,7 +127,9 @@ def expand_live(html: str, stats, report, page) -> str:
     """Replace [[live:key(:arg)*]] tokens in a page body with the baked figure wrapped for live.js.
 
     Keys: sats-per-dollar, price[:cur], sats-for:amount[:cur], money-for:sats[:cur], fee[:fast|medium|slow], height, to-halving, supply,
-    when[:fees] (the price or fee feed's time stamp), cpi, gold (the last monthly figures, not live)."""
+    when[:fees] (the price or fee feed's time stamp), cpi, gold (the last monthly figures, not live),
+    items (how many everyday items the basket holds), sp500, sp500-usd, sp500-sats (the S&P 500 row of the comparisons
+    table: the index level, the same number as dollars, and that number in sats; baked, not live)."""
     from .stats_data import CURRENCIES, fmt_money, fmt_sats, month_name
 
     def missing(key: str) -> str:
@@ -187,6 +203,14 @@ def expand_live(html: str, stats, report, page) -> str:
                 return missing(key)
             day, usd = stats.gold[-1]
             return f'{fmt_money(usd)} an ounce ({month_name(day)})'
+        if key == "items":
+            count = len(stats.basket()) if ok else 0
+            return str(count) if count else missing(key)
+        if key in ("sp500", "sp500-usd", "sp500-sats"):
+            row = stats.sp500_row() if ok else None
+            if not row:
+                return missing(key)
+            return {"sp500": row["level_text"], "sp500-usd": row["dollars_text"], "sp500-sats": row["value_text"]}[key]
         report.error(f"{page.source}: unknown live token [[live:{key}]]")
         return match.group(0)
 
@@ -241,7 +265,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
                 report.error(f"{page.source}: placement {slug!r} is not in go/redirects.csv")
         if key == "acts" and page.template == "guide" and not page.meta.get("understand_first"):
             report.warn(f"{page.source}: an Acts guide opens with an \"Understand first\" line; add understand_first to the front matter")
-        if "—" in page.body_md or "—" in page.title:
+        if "\u2014" in page.body_md or "\u2014" in page.title:
             report.error(f"{page.source}: contains an em dash; use a comma, colon, semicolon, or period")
 
     # Navigation: sections that have at least one page, in site.yml order
@@ -260,6 +284,14 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         for item in site.get("nav_generated") or []:
             nav.append({"label": item["label"], "url": item["url"]})
 
+    def described(url: str, text: str) -> str:
+        """The description a generated page hands to the head (base.html reads page_description), held to the same rules as a written one."""
+        if len(text) > 155:
+            report.warn(f"{url}: description is {len(text)} characters; keep it under 155")
+        if "\u2014" in text:
+            report.error(f"{url}: description contains an em dash; use a comma, colon, semicolon, or period")
+        return text
+
     env = jinja_env()
     common = {
         "site": site,
@@ -277,10 +309,12 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     for name, label in sections.items():
         listed = sorted(section_pages.get(name, []), key=lambda p: (p.meta.get("order", 999), p.title))
         if listed and f"/{name}/" not in seen:
+            section_description = str((site.get("section_descriptions") or {}).get(name, "")).strip()
             html = env.get_template("section.html").render(
                 page=None, title=label, section=name, canonical=site["url"].rstrip("/") + f"/{name}/",
                 listed=[p for p in listed if p.url != f"/{name}/"],
-                attribution=[{"text": ATTRIBUTION_LINES[c]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES[c]["url"]} for c in (["blockchain", "bls", "fred", "worldbank", "altme"] if (name == "charts" and stats and stats.available) else [])],
+                attribution=credit_lines(["blockchain", "bls", "fred", "worldbank", "altme"] if (name == "charts" and stats and stats.available) else [], today),
+                page_description=described(f"/{name}/", section_description) if section_description else None,
                 **common
             )
             target = dist / name / "index.html"
@@ -305,13 +339,13 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
             if target is None or not target.approved:
                 continue  # never render a box for a program that is not approved
             placements.append({**placement, "program": target.program, "url": f"/go/{slug}"})
-        attribution = []
+        codes = []
         for code in page.meta.get("attribution") or []:
-            line = ATTRIBUTION_LINES.get(str(code))
-            if line is None:
+            if str(code) not in ATTRIBUTION_LINES:
                 report.error(f"{page.source}: unknown attribution code {code!r}; use one of {sorted(ATTRIBUTION_LINES)}")
                 continue
-            attribution.append({"text": line["text"].format(date=long_date(today)), "url": line["url"]})
+            codes.append(str(code))
+        attribution = credit_lines(codes, today)
         listed = []
         if page.url != "/" and page.url == f"/{page.section}/":
             listed = sorted(
@@ -358,28 +392,24 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
     if key == "stats" and stats.available:
         base = site["url"].rstrip("/")
 
-        def described(url: str, text: str) -> str:
-            """The description a generated page hands to the head (base.html reads page_description), held to the same rules as a written one."""
-            if len(text) > 155:
-                report.warn(f"{url}: description is {len(text)} characters; keep it under 155")
-            if "—" in text:
-                report.error(f"{url}: description contains an em dash; use a comma, colon, semicolon, or period")
-            return text
-
         amount_pages = stats.amount_pages()
         for entry in amount_pages:
             html = env.get_template("amount.html").render(page=None, title=entry["title"], section="sats", canonical=base + entry["url"], entry=entry,
-                                                          page_description=described(entry["url"], entry["description"]), **common)
+                                                          page_description=described(entry["url"], entry["description"]),
+                                                          attribution=credit_lines(["coingecko", "blockchain"] if entry["yearly"] else ["coingecko"], today), **common)
             target = dist / entry["url"].strip("/") / "index.html"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(html, encoding="utf-8")
             generated.append((entry["url"], today.isoformat()))
         groups = stats.amount_index()
         names = [group["name"] for group in groups]
-        sats_description = (f"See how many sats an amount of money buys, from {AMOUNTS[0]:,} to {AMOUNTS[-1]:,}, in "
-                            + (", ".join(names[:-1]) + ", and " + names[-1] if len(names) > 2 else " and ".join(names)) + ".")
-        html = env.get_template("sats_index.html").render(page=None, title="Dollars, euros, and pounds in sats", section="sats", canonical=base + "/sats/", groups=groups,
-                                                          page_description=described("/sats/", sats_description), **common)
+        number_words = {2: "two", 3: "three", 4: "four", 5: "five", 6: "six", 7: "seven", 8: "eight", 9: "nine"}
+        sats_description = (f"See what common amounts buy in sats across {number_words.get(len(groups), len(groups))} currencies. "
+                            "Prices are checked hourly, with January history on US dollar pages.")
+        html = env.get_template("sats_index.html").render(page=None, title="Money in sats", section="sats", canonical=base + "/sats/", groups=groups,
+                                                          currency_names=(", ".join(names[:-1]) + ", or " + names[-1] if len(names) > 2 else " or ".join(names)),
+                                                          page_description=described("/sats/", sats_description),
+                                                          attribution=credit_lines(["coingecko"], today), **common)
         (dist / "sats").mkdir(parents=True, exist_ok=True)
         (dist / "sats" / "index.html").write_text(html, encoding="utf-8")
         generated.append(("/sats/", today.isoformat()))
@@ -387,28 +417,26 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         for entry in item_pages:
             html = env.get_template("item.html").render(page=None, title=entry["title"], section="items", canonical=base + entry["url"], entry=entry,
                                                         page_description=described(entry["url"], entry["description"]),
-                                                        attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]},
-                                                                     {"text": ATTRIBUTION_LINES["blockchain"]["text"], "url": ATTRIBUTION_LINES["blockchain"]["url"]}], **common)
+                                                        attribution=credit_lines(["bls", "blockchain"], today), **common)
             target = dist / entry["url"].strip("/") / "index.html"
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text(html, encoding="utf-8")
             generated.append((entry["url"], entry["date"]))
-        shown = {entry["stem"] for entry in item_pages}
-        examples = [stem for stem in ("eggs", "gasoline", "milk", "coffee", "electricity") if stem in shown]
-        rest = len(item_pages) - len(examples)
-        items_description = ((", ".join(examples).capitalize() + f", and {rest} more everyday items" if examples and rest > 0 else f"{len(item_pages)} everyday items")
-                             + " priced in sats, from BLS average prices for U.S. cities.")
+        items_description = (f"See {len(item_pages)} everyday items priced in sats using BLS averages for US cities and monthly bitcoin prices, "
+                             "with item histories where available.")
         html = env.get_template("items_index.html").render(page=None, title="Everyday items priced in sats", section="items", canonical=base + "/items/", items=item_pages,
                                                            page_description=described("/items/", items_description),
-                                                           attribution=[{"text": ATTRIBUTION_LINES["bls"]["text"].format(date=long_date(today)), "url": ATTRIBUTION_LINES["bls"]["url"]}], **common)
+                                                           attribution=credit_lines(["bls", "blockchain"], today), **common)
         (dist / "items").mkdir(parents=True, exist_ok=True)
         (dist / "items" / "index.html").write_text(html, encoding="utf-8")
         generated.append(("/items/", today.isoformat()))
         report.pages += len(amount_pages) + len(item_pages) + 2
 
     # 404 page
+    not_found_description = str(site.get("not_found_description", "")).strip()
     (dist / "404.html").write_text(
-        env.get_template("404.html").render(page=None, title="Page not found", section="", canonical=None, **common),
+        env.get_template("404.html").render(page=None, title="Page not found", section="", canonical=None,
+                                            page_description=described("/404.html", not_found_description) if not_found_description else None, **common),
         encoding="utf-8",
     )
 

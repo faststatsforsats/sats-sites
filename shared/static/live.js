@@ -8,6 +8,7 @@
      price            data-currency (usd, eur, ...)
      sats-per-dollar
      sats-for         data-amount and data-currency: how many sats that amount buys
+     btc-for          data-amount and data-currency: the same amount in bitcoin, to eight places
      money-for        data-sats and data-currency: what that many sats are worth
      change           data-currency: 24-hour change in percent
      fees             data-tier: fast, medium, slow
@@ -48,14 +49,16 @@
     if (!when) return;
     var d = new Date(when);
     for (var i = 0; i < marks.length; i++) {
-      marks[i].textContent = "as of " + d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+      // keep the stamp's capital letter as the page wrote it: "As of" where it opens a line, "as of" inside a sentence
+      var lead = /^\s*As of/.test(marks[i].textContent) ? "As of " : "as of ";
+      marks[i].textContent = lead + d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
     }
   }
 
   var needPrice = !!wantsPrice, needFees = false;
   for (var i = 0; i < nodes.length; i++) {
     var k = nodes[i].getAttribute("data-live");
-    if (k === "price" || k === "sats-per-dollar" || k === "sats-for" || k === "money-for" || k === "change") needPrice = true;
+    if (k === "price" || k === "sats-per-dollar" || k === "sats-for" || k === "btc-for" || k === "money-for" || k === "change") needPrice = true;
     if (k === "fees" || k === "height" || k === "to-halving" || k === "supply") needFees = true;
   }
 
@@ -73,6 +76,8 @@
         } else if (key === "sats-for" && p) {
           var amount = parseFloat(el.getAttribute("data-amount") || "0");
           el.textContent = sats(amount / p * 100000000);
+        } else if (key === "btc-for" && p) {
+          el.textContent = fmt(parseFloat(el.getAttribute("data-amount") || "0") / p, 8) + " BTC";
         } else if (key === "money-for" && p) {
           var n = parseFloat(el.getAttribute("data-sats") || "0");
           el.textContent = money(n / 100000000 * p, cur);

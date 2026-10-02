@@ -9,12 +9,13 @@
   {% set net = stats.network_summary() %}
   <table class="numbers">
     <tbody>
-      {% if net.hashrate_text %}<tr><th>Hash rate</th><td class="num"><a href="/charts/hashrate/">{{ net.hashrate_text }}</a></td><td>daily estimate, {{ net.hashrate_date }}; a year earlier {{ net.hashrate_ago_text }}</td></tr>{% endif %}
-      {% if stats.fees.get('height') %}<tr><th>Block height</th><td class="num live" data-live="height">{{ "{:,}".format(stats.fees.height) }}</td><td>blocks since January 2009; refreshes every 10 minutes from mempool.space</td></tr>{% endif %}
+      {% if net.hashrate_text %}<tr><th>Estimated hash rate</th><td class="num"><a href="/charts/hashrate/">{{ net.hashrate_text }}</a></td><td>daily estimate for {{ net.hashrate_date }}; a year earlier {{ net.hashrate_ago_text }}</td></tr>{% endif %}
+      {% if stats.fees.get('height') %}<tr><th>Latest block height</th><td class="num live" data-live="height">{{ "{:,}".format(stats.fees.height) }}</td><td>checked every 10 minutes from <a href="https://mempool.space" rel="noopener">mempool.space</a></td></tr>{% endif %}
       {% if stats.fees.get('fast') %}
-      <tr><th>Fee, next block</th><td class="num live" data-live="fees" data-tier="fast">{{ stats.fees.fast }} sat/vB</td><td rowspan="3"><span class="live-when" data-live-when="fees">as of the last Daily Build</span>; refreshes every 10 minutes from mempool.space</td></tr>
-      <tr><th>Fee, about 30 minutes</th><td class="num live" data-live="fees" data-tier="medium">{{ stats.fees.medium }} sat/vB</td></tr>
-      <tr><th>Fee, about an hour</th><td class="num live" data-live="fees" data-tier="slow">{{ stats.fees.slow }} sat/vB</td></tr>
+      {# the note shows when the fee feed last read mempool.space: the build's saved time first, then the live feed's own #}
+      <tr><th>Fee estimate, next block</th><td class="num live" data-live="fees" data-tier="fast">{{ stats.fees.fast }} sat/vB</td><td rowspan="3"><span class="live-when" data-live-when="fees">As of {{ stats.fees_updated_text }}</span>; checked every 10 minutes from <a href="https://mempool.space" rel="noopener">mempool.space</a></td></tr>
+      <tr><th>Fee estimate, about 30 minutes</th><td class="num live" data-live="fees" data-tier="medium">{{ stats.fees.medium }} sat/vB</td></tr>
+      <tr><th>Fee estimate, about an hour</th><td class="num live" data-live="fees" data-tier="slow">{{ stats.fees.slow }} sat/vB</td></tr>
       {% endif %}
     </tbody>
   </table>

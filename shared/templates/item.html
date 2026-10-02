@@ -7,7 +7,7 @@
     <h1>{{ entry.heading }}</h1>
     <p class="updated">Data through {{ entry.month }}</p>
   </header>
-  <p class="lead">{{ entry.finding }} A year earlier it was {{ entry.sats_ago_text or "not in the data" }}{% if entry.change_pct is not none %}, so in sats it is {{ "%+.0f"|format(entry.change_pct) }}% on the year{% endif %}. Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.</p>
+  <p class="lead">{{ entry.finding }} {% if entry.sats_ago_text and entry.change_pct is not none %}A year earlier, the sats cost was {{ entry.sats_ago_text }}; the change is {{ "%+.0f"|format(entry.change_pct) }}%.{% else %}No comparison is available for the same month a year earlier.{% endif %} There are 100,000,000 sats in one bitcoin.</p>
   {% if entry.chart_entry %}
   {% with cards = [entry.chart_entry] %}{% include "_gallery.html" %}{% endwith %}
   {% endif %}
@@ -21,7 +21,7 @@
   </table>
   {% endif %}
   <h2>Where the numbers come from</h2>
-  <p>The dollar price is the U.S. Bureau of Labor Statistics average price for U.S. cities, series {{ entry.series_id }} ({{ entry.series_title }}), for the month shown. The sats figure divides that price by the month's average bitcoin price from <a href="https://www.blockchain.com/explorer/charts/market-price" rel="noopener">blockchain.com</a>. The data is free to reuse: <a href="{{ entry.data_file }}">{{ entry.data_file }}</a>.</p>
-  <p>See the whole basket on <a href="/value/everyday-prices/">everyday prices in sats</a>, or convert any amount with the <a href="/tools/sats-converter/">sats converter</a>.</p>
+  <p>The dollar price is the Bureau of Labor Statistics average for US cities in the month shown, series {{ entry.series_id }} ({{ entry.series_title }}). We divide it by the average bitcoin price for that month and multiply by 100,000,000 to get sats. Download the data: <a href="{{ entry.data_file }}">{{ entry.data_file }}</a>.</p>
+  <p>Your store price and today's bitcoin price can differ. See the full basket on <a href="/value/everyday-prices/">Everyday prices in sats</a>, or check an amount with the <a href="/tools/sats-converter/">sats converter</a>.</p>
 </article>
 {% endblock %}

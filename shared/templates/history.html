@@ -11,12 +11,14 @@
     <thead><tr><th>January</th><th>Date</th><th class="num">Price</th><th class="num">Sats per dollar</th></tr></thead>
     <tbody>
     {% for row in stats.history() %}
-      <tr{% if row.year == 'now' %} class="now"{% endif %}><td>{{ row.year }}</td><td>{{ row.date }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>
+      <tr{% if row.year == 'latest' %} class="now"{% endif %}><td>{{ row.year }}</td><td>{{ row.date }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>
     {% endfor %}
     </tbody>
   </table>
-  <p class="small">Each row is the first day of January with a recorded price (daily average across major exchanges, blockchain.com). The last row is the latest day in the data.</p>
+  <p class="small">Annual prices are daily averages across major exchanges from <a href="https://www.blockchain.com/explorer/charts/market-price" rel="noopener">blockchain.com</a>. The latest row is the most recent day in that series, rather than a live quote.</p>
   {% with cards = [stats.chart_by_slug.get('sats-per-dollar'), stats.chart_by_slug.get('price-usd')] | select | list %}{% include "_gallery.html" %}{% endwith %}
+  {# Jim's note for this page: link to Fast Facts for explanations of halvings, the supply cap, and price #}
+  <p><a href="https://fastfactsforsats.com/">Fast Facts for Sats</a> explains <a href="https://fastfactsforsats.com/money/halvings/">halvings</a>, <a href="https://fastfactsforsats.com/money/the-21-million-cap/">the supply cap</a>, and <a href="https://fastfactsforsats.com/money/why-bitcoin-has-a-price/">price</a>.</p>
   {% endif %}
 </article>
 {% include "_sources.html" %}
