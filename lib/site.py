@@ -293,7 +293,7 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
         template_name = {
             "home": "home.html", "page": "page.html", "guide": "guide.html", "chart": "chart.html",
             "basket": "basket.html", "comparisons": "comparisons.html", "converter": "converter.html",
-            "network": "network.html", "history": "history.html",
+            "network": "network.html", "history": "history.html", "campaign": "campaign.html",
         }.get(page.template)
         if template_name is None:
             report.error(f"{page.source}: unknown template {page.template!r}")
@@ -319,6 +319,20 @@ def build_site(key: str, out_dir: Path | None = None, strict: bool = False) -> R
                 key=lambda p: (p.meta.get("order", 999), p.title),
             )
         page.body_html = expand_live(page.body_html, stats, report, page)
+        hook = page.meta.get("hook_chart") if page.template == "campaign" else None
+        if hook:
+            # A campaign page shows one Stats chart as its hook. The image files travel with this site's build
+            # (every site rebuilds after the Daily Build commits charts/), so the preview works before the domains do.
+            slug = str(hook.get("slug", "")).strip()
+            copied = 0
+            for name in (f"{slug}.png", f"{slug}-dark.png"):
+                source = ROOT / "charts" / name
+                if source.exists():
+                    (dist / "charts").mkdir(parents=True, exist_ok=True)
+                    shutil.copy2(source, dist / "charts" / name)
+                    copied += 1
+            if copied < 2:
+                report.warn(f"{page.source}: hook_chart {slug!r} has no image in charts/ yet (the Daily Build draws it); the page shows a broken image until then")
         html = env.get_template(template_name).render(
             page=page,
             title=page.title,

@@ -53,13 +53,15 @@ Three Pages projects, all connected to this repository (Workers & Pages, Create 
 
 To change a field after the first deployment: the project's Settings, Build, Edit under Build configuration, Save, then Deployments, Retry deployment.
 
-After the first deployment, set the build watch paths so a change to one site does not rebuild the other two (project Settings, Build, Build watch paths, Include paths). This keeps the daily data commit to one build a day instead of three, roughly 30 of the 500 free builds a month.
+After the first deployment, set the build watch paths so a change to one site does not rebuild the other two (project Settings, Build, Build watch paths, Include paths). This keeps the daily data commit to the sites that use the data instead of all three.
 
 | Project | Include paths |
 | --- | --- |
 | faststatsforsats | `sites/stats/*`, `content/stats/*`, `shared/*`, `lib/*`, `go/*`, `data/*`, `charts/*`, `build.py`, `requirements.txt` |
 | fastfactsforsats | `sites/facts/*`, `content/facts/*`, `shared/*`, `lib/*`, `go/*`, `build.py`, `requirements.txt` |
-| fastactsforsats | `sites/acts/*`, `content/acts/*`, `shared/*`, `lib/*`, `go/*`, `build.py`, `requirements.txt` |
+| fastactsforsats | `sites/acts/*`, `content/acts/*`, `shared/*`, `lib/*`, `go/*`, `charts/*`, `build.py`, `requirements.txt` |
+
+The Acts list includes `charts/*` because a campaign page (`template: campaign`) shows one Stats chart as its hook and the build copies that chart's images from `charts/`; without it the chart on the campaign page would refresh only when something else on the Acts site changed. The daily data commit therefore rebuilds Stats and Acts, about 60 of the 500 free builds a month.
 
 Then, for each project: Metrics, Enable Web Analytics. Custom domains are added in step 20 of the Build Recipe, after the pages.dev addresses have been reviewed.
 

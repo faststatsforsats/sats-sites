@@ -1,0 +1,15 @@
+{# The weekly email and the checklist. site.newsletter_embed (sites/<site>/site.yml) holds the beehiiv form once
+   step 25 creates it; until then the block offers the checklist alone. site.checklist is the PDF's path on the Acts site.
+   The words are Jim's (the campaign page's download line and the checklist's newsletter line); change them with him. #}
+{% if site.get('checklist') or site.get('newsletter_embed') %}
+<section class="newsletter" aria-label="Fast Stats Weekly and the checklist">
+  {% if site.get('newsletter_embed') %}
+  <h2>Fast Stats Weekly</h2>
+  <p>A free email every Thursday.</p>
+  {{ site.get('newsletter_embed') | safe }}
+  {% endif %}
+  {% if site.get('checklist') %}
+  <p class="newsletter-cta"><a class="button" href="{{ site.get('checklist') }}">Download the Sats Stacker's Starter Checklist</a> <span class="small">One page. Free.</span></p>
+  {% endif %}
+</section>
+{% endif %}

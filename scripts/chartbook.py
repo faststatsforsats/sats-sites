@@ -444,4 +444,73 @@ def hashrate(data, out_dir: Path, pulled: str):
     }
 
 
-BUILDERS = [sats_per_dollar, price_usd, eggs_in_sats, gold_in_sats, home_in_bitcoin, fear_greed, hashrate]
+# ---------------------------------------------------------------- 8. $25 a week since 2020
+
+WEEKLY_START = "2020-01-06"   # the first Monday of 2020
+WEEKLY_USD = 25.0
+
+
+def twenty_five_a_week(data, out_dir: Path, pulled: str):
+    """The campaign's hook chart: the sats a $25 buy every Monday since January 2020 added up to, week by week."""
+    price = data.get("price_daily")
+    if not price:
+        return None
+    by_day = dict(price)
+    first, last = S.parse(WEEKLY_START), S.parse(price[-1][0])
+    series: S.Series = []
+    total_sats, buys = 0.0, 0
+    monday = first
+    while monday <= last:
+        day = monday
+        usd = by_day.get(day.isoformat())
+        while not usd and day > first - dt.timedelta(days=7):   # a Monday with no published price: use the last known day
+            day -= dt.timedelta(days=1)
+            usd = by_day.get(day.isoformat())
+        if usd and usd > 0:
+            total_sats += WEEKLY_USD / usd * 100_000_000
+            buys += 1
+            series.append((monday.isoformat(), total_sats))
+        monday += dt.timedelta(days=7)
+    if len(series) < 52:
+        return None
+    day, sats = series[-1]
+    spent = buys * WEEKLY_USD
+    title = f"$25 a week since 2020 bought {sats:,.0f} sats"
+
+    def fmt(v):
+        return f"{v:,.0f} sats"
+
+    # One mark: the week the stack passed its last halving (the line is monotonic, so highs and lows say nothing)
+    marks = []
+    for halving in reversed(HALVINGS):
+        if halving > first:
+            point = next(((d, v) for d, v in series if S.parse(d) >= halving), None)
+            if point and point[0] != day:
+                marks.append((point[0], point[1], f"{_sats_label(point[1])} by the\n{halving.year} halving", "above"))
+            break
+
+    def draw(ax, c):
+        import matplotlib.ticker as mt
+
+        _draw_series(ax, c, series, 1, _sats_label(sats), "sats stacked", marks, events_label="bottom", log=False)
+        ax.yaxis.set_major_formatter(mt.FuncFormatter(lambda v, _: thousands(v)))
+        ax.set_ylim(0, ax.get_ylim()[1])
+        ax.grid(True, which="major", axis="y")
+
+    render_chart("twenty-five-a-week", title, draw, "blockchain.com market price", pulled, out_dir,
+                 subtitle=f"$25 every Monday since January 2020 at that day's average price: {buys} buys, ${spent:,.0f} in all",
+                 highlight=f"{sats:,.0f} sats", slot=1)
+    labels = (("now", {}), ("a year ago", {"years": 1}), ("three years ago", {"years": 3}), ("five years ago", {"years": 5}))
+    return {
+        "slug": "twenty-five-a-week", "title": title,
+        "heading": "What $25 a week since 2020 bought in sats",
+        "description": "See how many sats a $25 bitcoin purchase every Monday since January 2020 would have accumulated. Historical illustration, updated daily.",
+        "subtitle": "Sats stacked by a $25 buy every Monday since January 6, 2020", "unit": "sats stacked",
+        "latest": {"date": day, "value": round(sats), "text": fmt(sats), "spent": spent, "buys": buys},
+        "table": _table(series, fmt, labels),
+        "data_file": "/data/price-daily.json", "frequency": "weekly",
+        "attribution": ["blockchain"], "sources": [{"name": "blockchain.com, market price (USD)", "url": blockchain_com.CHARTS["market-price"]["page"]}],
+    }
+
+
+BUILDERS = [sats_per_dollar, price_usd, eggs_in_sats, gold_in_sats, home_in_bitcoin, fear_greed, hashrate, twenty_five_a_week]

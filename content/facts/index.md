@@ -24,6 +24,7 @@ You do not need to own a whole bitcoin to understand it, use it, or own part of 
 - [How many sats are in a bitcoin?](/basics/how-many-sats-in-a-bitcoin/) Exactly 100,000,000. See the units and learn the simple math.
 - [Why count in sats instead of dollars?](/basics/why-count-in-sats/) A different way to look at prices, purchasing power, and what your money buys.
 - [What does stacking sats mean?](/basics/stacking-sats/) Why Bitcoiners use the phrase and what they are actually doing.
+- [How a bitcoin wallet works](/basics/how-a-wallet-works/) Keys, not coins. What a seed phrase and an address do, and what custodial means.
 
 ## The network
 

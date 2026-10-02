@@ -42,6 +42,8 @@ python3 scripts/nostr_post.py --self-test       # key handling and signing check
 
 ## The charts (October 2026)
 
-sats-per-dollar, price-usd, eggs-in-sats, gold-in-sats, home-in-bitcoin, fear-greed, hashrate. Each writes a light PNG, a dark PNG, and an SVG into `charts/`, an entry in `charts/index.json`, and a page at `/charts/<slug>/` on the Stats site.
+sats-per-dollar, price-usd, eggs-in-sats, gold-in-sats, home-in-bitcoin, fear-greed, hashrate, twenty-five-a-week (the sats a $25 buy every Monday since January 2020 added up to; the October campaign's hook chart, also shown on the Acts page /first-100k-sats/). Each writes a light PNG, a dark PNG, and an SVG into `charts/`, an entry in `charts/index.json`, and a page at `/charts/<slug>/` on the Stats site.
+
+`scripts/checklist_pdf.py` is separate from the Daily Build: it draws the one-page Sats Stacker's Starter Checklist into `sites/acts/static/` from the words in `scripts/checklist.yml` (edit the words there, then run it by hand; it needs `reportlab`, `pyyaml`, and `pillow`, and it picks the largest type that keeps everything on one page).
 
 The look (lib/chartstyle.py): the key figure in the title is set in the series color; the line is 3 px with a soft halo and a wash fading beneath it; the latest value sits in a bold pill at the line's end; the all-time low and the high of the last five years (or the all-time high, the record, the greediest and most fearful days) are marked with a dot and a two-line tag; the halvings are thin vertical lines on the price, sats-per-dollar, and hash rate charts; the Stats coin sits in the footer corner. Tags are placed by scoring each candidate spot against the line, the other tags, and the figure's edges (`SATS_LABEL_DEBUG=1` prints the scores). The SVG keeps only the line (no halo or wash) so it stays small.

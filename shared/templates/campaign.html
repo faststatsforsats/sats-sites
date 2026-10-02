@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="prose campaign">
+  <header class="page-head">
+    {% if page.meta.get('eyebrow') %}<p class="eyebrow">{{ page.meta.get('eyebrow') }}</p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {% if page and page.go_slugs %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}{# with boxes only, _placements.html puts the line directly above them #}
+  {% set hook = page.meta.get('hook_chart') %}
+  {% if hook and hook.get('slug') %}
+  {% set stats_page = "https://faststatsforsats.com/charts/" ~ hook.get('slug') ~ "/" %}
+  <figure class="chart">
+    <a href="{{ stats_page }}">
+      <picture>
+        <source srcset="/charts/{{ hook.get('slug') }}-dark.png" media="(prefers-color-scheme: dark)">
+        <img src="/charts/{{ hook.get('slug') }}.png" alt="{{ hook.get('alt') or page.title }}" width="1600" height="900" loading="eager">
+      </picture>
+    </a>
+    <figcaption>{% if hook.get('caption') %}{{ hook.get('caption') }} {% endif %}<a href="{{ stats_page }}">{{ hook.get('link_text') or 'See the numbers behind the chart' }}</a>.</figcaption>
+  </figure>
+  {% endif %}
+  {{ page.body_html | safe }}
+  {% include "_newsletter.html" %}
+  {% include "_placements.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

@@ -15,7 +15,8 @@ This repository builds three sites for Jim Shaver: Fast Stats for Sats (faststat
 - Data and charts are written only by the Daily Build (`scripts/daily_build.py`, 09:00 UTC). Do not edit `data/` or `charts/` by hand.
 - The Stats site reads `data/` and `charts/` at build time through `lib/stats_data.py` (the `stats` object in templates) and generates `/sats/<amount>-<currency>/` and `/items/<slug>/` pages from them in `lib/site.py`. A top-level page joins the header nav with `nav: true` and a short `nav_label`.
 - A page can show today's figure with a token in its Markdown: `[[live:sats-per-dollar]]`, `[[live:price]]`, `[[live:sats-for:100:usd]]`, `[[live:money-for:100000]]`, `[[live:fee:fast]]`, `[[live:height]]`, `[[live:to-halving]]`, `[[live:supply]]`, `[[live:when]]` (or `[[live:when:fees]]`), `[[live:cpi]]`, `[[live:gold]]`. The build bakes the number from `data/latest.json` and `shared/static/live.js` refreshes it from the Worker; the full list is `expand_live` in `lib/site.py`.
-- Placement boxes (`placements:` in front matter) may name a program before it is approved; the box and the disclosure line appear only once `go/redirects.csv` says `approved`. A `/go/` link written in the body must already be approved or the strict build fails.
+- Placement boxes (`placements:` in front matter) may name a program before it is approved; the box and the disclosure line appear only once `go/redirects.csv` says `approved`. A `/go/` link written in the body must already be approved or the strict build fails. A campaign gets its own rows in the CSV (`kraken-first100k`, campaign `oct26`) so clicks can be told apart.
+- A campaign page is `template: campaign` with `eyebrow` and `hook_chart` in its front matter (see the top of `lib/content.py`); the build copies the hook chart's PNGs from `charts/` into that site's dist. The Sats Stacker's Starter Checklist PDF in `sites/acts/static/` is drawn by `scripts/checklist_pdf.py` from the words in `scripts/checklist.yml`; its twelve acts mirror `content/acts/first-100k-sats.md` in shorter form, so change both together and run the script. On a campaign page the download line is the button in `shared/templates/_newsletter.html`, which sits at the end of the body, above the product boxes.
 - Chart pages under `content/stats/charts/` are shared with the Daily Build: it owns the `chart` and `updated` front matter and the text between `<!-- auto:start -->` and `<!-- auto:end -->`. Write the explainer below the end marker and it is kept.
 
 ## Brand
@@ -34,6 +35,9 @@ This repository builds three sites for Jim Shaver: Fast Stats for Sats (faststat
 - No price predictions, no targets, no "will." No advice on how much anyone should buy, hold, or allocate.
 - Every figure comes from `data/` or a named source with a URL and a pull time. No estimates.
 - Every Acts guide has `understand_first` in its front matter, linking the Facts explainer behind it.
+- The Facts and Acts pages carry Jim's own text: he edits a Word copy and the edits go in word for word. Do not reword those pages; propose changes to him instead. New pages follow the same voice.
+- Figures that change at someone else's discretion (product prices, reward rates, most fees) are not quoted on Acts pages; the page says what to check and the Sources list links the provider's own page. Quote a third-party figure only when the page needs it to make sense, and name who lists it ("Unchained lists $250 per IRA per year").
+- In a step-by-step guide a step heading is written `## <span class="step">Step 1</span> Choose a service`, so "Step 1" sits as a small label above the heading.
 - Affiliate links are written only as `/go/{slug}` and only for programs with status `approved` in `go/redirects.csv`. Never a raw affiliate URL. Placement boxes go in the `placements:` front matter list, not in the body.
 - Tax and IRA pages describe general rules and say a tax professional should be consulted for the reader's situation.
 

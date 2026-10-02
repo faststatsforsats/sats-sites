@@ -12,6 +12,11 @@ serves_data: false
 api_url: https://api.faststatsforsats.com
 disclaimer: Not financial advice. Fast Acts for Sats is an information site.
 
+# The Sats Stacker's Starter Checklist (sites/acts/static/, built in step 19); the welcome email links it too.
+checklist: /sats-stackers-starter-checklist.pdf
+# The beehiiv subscribe form's script tag goes here in step 25 (shared/templates/_newsletter.html shows it).
+newsletter_embed: ""
+
 # The five sections, in Jim's order. Every guide lives under one of them.
 sections:
   buy: Buy

@@ -1,0 +1,52 @@
+# The words on the one-page checklist PDF (scripts/checklist_pdf.py draws it into sites/acts/static/).
+# Jim's text. A link is written [words](address); each act's title links to its guide.
+# The twelve acts mirror content/acts/first-100k-sats.md in shorter form: change both together, then run the script.
+title: "Sats Stacker's Starter Checklist"
+subtitle: "Twelve small acts to buy, protect, and use bitcoin."
+intro: "Sats are small pieces of bitcoin. There are 100,000,000 in one bitcoin. Work at your own pace. Approval, transfers, and delivery may add waiting time."
+acts:
+  - title: "Choose a buying service"
+    url: https://fastactsforsats.com/buy/first-sats/
+    text: "Compare fees, availability, and withdrawals. Have your ID and bank details ready."
+  - title: "Secure the account"
+    url: https://fastactsforsats.com/secure/privacy-basics/
+    text: "Use a unique password and stronger sign-in protection. Save recovery codes safely."
+  - title: "Make a small first buy"
+    url: https://fastactsforsats.com/buy/first-sats/
+    text: "Check the fee and save the confirmation. Turn on the sats display if available."
+  - title: "Compare what you received"
+    url: https://faststatsforsats.com/tools/sats-converter/
+    text: "Use the [sats converter](https://faststatsforsats.com/tools/sats-converter/) at roughly the same time. Allow for fees, spread, and price changes."
+  - title: "Consider a recurring buy"
+    url: https://faststatsforsats.com/charts/twenty-five-a-week/
+    text: "Choose an amount that fits your budget, and review it when circumstances change."
+  - title: "Learn how a wallet works"
+    url: https://fastfactsforsats.com/basics/how-a-wallet-works/
+    text: "Understand keys, receiving addresses, and recovery backups."
+  - title: "Try a self-custody phone wallet"
+    url: https://fastactsforsats.com/store/how-to-store-sats-safely/
+    text: "Follow its official backup guide, then transfer a small test amount on the right network."
+  - title: "Consider a hardware wallet"
+    url: https://fastactsforsats.com/store/best-hardware-wallets/
+    text: "Compare cost and compatibility. Buy from the maker or its listed authorized seller."
+  - title: "Set it up and verify the backup"
+    url: https://fastactsforsats.com/store/hardware-wallet-setup/
+    text: "Follow the maker's procedure before funding, then test receiving and sending."
+  - title: "Try rewards on a planned purchase"
+    url: https://fastactsforsats.com/earn/how-to-earn-sats/
+    text: "Check fees and restrictions. Avoid extra spending to chase sats."
+  - title: "Make one small bitcoin payment"
+    url: https://fastactsforsats.com/use/how-to-pay-with-bitcoin/
+    text: "Check the details and save the receipt."
+  - title: "Review your records"
+    url: https://fastfactsforsats.com/rules/taxes-on-sats/
+    text: "Keep dates, dollars, sats, fees, rewards, transfers, and payments."
+closing: "The goal is to learn the process. Reaching 100,000 sats depends on your purchases, fees, rewards, and bitcoin's price. Bitcoin can lose value."
+addresses:
+  - label: "Full guides"
+    address: fastactsforsats.com/first-100k-sats/
+  - label: "Converter"
+    address: faststatsforsats.com/tools/sats-converter/
+sites_line: "Fast Stats for Sats shows the numbers. Fast Facts for Sats explains Bitcoin. Fast Acts for Sats shows the steps."
+newsletter_line: "Fast Stats Weekly: A free email every Thursday. Sign up at fastactsforsats.com/first-100k-sats/."
+disclaimer: "Educational information, not personal financial or tax advice. Some marked product links may pay us a commission."

@@ -32,9 +32,12 @@ def _split(text: str) -> tuple[dict, str]:
 def _auto_block(entry: dict) -> str:
     rows = "\n".join(f"| {label} | {when} | {text} |" for label, when, text in entry["table"])
     unit = entry["unit"]
+    subtitle = entry["subtitle"]
+    if len(subtitle) > 1 and not subtitle[1].isupper():   # "Sats one dollar buys" -> "sats one dollar buys", but "US dollars" stays
+        subtitle = subtitle[0].lower() + subtitle[1:]
     return (
         f"{AUTO_START}\n"
-        f"{entry['title']}. The chart shows {entry['subtitle'][0].lower() + entry['subtitle'][1:]}, redrawn every morning from the published data.\n\n"
+        f"{entry['title']}. The chart shows {subtitle}, redrawn every morning from the published data.\n\n"
         f"| When | Date | {unit[0].upper() + unit[1:]} |\n| --- | --- | --- |\n{rows}\n\n"
         f"The numbers behind this chart are free to use: [{entry['data_file']}]({entry['data_file']}). Sats means satoshis, the smallest unit of bitcoin; 100,000,000 sats make one bitcoin.\n"
         f"{AUTO_END}"

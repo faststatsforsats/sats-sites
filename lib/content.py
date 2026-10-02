@@ -17,12 +17,21 @@ A page file looks like this:
       - name: Kraken fee schedule
         url: https://www.kraken.com/features/fee-schedule
     placements:                # affiliate boxes; slug must be in go/redirects.csv; a box renders only once the status is approved
-    live: true                 # optional note that the body uses [[live:...]] figures (see lib/site.py LIVE_TOKEN)
       - slug: kraken
         headline: Kraken
         text: One sentence on what it is and who it suits.
+    live: true                 # optional note that the body uses [[live:...]] figures (see lib/site.py LIVE_TOKEN)
     ---
     The answer in two sentences...
+
+A campaign page (template: campaign) may add:
+
+    eyebrow: October 2026        # small label above the title
+    hook_chart:                  # one Stats chart shown under the title; its PNGs are copied from charts/
+      slug: twenty-five-a-week
+      alt: What $25 a week since 2020 bought in sats
+      caption: One sentence under the chart.
+      link_text: See the numbers behind the chart   # the words that link to the chart's Stats page
 
 The file's path sets the URL: content/acts/buy/first-bitcoin.md becomes /buy/first-bitcoin/,
 content/acts/buy/index.md becomes /buy/, and content/acts/index.md is the home page.

@@ -115,6 +115,7 @@ def apply(mode: str = "light"):
         "font.family": "sans-serif",
         "font.sans-serif": ["DejaVu Sans", "Segoe UI", "Helvetica", "Arial", "sans-serif"],
         "font.size": 12,
+        "text.parse_math": False,   # a title with two dollar figures is prose, not TeX
         "text.color": c.ink,
         "axes.labelcolor": c.ink2,
         "axes.edgecolor": c.axis,
