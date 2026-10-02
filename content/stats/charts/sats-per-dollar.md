@@ -7,7 +7,7 @@ chart:
   slug: sats-per-dollar
   alt: A dollar bought 1,178 sats on October 2, 2026
   source: blockchain.com, market price (USD)
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain

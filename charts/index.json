@@ -1,39 +1,39 @@
 {
- "updated": "2026-10-01T20:54:07+00:00",
+ "updated": "2026-10-02T12:37:24+00:00",
  "site": "https://faststatsforsats.com",
  "charts": [
   {
    "slug": "sats-per-dollar",
-   "title": "A dollar bought 1,197 sats on October 1, 2026",
+   "title": "A dollar bought 1,178 sats on October 2, 2026",
    "heading": "Sats per dollar since 2011",
    "description": "How many sats one US dollar buys, every day since 2011, drawn from the daily average bitcoin price and updated each morning.",
    "subtitle": "Sats one US dollar buys, daily since 2011",
    "unit": "sats per dollar",
    "latest": {
-    "date": "2026-10-01",
-    "value": 1197,
-    "text": "1,197 sats"
+    "date": "2026-10-02",
+    "value": 1178,
+    "text": "1,178 sats"
    },
    "table": [
     [
      "now",
-     "October 1, 2026",
-     "1,197 sats"
+     "October 2, 2026",
+     "1,178 sats"
     ],
     [
      "a year ago",
-     "October 1, 2025",
-     "877 sats"
+     "October 2, 2025",
+     "843 sats"
     ],
     [
      "five years ago",
-     "October 1, 2021",
-     "2,285 sats"
+     "October 2, 2021",
+     "2,077 sats"
     ],
     [
      "ten years ago",
-     "October 1, 2016",
-     "164,371 sats"
+     "October 2, 2016",
+     "163,137 sats"
     ]
    ],
    "data_file": "/data/price-daily.json",
@@ -47,7 +47,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/sats-per-dollar/",
    "png": "/charts/sats-per-dollar.png",
    "png_dark": "/charts/sats-per-dollar-dark.png",
@@ -55,36 +55,36 @@
   },
   {
    "slug": "price-usd",
-   "title": "One bitcoin cost $83,571 on October 1, 2026",
+   "title": "One bitcoin cost $84,862 on October 2, 2026",
    "heading": "Bitcoin price in dollars since 2011",
    "description": "The daily average bitcoin price in US dollars since 2011, on a log scale so early years stay readable, updated every morning.",
    "subtitle": "US dollars per bitcoin, daily since 2011",
    "unit": "USD",
    "latest": {
-    "date": "2026-10-01",
-    "value": 83570.96,
-    "text": "$83,571"
+    "date": "2026-10-02",
+    "value": 84862.44,
+    "text": "$84,862"
    },
    "table": [
     [
      "now",
-     "October 1, 2026",
-     "$83,571"
+     "October 2, 2026",
+     "$84,862"
     ],
     [
      "a year ago",
-     "October 1, 2025",
-     "$114,035"
+     "October 2, 2025",
+     "$118,618"
     ],
     [
      "five years ago",
-     "October 1, 2021",
-     "$43,758"
+     "October 2, 2021",
+     "$48,140"
     ],
     [
      "ten years ago",
-     "October 1, 2016",
-     "$608.38"
+     "October 2, 2016",
+     "$612.98"
     ]
    ],
    "data_file": "/data/price-daily.json",
@@ -98,7 +98,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/price-usd/",
    "png": "/charts/price-usd.png",
    "png_dark": "/charts/price-usd-dark.png",
@@ -154,7 +154,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/eggs-in-sats/",
    "png": "/charts/eggs-in-sats.png",
    "png_dark": "/charts/eggs-in-sats-dark.png",
@@ -210,7 +210,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/gold-in-sats/",
    "png": "/charts/gold-in-sats.png",
    "png_dark": "/charts/gold-in-sats-dark.png",
@@ -266,7 +266,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/home-in-bitcoin/",
    "png": "/charts/home-in-bitcoin.png",
    "png_dark": "/charts/home-in-bitcoin-dark.png",
@@ -274,31 +274,31 @@
   },
   {
    "slug": "fear-greed",
-   "title": "Fear and Greed read 74 (Greed) on October 1, 2026",
+   "title": "Fear and Greed read 72 (Greed) on October 2, 2026",
    "heading": "The Fear and Greed gauge",
    "description": "The Crypto Fear & Greed Index from alternative.me, day by day for the last year, with what the reading means and how it is built.",
    "subtitle": "Crypto Fear & Greed Index, daily, last 12 months",
    "unit": "index",
    "latest": {
-    "date": "2026-10-01",
-    "value": 74,
-    "text": "74 (Greed)"
+    "date": "2026-10-02",
+    "value": 72,
+    "text": "72 (Greed)"
    },
    "table": [
     [
      "now",
-     "October 1, 2026",
-     "74"
+     "October 2, 2026",
+     "72"
     ],
     [
      "a month ago",
-     "September 1, 2026",
-     "69"
+     "September 2, 2026",
+     "63"
     ],
     [
      "a year ago",
-     "October 1, 2025",
-     "49"
+     "October 2, 2025",
+     "64"
     ]
    ],
    "data_file": "/data/fear-greed.json",
@@ -312,7 +312,7 @@
      "url": "https://alternative.me/crypto/fear-and-greed-index/"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/fear-greed/",
    "png": "/charts/fear-greed.png",
    "png_dark": "/charts/fear-greed-dark.png",
@@ -320,36 +320,36 @@
   },
   {
    "slug": "hashrate",
-   "title": "The network ran at 931 EH/s on September 30, 2026",
+   "title": "The network ran at 898 EH/s on October 1, 2026",
    "heading": "Bitcoin hash rate since 2011",
    "description": "The estimated computing power securing Bitcoin, in exahashes per second, every day since 2011, on a log scale.",
    "subtitle": "Exahashes per second, daily since 2011",
    "unit": "EH/s",
    "latest": {
-    "date": "2026-09-30",
-    "value": 930.5,
-    "text": "931 EH/s"
+    "date": "2026-10-01",
+    "value": 897.5,
+    "text": "898 EH/s"
    },
    "table": [
     [
      "now",
-     "September 30, 2026",
-     "931 EH/s"
+     "October 1, 2026",
+     "898 EH/s"
     ],
     [
      "a year ago",
-     "September 28, 2025",
-     "1,168 EH/s"
+     "October 1, 2025",
+     "1,077 EH/s"
     ],
     [
      "five years ago",
-     "September 28, 2021",
-     "144 EH/s"
+     "October 1, 2021",
+     "132 EH/s"
     ],
     [
      "ten years ago",
-     "September 28, 2016",
-     "1.8 EH/s"
+     "October 1, 2016",
+     "1.9 EH/s"
     ]
    ],
    "data_file": "/data/network.json",
@@ -363,7 +363,7 @@
      "url": "https://www.blockchain.com/explorer/charts/hash-rate"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/hashrate/",
    "png": "/charts/hashrate.png",
    "png_dark": "/charts/hashrate-dark.png",
@@ -416,7 +416,7 @@
      "url": "https://www.blockchain.com/explorer/charts/market-price"
     }
    ],
-   "drawn_at": "2026-10-01T20:54:07+00:00",
+   "drawn_at": "2026-10-02T12:37:24+00:00",
    "page": "/charts/twenty-five-a-week/",
    "png": "/charts/twenty-five-a-week.png",
    "png_dark": "/charts/twenty-five-a-week-dark.png",

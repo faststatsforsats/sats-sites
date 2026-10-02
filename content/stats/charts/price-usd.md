@@ -7,7 +7,7 @@ chart:
   slug: price-usd
   alt: One bitcoin cost $84,862 on October 2, 2026
   source: blockchain.com, market price (USD)
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain
@@ -16,7 +16,7 @@ sources:
   url: https://www.blockchain.com/explorer/charts/market-price
 ---
 <!-- auto:start -->
-One bitcoin cost $84,862 on October 2, 2026. The chart shows uS dollars per bitcoin, daily since 2011, redrawn every morning from the published data.
+One bitcoin cost $84,862 on October 2, 2026. The chart shows US dollars per bitcoin, daily since 2011, redrawn every morning from the published data.
 
 | When | Date | USD |
 | --- | --- | --- |

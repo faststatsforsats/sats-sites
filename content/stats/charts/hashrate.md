@@ -7,7 +7,7 @@ chart:
   slug: hashrate
   alt: The network ran at 898 EH/s on October 1, 2026
   source: blockchain.com, total hash rate
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/network.json
 attribution:
 - blockchain

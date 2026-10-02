@@ -7,7 +7,7 @@ chart:
   slug: fear-greed
   alt: Fear and Greed read 72 (Greed) on October 2, 2026
   source: alternative.me Crypto Fear & Greed Index
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/fear-greed.json
 attribution:
 - altme

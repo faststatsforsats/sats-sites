@@ -7,7 +7,7 @@ chart:
   slug: gold-in-sats
   alt: An ounce of gold cost 6,394,777 sats in August 2026
   source: World Bank Commodity Price Data (The Pink Sheet), gold, blockchain.com, market price (USD)
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/gold.json
 attribution:
 - worldbank

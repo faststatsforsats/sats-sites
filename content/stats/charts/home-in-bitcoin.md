@@ -7,7 +7,7 @@ chart:
   slug: home-in-bitcoin
   alt: A median new home cost 5.7 bitcoin in Q2 2026
   source: FRED, Median Sales Price of New Houses Sold (MSPUS), blockchain.com, market price (USD)
-  pulled: October 2, 2026, 09:09 UTC
+  pulled: October 2, 2026, 12:37 UTC
   data: /data/homes.json
 attribution:
 - fred
