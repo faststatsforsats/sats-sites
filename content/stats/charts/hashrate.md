@@ -10,7 +10,7 @@ chart:
   source_links:
   - name: blockchain.com, total hash rate
     url: https://www.blockchain.com/explorer/charts/hash-rate
-  pulled: October 3, 2026, 15:41 UTC
+  pulled: October 3, 2026, 16:18 UTC
   data: /data/network.json
 attribution:
 - blockchain
