@@ -2,15 +2,15 @@
 title: Sats per dollar since 2011
 description: See how many sats one US dollar bought each day since 2011, using the average bitcoin price. Read the chart and explore its source data.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: sats-per-dollar
-  alt: A dollar bought 1,178 sats on October 2, 2026
+  alt: A dollar bought 1,183 sats on October 3, 2026
   source: blockchain.com, market price (USD)
   source_links:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain
@@ -19,14 +19,14 @@ sources:
   url: https://www.blockchain.com/explorer/charts/market-price
 ---
 <!-- auto:start -->
-A dollar bought 1,178 sats on October 2, 2026. Each point shows the sats one US dollar bought at that day's average bitcoin price.
+A dollar bought 1,183 sats on October 3, 2026. Each point shows the sats one US dollar bought at that day's average bitcoin price.
 
 | When | Date | Sats per dollar |
 | --- | --- | --- |
-| latest | October 2, 2026 | 1,178 sats |
-| a year ago | October 2, 2025 | 843 sats |
-| five years ago | October 2, 2021 | 2,077 sats |
-| ten years ago | October 2, 2016 | 163,137 sats |
+| latest | October 3, 2026 | 1,183 sats |
+| a year ago | October 3, 2025 | 829 sats |
+| five years ago | October 3, 2021 | 2,095 sats |
+| ten years ago | October 3, 2016 | 164,312 sats |
 
 Download the data behind this chart: [/data/price-daily.json](/data/price-daily.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->

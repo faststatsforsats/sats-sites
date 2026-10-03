@@ -2,17 +2,17 @@
 title: Gold priced in sats
 description: Compare gold with bitcoin through the sats cost of a troy ounce since 2011, using monthly averages. See the method and source data.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: gold-in-sats
-  alt: An ounce of gold cost 6,394,777 sats in August 2026
+  alt: An ounce of gold cost 5,378,033 sats in September 2026
   source: World Bank Commodity Price Data (The Pink Sheet), gold, blockchain.com, market price (USD)
   source_links:
   - name: World Bank Commodity Price Data (The Pink Sheet), gold
     url: https://www.worldbank.org/en/research/commodity-markets
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/gold.json
 attribution:
 - worldbank
@@ -24,14 +24,14 @@ sources:
   url: https://www.blockchain.com/explorer/charts/market-price
 ---
 <!-- auto:start -->
-An ounce of gold cost 6,394,777 sats in August 2026. Each point converts that month's average gold price to sats.
+An ounce of gold cost 5,378,033 sats in September 2026. Each point converts that month's average gold price to sats.
 
 | When | Date | Sats per troy ounce |
 | --- | --- | --- |
-| latest | August 2026 | 6,394,777 sats |
-| a year ago | August 2025 | 2,926,762 sats |
-| five years ago | August 2021 | 3,919,877 sats |
-| ten years ago | August 2016 | 231,522,767 sats |
+| latest | September 2026 | 5,378,033 sats |
+| a year ago | September 2025 | 3,246,599 sats |
+| five years ago | September 2021 | 3,854,848 sats |
+| ten years ago | September 2016 | 220,107,096 sats |
 
 Download the data behind this chart: [/data/gold.json](/data/gold.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->

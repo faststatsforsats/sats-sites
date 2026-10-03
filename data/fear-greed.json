@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T18:34:38+00:00",
+ "updated": "2026-10-03T09:09:33+00:00",
  "source": {
   "name": "alternative.me",
   "url": "https://alternative.me/crypto/fear-and-greed-index/"
@@ -15817,6 +15817,11 @@
    [
     "2026-10-02",
     72,
+    "Greed"
+   ],
+   [
+    "2026-10-03",
+    67,
     "Greed"
    ]
   ]

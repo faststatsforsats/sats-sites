@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T18:34:38+00:00",
+ "updated": "2026-10-03T09:09:33+00:00",
  "source": {
   "name": "blockchain.com",
   "url": "https://www.blockchain.com/explorer/charts"
@@ -25936,6 +25936,10 @@
    [
     "2026-10-02",
     84862.44
+   ],
+   [
+    "2026-10-03",
+    84502.85
    ]
   ]
  }

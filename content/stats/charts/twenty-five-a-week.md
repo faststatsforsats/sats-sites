@@ -2,7 +2,7 @@
 title: What $25 a week since 2020 bought in sats
 description: See the sats a weekly 25-dollar bitcoin purchase since January 2020 would have accumulated. Historical example with the method and limits explained.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: twenty-five-a-week
   alt: $25 a week since 2020 bought 30,764,492 sats
@@ -10,7 +10,7 @@ chart:
   source_links:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain

@@ -2,15 +2,15 @@
 title: Bitcoin price in dollars since 2011
 description: Track the daily average bitcoin price in US dollars since 2011. Learn how to read its logarithmic scale and compare dates in the data.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: price-usd
-  alt: One bitcoin cost $84,862 on October 2, 2026
+  alt: One bitcoin cost $84,503 on October 3, 2026
   source: blockchain.com, market price (USD)
   source_links:
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/price-daily.json
 attribution:
 - blockchain
@@ -19,14 +19,14 @@ sources:
   url: https://www.blockchain.com/explorer/charts/market-price
 ---
 <!-- auto:start -->
-One bitcoin cost $84,862 on October 2, 2026. Each point shows the daily average bitcoin price in US dollars.
+One bitcoin cost $84,503 on October 3, 2026. Each point shows the daily average bitcoin price in US dollars.
 
 | When | Date | US dollars per bitcoin |
 | --- | --- | --- |
-| latest | October 2, 2026 | $84,862 |
-| a year ago | October 2, 2025 | $118,618 |
-| five years ago | October 2, 2021 | $48,140 |
-| ten years ago | October 2, 2016 | $612.98 |
+| latest | October 3, 2026 | $84,503 |
+| a year ago | October 3, 2025 | $120,628 |
+| five years ago | October 3, 2021 | $47,727 |
+| ten years ago | October 3, 2016 | $608.60 |
 
 Download the data behind this chart: [/data/price-daily.json](/data/price-daily.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->

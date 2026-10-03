@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-02T18:34:38+00:00",
+ "updated": "2026-10-03T09:09:33+00:00",
  "source": {
   "name": "World Bank Commodity Price Data (The Pink Sheet)",
   "url": "https://www.worldbank.org/en/research/commodity-markets"
@@ -3208,6 +3208,10 @@
    [
     "2026-08-01",
     4411.0
+   ],
+   [
+    "2026-09-01",
+    4319.0
    ]
   ]
  }

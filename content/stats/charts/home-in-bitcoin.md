@@ -2,7 +2,7 @@
 title: A new home priced in bitcoin
 description: See the US median new-home price in bitcoin each quarter since 2011. Learn how the housing price and bitcoin price shape the line.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: home-in-bitcoin
   alt: A median new home cost 5.72 bitcoin in Q2 2026
@@ -12,7 +12,7 @@ chart:
     url: https://fred.stlouisfed.org/series/MSPUS
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/homes.json
 attribution:
 - fred

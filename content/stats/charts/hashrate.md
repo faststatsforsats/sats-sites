@@ -2,15 +2,15 @@
 title: Bitcoin hash rate since 2011
 description: Explore Bitcoin's estimated hash rate since 2011. Learn what EH/s means, why daily readings vary, and what the chart can tell you.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: hashrate
-  alt: Estimated hash rate was 898 EH/s on October 1, 2026
+  alt: Estimated hash rate was 931 EH/s on October 2, 2026
   source: blockchain.com, total hash rate
   source_links:
   - name: blockchain.com, total hash rate
     url: https://www.blockchain.com/explorer/charts/hash-rate
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/network.json
 attribution:
 - blockchain
@@ -19,14 +19,14 @@ sources:
   url: https://www.blockchain.com/explorer/charts/hash-rate
 ---
 <!-- auto:start -->
-The estimated network hash rate was 898 EH/s on October 1, 2026. Each point shows the estimated mining calculations per second, in EH/s.
+The estimated network hash rate was 931 EH/s on October 2, 2026. Each point shows the estimated mining calculations per second, in EH/s.
 
 | When | Date | EH/s |
 | --- | --- | --- |
-| latest | October 1, 2026 | 898 EH/s |
-| a year ago | October 1, 2025 | 1,077 EH/s |
-| five years ago | October 1, 2021 | 132 EH/s |
-| ten years ago | October 1, 2016 | 1.9 EH/s |
+| latest | October 2, 2026 | 931 EH/s |
+| a year ago | October 2, 2025 | 1,020 EH/s |
+| five years ago | October 2, 2021 | 178 EH/s |
+| ten years ago | October 2, 2016 | 1.7 EH/s |
 
 Download the data behind this chart: [/data/network.json](/data/network.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->

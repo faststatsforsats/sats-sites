@@ -2,15 +2,15 @@
 title: The Fear and Greed gauge
 description: Follow alternative.me's daily Bitcoin Fear and Greed readings over the past year. Learn what the score measures, how it is built, and its limits.
 template: chart
-updated: '2026-10-02'
+updated: '2026-10-03'
 chart:
   slug: fear-greed
-  alt: Fear and Greed read 72 (Greed) on October 2, 2026
+  alt: Fear and Greed read 67 (Greed) on October 3, 2026
   source: alternative.me Crypto Fear & Greed Index
   source_links:
   - name: alternative.me Crypto Fear & Greed Index
     url: https://alternative.me/crypto/fear-and-greed-index/
-  pulled: October 2, 2026, 18:34 UTC
+  pulled: October 3, 2026, 09:09 UTC
   data: /data/fear-greed.json
 attribution:
 - altme
@@ -19,15 +19,15 @@ sources:
   url: https://alternative.me/crypto/fear-and-greed-index/
 ---
 <!-- auto:start -->
-Fear and Greed read 72 (Greed) on October 2, 2026. The chart follows the Crypto Fear & Greed Index from [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) each day over the last 12 months.
+Fear and Greed read 67 (Greed) on October 3, 2026. The chart follows the Crypto Fear & Greed Index from [alternative.me](https://alternative.me/crypto/fear-and-greed-index/) each day over the last 12 months.
 
 Source: [alternative.me](https://alternative.me/crypto/fear-and-greed-index/)
 
 | When | Date | Index score |
 | --- | --- | --- |
-| latest | October 2, 2026 | 72 |
-| a month ago | September 2, 2026 | 63 |
-| a year ago | October 2, 2025 | 64 |
+| latest | October 3, 2026 | 67 |
+| a month ago | September 3, 2026 | 65 |
+| a year ago | October 3, 2025 | 63 |
 
 Download the data behind this chart: [/data/fear-greed.json](/data/fear-greed.json). There are 100,000,000 sats in one bitcoin.
 <!-- auto:end -->
