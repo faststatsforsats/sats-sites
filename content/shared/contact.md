@@ -1,11 +1,11 @@
 ---
 title: Contact
 description: Reach the person behind the three Sats sites by email to report a wrong figure, ask about a chart or the sats badge, or raise anything else.
-updated: 2026-10-02
+updated: 2026-10-03
 footer_label: Contact
 order: 4
 ---
-<p class="lead">Email <a href="mailto:jim@faststatsforsats.com">jim@faststatsforsats.com</a>. One address covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats, all run by Jim Shaver.</p>
+<p class="lead">Email <a href="mailto:jim@faststatsforsats.com">jim@faststatsforsats.com</a>. One address covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats, all run by DG Tulman.</p>
 
 ## What to write about
 

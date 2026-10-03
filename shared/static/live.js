@@ -26,8 +26,10 @@
 
   var SYMBOL = { usd: "$", eur: "€", gbp: "£", cad: "C$", aud: "A$", jpy: "¥", inr: "₹", chf: "CHF ", brl: "R$", mxn: "MX$" };
 
+  // Figures are written the American way (1,179 sats), like every figure the build wrote beside them, whatever
+  // the reader's own browser is set to: one page must not mix "1.179" with "3,294".
   function fmt(n, digits) {
-    return Number(n).toLocaleString(undefined, { maximumFractionDigits: digits === undefined ? 0 : digits, minimumFractionDigits: digits === undefined ? 0 : digits });
+    return Number(n).toLocaleString("en-US", { maximumFractionDigits: digits === undefined ? 0 : digits, minimumFractionDigits: digits === undefined ? 0 : digits });
   }
   function money(n, cur) {
     var sym = SYMBOL[cur] || (cur.toUpperCase() + " ");
@@ -51,7 +53,8 @@
     for (var i = 0; i < marks.length; i++) {
       // keep the stamp's capital letter as the page wrote it: "As of" where it opens a line, "as of" inside a sentence
       var lead = /^\s*As of/.test(marks[i].textContent) ? "As of " : "as of ";
-      marks[i].textContent = lead + d.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+      // the reader's own time zone, written the way the rest of the page writes dates: Oct 2, 2026, 6:01 PM
+      marks[i].textContent = lead + d.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" });
     }
   }
 

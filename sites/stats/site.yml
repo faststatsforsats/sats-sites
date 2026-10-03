@@ -4,7 +4,7 @@ name: Fast Stats for Sats
 short_name: Stats
 domain: faststatsforsats.com
 url: https://faststatsforsats.com
-tagline: Bitcoin values in charts you can understand
+tagline: See what Bitcoin changes in everyday numbers.
 description: Free Bitcoin charts and plain explanations. Explore sats values, price history, and a converter, with public sources and daily updates.
 role: value
 
@@ -17,6 +17,9 @@ api_url: https://api.faststatsforsats.com
 # The line under the wordmark on the sharing card (sites/stats/static/brand/og.png). After changing it, run
 # python3 scripts/sharing_card.py stats to redraw the card.
 sharing_card_line: "See what sats are worth today and how their value has changed"
+
+# The weekly email's subscribe form goes here in step 25 (the home page shows it under "Get one surprising chart each week.")
+newsletter_embed: ""
 
 # Footer line required on every page (style guide, Compliance)
 disclaimer: Not financial advice. Fast Stats for Sats is an information site.

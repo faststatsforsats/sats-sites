@@ -1,0 +1,52 @@
+{# The Facts home page. First screen: the plan's headline and introduction, the button to the five-minute guide, the
+   key picture, and three question cards that open to a short answer; then the subject directory (the page body).
+   On a phone the cards come before the picture, so they are on the first screen there too (site.css, .hero-cards).
+   The words are in content/facts/index.md. A card's three lines follow the introduction's promise: a straight answer,
+   a simple example, and the part people often miss. #}
+{% from "_art.html" import figure %}
+{% set hero = page.meta.get('hero') or {} %}
+{% set cards = page.meta.get('questions') or [] %}
+<div class="hero hero-cards">
+  <div class="hero-text">
+    <h1>{{ hero.get('headline') or page.title }}</h1>
+    {% if hero.get('intro') %}<p class="lead">{{ hero.get('intro') }}</p>{% endif %}
+    {% if hero.get('button') %}<p class="hero-actions"><a class="button" href="{{ hero.button.url }}">{{ hero.button.text }}</a></p>{% endif %}
+  </div>
+  {% if hero.get('art') and art.get(hero.art) %}
+  <div class="hero-visual">
+    {{ figure(hero.art, art[hero.art], sizes="(min-width: 720px) 560px, calc(100vw - 32px)", eager=true) }}
+  </div>
+  {% endif %}
+
+{% if cards %}
+<section class="band hero-below" aria-labelledby="questions-h">
+  <h2 id="questions-h">{{ page.meta.questions_heading }}</h2>
+  <ul class="questions">
+    {% for card in cards %}
+    <li>
+      <details class="question">
+        <summary>{{ card.question }}</summary>
+        <div class="answer">
+          <dl>
+            {# each line is plain words or a passage pulled from its explainer (lib/site.py, `quoted`); a line
+               that could not be pulled is simply not there #}
+            {% for part, label in [('answer', 'The straight answer'), ('example', 'A simple example'), ('missed', 'The part people often miss')] if card.lines.get(part) %}
+            <dt>{{ label }}</dt>
+            <dd>{{ card.lines[part] }}</dd>
+            {% endfor %}
+          </dl>
+          {% if card.get('more') and pages_by_url.get(card.more) %}<p class="answer-more">{{ page.meta.questions_more }} <a href="{{ card.more }}">{{ pages_by_url[card.more].title }}</a></p>{% endif %}
+        </div>
+      </details>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+</div>
+
+<section class="band">
+  <article class="prose home">
+    {{ page.body_html | safe }}
+  </article>
+</section>

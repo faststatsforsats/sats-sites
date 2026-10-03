@@ -1,0 +1,23 @@
+{# The illustrations (shared/art.yml). `a` is a picture's entry there. Every web copy is the whole picture at 3:2;
+   the browser picks a width from `sizes`. Alt text describes the scene; the caption (the quoted line) carries the
+   joke, as real text. Pass alt="" only for a picture shown a second time on the same page. #}
+{% macro picture(name, a, sizes="(min-width: 760px) 720px, calc(100vw - 32px)", eager=false, alt=none) -%}
+<picture>
+  <source type="image/webp" srcset="{% for w in [480, 768, 1080, 1536] %}/static/art/{{ name }}-{{ w }}.webp {{ w }}w{% if not loop.last %}, {% endif %}{% endfor %}" sizes="{{ sizes }}">
+  <img src="/static/art/{{ name }}-1080.jpg" width="{{ a.width }}" height="{{ a.height }}" alt="{{ a.alt if alt is none else alt }}" {% if eager %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %} decoding="async">
+</picture>
+{%- endmacro %}
+
+{# The quoted line: the short comment that goes with a picture or a chart. It is printed in quotation marks with no
+   name on it; do not add a credit. The About page says these lines are commentary. #}
+{% macro quoted_line(line) -%}
+&ldquo;{{ line }}&rdquo;
+{%- endmacro %}
+
+{% macro figure(name, a, sizes="(min-width: 760px) 720px, calc(100vw - 32px)", eager=false, caption=true, cls="", bridge=false) -%}
+<figure class="art{% if cls %} {{ cls }}{% endif %}">
+  {{ picture(name, a, sizes, eager) }}
+  {% if caption and a.get('caption') %}<figcaption class="quoted-line">{{ quoted_line(a.get('caption')) }}</figcaption>{% endif %}
+</figure>
+{% if bridge and a.get('bridge') %}<p class="bridge">{{ a.get('bridge') }}</p>{% endif %}
+{%- endmacro %}

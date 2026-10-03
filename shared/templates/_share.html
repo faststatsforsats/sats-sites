@@ -1,0 +1,10 @@
+{# "Send this explanation to a friend" (Jim's improvement plan). With scripts, the button opens the device's own share
+   sheet where there is one, and otherwise copies the page's address. Without scripts it is an email link.
+   Nothing about the reader or the friend reaches the site. #}
+{% if canonical %}
+<div class="share">
+  <a class="button quiet" data-share data-share-title="{{ title }}" data-share-url="{{ canonical }}" href="mailto:?subject={{ title | urlencode }}&amp;body={{ canonical | urlencode }}">Send this explanation to a friend</a>
+  <span class="share-done" role="status" data-copied="Link copied. Paste it into a message."></span>
+</div>
+<script src="{{ static_url('actions.js') }}" defer></script>
+{% endif %}

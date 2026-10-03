@@ -16,7 +16,7 @@
   var priceOut = document.getElementById("conv-price");
 
   var SYMBOL = { usd: "$", eur: "€", gbp: "£", cad: "C$", aud: "A$", jpy: "¥", inr: "₹", chf: "CHF ", brl: "R$", mxn: "MX$" };
-  function fmt(n, digits) { return Number(n).toLocaleString(undefined, { maximumFractionDigits: digits, minimumFractionDigits: digits }); }
+  function fmt(n, digits) { return Number(n).toLocaleString("en-US", { maximumFractionDigits: digits, minimumFractionDigits: digits }); }   // the American way, like the rest of the page
   function money(n, cur) { var sym = SYMBOL[cur] || (cur.toUpperCase() + " "); return sym + fmt(n, n >= 1000 ? 0 : 2); }
   function sats(n) { if (n >= 100) return fmt(n, 0) + " sats"; if (n >= 10) return fmt(n, 1) + " sats"; return fmt(n, 2) + " sats"; }
 

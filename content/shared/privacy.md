@@ -1,13 +1,13 @@
 ---
 title: Privacy policy
 description: See what the three Sats sites record when you visit, what they do not collect, and which services handle the pages, the visit counts, and email.
-updated: 2026-10-02
+updated: 2026-10-03
 footer_label: Privacy
 order: 1
 ---
 <p class="lead">These sites do not ask who you are. They have no accounts, no sign-up forms, and no advertising, and their pages set no cookies.</p>
 
-This policy covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats. Jim Shaver runs all three and can be reached at [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com).
+This policy covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats. DG Tulman runs all three and can be reached at [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com).
 
 ## What happens when you open a page
 
@@ -19,13 +19,19 @@ Pages that show a live price or fee estimate ask api.faststatsforsats.com for th
 
 The sats converter and the badge form on Fast Stats for Sats work in your browser. The amounts you type are not sent anywhere.
 
+The knowledge check on Fast Facts for Sats works the same way: your answers are not saved or sent. "Send this explanation to a friend" opens your own device's sharing, copies the page's address, or starts an email in your own mail program. These sites do not learn who receives it.
+
 ## What these sites do not do
 
 They do not build profiles of visitors, sell information about them, or pass it to advertisers.
 
-## Cookies
+## Cookies and what stays in your browser
 
-The pages on these sites set no cookies and store nothing in your browser. Cloudflare may set a cookie of its own when it needs to check that a visitor is a person, not an automated program.
+The pages on these sites set no cookies. Cloudflare may set a cookie of its own when it needs to check that a visitor is a person, not an automated program.
+
+One thing can be kept in your browser, and only if you use it. On Fast Acts for Sats you can tick off the twelve acts, and the numbers of the acts you ticked are saved on your own device so they are still there when you come back. That list is never sent to these sites or to anyone else, and "Clear my ticks" on that page removes it.
+
+It holds nothing about what you own. These sites never ask for your holdings, wallet addresses, or recovery words.
 
 ## Links to other sites
 

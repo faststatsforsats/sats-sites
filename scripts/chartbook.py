@@ -158,8 +158,14 @@ WHEN = {"daily": S.long_date, "monthly": S.month_name, "quarterly": _quarter}
 def _table(series: S.Series, fmt, labels=(("latest", {}), ("a year ago", {"years": 1}), ("five years ago", {"years": 5}), ("ten years ago", {"years": 10})), frequency: str = "daily") -> list[list[str]]:
     when = WHEN.get(frequency, S.long_date)
     rows = []
+    latest = S.parse(series[-1][0])
     for label, offset in labels:
         point = series[-1] if not offset else S.value_about(series, **offset)
+        if point and offset and frequency in ("monthly", "quarterly") and set(offset) == {"years"}:
+            # "a year ago" is the same month or quarter that many years back. When the source skipped that period
+            # (most BLS average prices have no October 2025 figure), the row is left out; the month before will not do.
+            if point[0][:7] != f"{latest.year - offset['years']:04d}-{latest.month:02d}":
+                continue
         if point:
             rows.append([label, when(point[0]), fmt(point[1])])
     return rows

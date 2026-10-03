@@ -1,18 +1,14 @@
-{# The headline figures on the Stats site: sats per dollar, today's price, 24-hour change, Fear and Greed, the hour fee. live.js refreshes them. #}
+{# Today's live figures on the Stats home page, as one compact strip: sats per dollar, the price, the 24-hour change,
+   Fear and Greed, the hour fee. live.js refreshes them. The labels and the line under the strip are Jim's. #}
 {% if stats and stats.available %}
-<section class="bignumber" aria-label="Today's numbers">
-  <div class="big">
-    <span class="big-label">One US dollar buys</span>
-    <span class="big-value live" data-live="sats-per-dollar">{{ "{:,}".format(stats.sats_per_dollar) }} sats</span>
-  </div>
-  <div class="big-row">
-    <div><span class="big-label">Bitcoin price</span><span class="live" data-live="price" data-currency="usd">${{ "{:,.0f}".format(stats.price_usd) }}</span></div>
-    {% if stats.change_24h.get('usd') is not none %}<div><span class="big-label">24-hour change</span><span class="live" data-live="change" data-currency="usd">{{ "%+.1f"|format(stats.change_24h.get('usd')) }}%</span></div>{% endif %}
-    {# alternative.me's terms ask for its credit right next to the reading, so it sits under the figure itself #}
-    {% if stats.fear_greed %}<div><span class="big-label">Fear and Greed</span><a href="/charts/fear-greed/">{{ stats.fear_greed.value }} ({{ stats.fear_greed.label }})</a><span class="big-credit">Source: <a href="https://alternative.me/crypto/fear-and-greed-index/" rel="noopener">alternative.me</a></span></div>{% endif %}
-    {# the label names the hour estimate, so the figure is mempool.space's hour fee (the "slow" tier of the feed) #}
-    {% if stats.fees.get('slow') %}<div><span class="big-label">Fee estimate, about an hour</span><span class="live" data-live="fees" data-tier="slow">{{ stats.fees.slow }} sat/vB</span></div>{% endif %}
-  </div>
-  <p class="big-when"><span class="live-when" data-live-when="price">As of {{ stats.updated_text }}</span>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>; price checked hourly. Fee data: <a href="https://mempool.space" rel="noopener">mempool.space</a>.</p>
-</section>
+<div class="strip" role="group" aria-label="Today's numbers">
+  <div><span class="big-label">One US dollar buys</span><span class="strip-value live" data-live="sats-per-dollar">{{ "{:,}".format(stats.sats_per_dollar) }} sats</span></div>
+  <div><span class="big-label">Bitcoin price</span><span class="strip-value live" data-live="price" data-currency="usd">${{ "{:,.0f}".format(stats.price_usd) }}</span></div>
+  {% if stats.change_24h.get('usd') is not none %}<div><span class="big-label">24-hour change</span><span class="strip-value live" data-live="change" data-currency="usd">{{ "%+.1f"|format(stats.change_24h.get('usd')) }}%</span></div>{% endif %}
+  {# alternative.me's terms ask for its credit right next to the reading, so it sits under the figure itself #}
+  {% if stats.fear_greed %}<div><span class="big-label">Fear and Greed</span><span class="strip-value"><a href="/charts/fear-greed/">{{ stats.fear_greed.value }} ({{ stats.fear_greed.label }})</a></span><span class="big-credit">Source: <a href="https://alternative.me/crypto/fear-and-greed-index/" rel="noopener">alternative.me</a></span></div>{% endif %}
+  {# the label names the hour estimate, so the figure is mempool.space's hour fee (the "slow" tier of the feed) #}
+  {% if stats.fees.get('slow') %}<div><span class="big-label">Fee estimate, about an hour</span><span class="strip-value live" data-live="fees" data-tier="slow">{{ stats.fees.slow }} sat/vB</span></div>{% endif %}
+</div>
+<p class="strip-when"><span class="live-when" data-live-when="price">As of {{ stats.updated_text }}</span>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>; price checked hourly. Fee data: <a href="https://mempool.space" rel="noopener">mempool.space</a>.</p>
 {% endif %}

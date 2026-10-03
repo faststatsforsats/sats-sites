@@ -1,0 +1,119 @@
+# The illustrations the three sites use, one entry each. The pictures are from Jim's improvement plan of October 2,
+# 2026, and so are the words a reader meets or a designer needs: `alt`, `caption` (the quoted line), `bridge`, `button`,
+# `placement`, `concept`, and `note` (what the picture must not be taken to mean) are his plan's text word for word, and
+# `question` is the plan's question for that subject. Change those only from his edits. `purpose`, `crops`, `source`,
+# `rights`, `reviewer`, and `status` are the record kept for each picture.
+#
+# Files: art/masters/<name>.png is the picture as supplied (never served). shared/static/art/<name>-<width>.webp are
+# the web copies at 480, 768, 1080, and 1536 px wide, with <name>-1080.jpg for a browser that cannot show WebP.
+# Nothing is cropped: every web copy is the whole picture at its 3:2 shape, so the hook stays on the gift and the wedge
+# stays on the plate. A new picture gets an entry here, its master, and its web copies (the sizes are listed in the
+# README) before any page names it.
+#
+# A page shows a picture with [[art:<name>]] on a line of its own (the caption under it is the quoted line), or
+# [[art:<name>:plain]] for the picture alone. Captions, bridges, and buttons are real text on the page, never part of
+# the picture.
+#
+# An entry carries the plan's image brief: `question` (the article question the picture opens), `purpose` (its
+# editorial job), `concept` (the scene), `caption` (the quoted line), `placement`, `bridge` (to the next section), `alt`,
+# `crops`, `source` (where it came from), `rights`, `reviewer`, and `status`.
+#
+# status: `approved` once Jim has seen the picture in its place on a page (the plan names the hen and the key as the
+# approved direction; a picture that goes live in an upload is approved by that upload). `prepared` means the web
+# copies are made and no page shows it yet; the build refuses a page that names a picture that is not approved.
+#
+# Keep illustrated people out of this series. Product photographs for the actual devices come from the makers, with a
+# permission record; never generate a picture that appears to document hands-on testing.
+
+hen-two-price-tags:
+  site: stats
+  width: 1536
+  height: 1024
+  alt: "A hen beside a carton of eggs beneath dollar and Bitcoin price tags."
+  question: "Did breakfast get cheaper, or did the measuring stick change?"
+  purpose: "Introduces the unit comparison: one carton, priced two ways. It does not establish a trend."
+  caption: "The hen laid the same eggs. The price tags are having the argument."
+  bridge: "So what changes when we price breakfast in sats?"
+  button: "Explore the egg chart"
+  placement: "Fast Stats eggs-in-sats page, between the opening question and the chart; also useful as the weekly article preview."
+  concept: "A bemused russet hen beside one carton of eggs at a miniature market counter. Two hanging tags identify dollars and Bitcoin without displaying prices. The same eggs are the focal point."
+  note: "Keep the actual prices, dates and interpretation in the chart. The illustration introduces the unit comparison and does not establish a trend."
+  crops: "Whole picture, landscape 3:2. Both price tags and the eggs stay in view."
+  source: "Generated illustration, supplied by DG Tulman with the improvement plan, October 2, 2026"
+  rights: "Supplied by DG Tulman for use on these sites"
+  reviewer: "DG Tulman"
+  status: approved
+
+gold-and-paper-airplane:
+  site: stats
+  width: 1536
+  height: 1024
+  alt: "A gold ingot sits beside an orange paper airplane marked with the Bitcoin symbol."
+  question: "Which bought more of the other over this period?"
+  purpose: "A portability metaphor: the weight of metal beside light paper."
+  caption: "Gold has heft. Bitcoin packs light. Neither comes with a promise about tomorrow."
+  bridge: "Price is only one difference. What about moving and holding it?"
+  placement: "Fast Stats gold comparison, between the price chart interpretation and the section comparing asset properties."
+  concept: "An unbranded gold ingot rests beside a folded orange paper airplane with a small navy Bitcoin symbol. Contrast the tactile weight of metal with light paper, without a scale, upward trail or trophy."
+  note: "The paper airplane is a portability metaphor. It does not imply equal values, free transfers, instant settlement or future returns. Keep the related explanation specific and balanced."
+  crops: "Whole picture, landscape 3:2. The ingot and the airplane both stay in view."
+  source: "Generated illustration, supplied by DG Tulman with the improvement plan, October 2, 2026"
+  rights: "Supplied by DG Tulman for use on these sites"
+  reviewer: "DG Tulman"
+  status: approved
+
+key-and-doorway:
+  site: facts
+  width: 1536
+  height: 1024
+  alt: "A brass key with a Bitcoin-shaped opening leans beside a warmly lit doorway."
+  question: "What does a wallet actually hold?"
+  purpose: "A metaphor for access. It is not a technical diagram."
+  caption: "A wallet is a funny name for something whose most important job is keeping the keys."
+  bridge: "What does a Bitcoin wallet actually hold?"
+  placement: "Fast Facts wallet explanation, immediately before the section about keys and access."
+  concept: "One crafted brass key leans against a navy wall beside an unexpected miniature doorway filled with warm light. Keep the scene quiet and intriguing, with no treasure beyond the door."
+  note: "Use a deterministic diagram for the actual signing and verification process. This image is a metaphor for access, not a technical diagram or a claim that coins live inside a device."
+  crops: "Whole picture, landscape 3:2. The key and the lit doorway both stay in view."
+  source: "Generated illustration, supplied by DG Tulman with the improvement plan, October 2, 2026"
+  rights: "Supplied by DG Tulman for use on these sites"
+  reviewer: "DG Tulman"
+  status: approved
+
+bitcoin-slice:
+  site: facts
+  width: 1536
+  height: 1024
+  alt: "An orange ceramic Bitcoin disc with a wedge served on a separate plate."
+  question: "Do I need a whole bitcoin?"
+  purpose: "Makes divisibility tangible. The caption invites learning, not an obligation to buy."
+  caption: "You can learn about the pie without ordering the whole thing."
+  bridge: "How small can a Bitcoin amount be?"
+  button: "Try the converter"
+  placement: "Fast Facts answer to \"Do I need a whole bitcoin?\" or a beginner article about sats."
+  concept: "A thick orange ceramic disc resembles a pie. One wedge has been removed and placed on a small ivory saucer. A Bitcoin mark identifies the subject. Make the material tactile and the composition simple."
+  note: "The size of the pictured slice is illustrative. State numerical units in accessible page text rather than treating the wedge as a measured quantity. The caption invites learning, not an obligation to buy."
+  crops: "Whole picture, landscape 3:2. Never crop the wedge off the pie."
+  source: "Generated illustration, supplied by DG Tulman with the improvement plan, October 2, 2026"
+  rights: "Supplied by DG Tulman for use on these sites"
+  reviewer: "DG Tulman"
+  status: prepared
+
+gift-with-a-hook:
+  site: acts
+  width: 1536
+  height: 1024
+  alt: "A fishing hook catches the orange ribbon around a gift bearing a Bitcoin tag."
+  question: "Could you spot this scam"      # the plan's name for the feature, as its table has it
+  purpose: "Makes a deceptive promise easy to recognize."
+  caption: "Before you admire the bow, check what it is tied to."
+  bridge: "What does this offer want from you?"
+  button: "Check the warning signs"
+  placement: "Fast Acts scam checklist or Fast Facts explanation of fraudulent giveaway messages, just before the warning signs."
+  concept: "A tempting ivory gift with an orange ribbon has a large brass fishing hook caught in its bow. A tiny navy tag bears a Bitcoin symbol. Keep the hook visible and the joke readable at phone size."
+  note: "Place this on scam-related content, not beside a legitimate affiliate offer. Context should make clear that the subject is deceptive promises, not every gift or promotion."
+  crops: "Whole picture, landscape 3:2. Never crop the hook off the gift; the hook stays readable at phone size."
+  source: "Generated illustration, supplied by DG Tulman with the improvement plan, October 2, 2026"
+  rights: "Supplied by DG Tulman for use on these sites"
+  reviewer: "DG Tulman"
+  status: prepared

@@ -2,7 +2,9 @@
 title: A dozen eggs priced in sats
 description: See the sats cost of a dozen large eggs since 2011, using BLS monthly averages and bitcoin prices. Learn why both prices matter.
 template: chart
-updated: '2026-10-03'
+question: Did breakfast get cheaper, or did the measuring stick change?
+art: hen-two-price-tags
+updated: '2026-10-02'
 chart:
   slug: eggs-in-sats
   alt: A dozen eggs cost 3,294 sats in August 2026
@@ -12,7 +14,7 @@ chart:
     url: https://data.bls.gov/timeseries/APU0000708111
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 3, 2026, 09:09 UTC
+  pulled: October 2, 2026, 18:34 UTC
   data: /data/eggs.json
 attribution:
 - bls

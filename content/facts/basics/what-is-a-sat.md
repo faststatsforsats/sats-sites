@@ -17,7 +17,11 @@ A sat is the smallest unit of bitcoin.
 
 1 sat = 0.00000001 BTC
 
+<!-- quote: sats-in-a-bitcoin -->
+
 There are 100,000,000 sats in one bitcoin.
+
+<!-- /quote: sats-in-a-bitcoin -->
 
 Right now, one U.S. dollar buys [[live:sats-per-dollar]] ([[live:when]]).
 
@@ -65,7 +69,11 @@ There is another benefit.
 
 Thinking in sats reminds you that owning bitcoin does not mean buying an entire bitcoin.
 
+<!-- quote: own-part -->
+
 You can own 10,000 sats, 100,000 sats, or 10 million sats.
+
+<!-- /quote: own-part -->
 
 A pizza does not require buying the whole restaurant.
 

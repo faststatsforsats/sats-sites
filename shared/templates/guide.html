@@ -11,6 +11,7 @@
   {% endif %}
   {% if page and page.go_slugs %}<p class="disclosure">{{ disclosure_line }}</p>{% endif %}
   {{ page.body_html | safe }}
+  {% if site.key == 'facts' %}{% include "_share.html" %}{% endif %}
   {% include "_placements.html" %}
 </article>
 {% include "_sources.html" %}

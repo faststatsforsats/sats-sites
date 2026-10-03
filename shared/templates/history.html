@@ -8,10 +8,11 @@
   {{ page.body_html | safe }}
   {% if stats and stats.available %}
   <table class="numbers">
-    <thead><tr><th>January</th><th>Date</th><th class="num">Price</th><th class="num">Sats per dollar</th></tr></thead>
+    {# on a phone the first column gives way: the date beside it already carries the year, and the sats figures stay in view #}
+    <thead><tr><th class="hide-sm">January</th><th>Date</th><th class="num">Price</th><th class="num">Sats per dollar</th></tr></thead>
     <tbody>
     {% for row in stats.history() %}
-      <tr{% if row.year == 'latest' %} class="now"{% endif %}><td>{{ row.year }}</td><td>{{ row.date }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>
+      <tr{% if row.year == 'latest' %} class="now"{% endif %}><td class="hide-sm">{{ row.year }}</td><td>{{ row.date }}</td><td class="num">{{ row.usd_text }}</td><td class="num">{{ row.sats_text }}</td></tr>
     {% endfor %}
     </tbody>
   </table>

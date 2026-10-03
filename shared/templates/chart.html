@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "_embed.html" import chart_snippet %}
+{% from "_art.html" import figure %}
 {% block content %}
 <article class="prose chart-page">
   <header class="page-head">
@@ -7,6 +8,20 @@
     <h1>{{ page.title }}</h1>
     {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
   </header>
+  {# The question the chart answers and a picture that opens it (front matter `question` and `art`; shared/art.yml),
+     with the picture's bridge to the chart. On a wide screen the picture stays small beside the question, so the
+     chart, which is the evidence, starts on the first screen. On a phone the picture is small, with its quoted line
+     beside it, between the question and the bridge, so the chart starts on the first screen there too. #}
+  {% set opener = page.meta.get('art') %}
+  {% if opener and art.get(opener) %}
+  <div class="opener">
+    {% if page.meta.get('question') %}<p class="lead">{{ page.meta.get('question') }}</p>{% endif %}
+    {{ figure(opener, art[opener], sizes="(min-width: 641px) 320px, 38vw", eager=true) }}
+    {% if art[opener].get('bridge') %}<p class="bridge">{{ art[opener].get('bridge') }}</p>{% endif %}
+  </div>
+  {% elif page.meta.get('question') %}
+  <p class="lead">{{ page.meta.get('question') }}</p>
+  {% endif %}
   {% if chart and chart.get('slug') %}
   {% set png = "/charts/" ~ chart.get('slug') ~ ".png" %}
   {% set png_dark = "/charts/" ~ chart.get('slug') ~ "-dark.png" %}
@@ -15,6 +30,8 @@
   <figure class="chart">
     <picture>
       <source srcset="{{ png_dark }}" media="(prefers-color-scheme: dark)">
+      {# The chart is the largest thing on the first screen, on a phone too now that the opening picture is small
+         there, so it is fetched at once and at the browser's normal priority. #}
       <img src="{{ png }}" alt="{{ alt }}" width="1600" height="900" loading="eager">
     </picture>
     <figcaption>

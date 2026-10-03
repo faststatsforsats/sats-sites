@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{# A guided route: a few stops, each a question answered in words quoted from the explainer behind it (front matter
+   `stops`: question, from, and either `take` for the page's opening blocks or `under` for the blocks under one of its
+   subheads). The quotes are lifted at build time, so a change to an explainer shows here too. An optional knowledge
+   check follows (`check`); shared/static/actions.js marks it, and without scripts each answer sits behind "Show the
+   answer". Nothing a reader picks is stored or sent. #}
+{% block content %}
+<article class="prose route-page">
+  <header class="page-head">
+    {% if page.meta.get('eyebrow') %}<p class="eyebrow">{{ page.meta.get('eyebrow') }}</p>{% endif %}
+    <h1>{{ page.title }}</h1>
+    {% if page.updated %}<p class="updated">Updated {{ page.updated | date }}</p>{% endif %}
+  </header>
+  {{ page.body_html | safe }}
+  <ol class="route">
+    {% for stop in page.meta.get('stops') or [] %}
+    <li class="stop">
+      <p class="minute">{{ page.meta.stop_label | replace('{n}', loop.index) | replace('{total}', loop.length) }}</p>
+      <h2 id="stop-{{ loop.index }}">{{ stop.question }}</h2>
+      {{ excerpt(stop) }}
+      {% if pages_by_url.get(stop.from) %}<p class="stop-more">{{ page.meta.more_label }} <a href="{{ stop.from }}">{{ pages_by_url[stop.from].title }}</a></p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+
+  {% set check = page.meta.get('check') %}
+  {% if check %}
+  <section class="check" aria-labelledby="check-h" data-check data-right="{{ check.right }}" data-wrong="{{ check.wrong }}" data-score="{{ check.score }}" data-unanswered="{{ check.unanswered }}">
+    <h2 id="check-h">{{ check.heading }}</h2>
+    <p>{{ check.intro }}</p>
+    <form onsubmit="return false">
+      {% for item in check.questions %}
+      <fieldset data-answer="{{ item.answer }}">
+        <legend>{{ loop.index }}. {{ item.q }}</legend>
+        {% set number = loop.index %}
+        {% for option in item.options %}
+        <label><input type="radio" name="check-{{ number }}" value="{{ loop.index }}"> <span>{{ option }}</span></label>
+        {% endfor %}
+        {# shown by actions.js once the reader asks: the verdict, then (after a wrong pick) the right option, then why #}
+        <p class="why" hidden><span class="verdict"></span> <span class="right-option" hidden>{{ check.answer_is }} {{ item.options[item.answer - 1] }}.</span> {{ item.why_html }}</p>
+        <details class="check-answer"><summary>{{ check.show }}</summary><p>{{ item.options[item.answer - 1] }}. {{ item.why_html }}</p></details>
+      </fieldset>
+      {% endfor %}
+      <p class="check-row"><button type="button" class="button" data-check-go hidden>{{ check.button }}</button> <span class="check-result" role="status"></span></p>
+    </form>
+  </section>
+  {% endif %}
+
+  {% if page.meta.get('next') %}
+  <h2>{{ page.meta.next.heading }}</h2>
+  <ul class="page-list">
+    {% for item in page.meta.next.links %}<li><a href="{{ item.url }}">{{ item.text }}</a>{% if item.get('note') %}<span class="page-list-desc">{{ item.note }}</span>{% endif %}</li>{% endfor %}
+  </ul>
+  {% endif %}
+  {% include "_share.html" %}
+</article>
+{% include "_sources.html" %}
+{% endblock %}

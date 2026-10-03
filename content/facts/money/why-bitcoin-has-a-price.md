@@ -19,7 +19,11 @@ Bitcoin has a price for a simple reason:
 
 People buy it and people sell it.
 
+<!-- quote: latest-trade -->
+
 The latest trade becomes the price.
+
+<!-- /quote: latest-trade -->
 
 Right now, bitcoin is about [[live:price]] per coin ([[live:when]]).
 

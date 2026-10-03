@@ -1,0 +1,63 @@
+{# The Acts home page. First screen: the plan's headline and introduction, then four task cards, each with its
+   hands-on time, what is needed, and how the reader knows it is done; a card says so when shipping or settlement
+   takes longer. Then the twelve acts and the checklist, with progress kept in the reader's own browser
+   (shared/static/actions.js), then the guide directory (the page body). The words are in content/acts/index.md. #}
+{% set hero = page.meta.get('hero') or {} %}
+<section class="hero hero-solo">
+  <div class="hero-text">
+    <h1>{{ hero.get('headline') or page.title }}</h1>
+    {% if hero.get('intro') %}<p class="lead">{{ hero.get('intro') }}</p>{% endif %}
+    {% if hero.get('note') %}<p class="hero-note">{{ hero.get('note') }}</p>{% endif %}
+  </div>
+</section>
+
+{% set tasks = page.meta.get('tasks') or [] %}
+{% if tasks %}
+<section class="band" aria-labelledby="tasks-h" style="margin-top: 0">
+  <h2 id="tasks-h">{{ page.meta.tasks_heading }}</h2>
+  <ul class="tasks">
+    {% for task in tasks %}
+    <li class="task">
+      <h3><a href="{{ task.url }}">{{ task.name }}</a></h3>
+      <dl>
+        <div><dt>Hands-on time</dt><dd>{{ task.time }}</dd></div>
+        <div><dt>What you need</dt><dd>{{ task.need }}</dd></div>
+        <div><dt>Done when</dt><dd>{{ task.done }}</dd></div>
+      </dl>
+      {% if task.get('wait') %}<p class="task-wait">{{ task.wait }}</p>{% endif %}
+      {# the whole card is the link (its heading); this line only shows where it goes #}
+      {% if task.get('cta') %}<span class="task-cta" aria-hidden="true">{{ task.cta }}</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+{% set path = page.meta.get('path') or {} %}
+{% if path %}
+<section class="band" aria-labelledby="path-h">
+  <div class="path">
+    <div>
+      <h2 id="path-h">{{ path.heading }}</h2>
+      <p>{{ inline(path.text) }}</p>
+      {% if path.get('wait') %}<p>{{ path.wait }}</p>{% endif %}
+      <p class="hero-actions"><a class="button" href="{{ path.url }}">{{ path.button }}</a></p>
+    </div>
+    <div class="path-side">
+      {# filled in by actions.js from the ticks saved in this browser; hidden until there is at least one #}
+      <div class="progress" data-acts-summary data-acts-key="{{ path.key }}" data-acts-total="{{ path.total }}" hidden>
+        <p class="progress-line"><span data-acts-count>0</span> {{ path.progress_text }}</p>
+        <progress max="{{ path.total }}" value="0" aria-label="{{ path.progress_label }}"></progress>
+      </div>
+      {% if site.get('checklist') %}<p>{{ inline(path.checklist_text) }}</p>{% endif %}
+    </div>
+  </div>
+</section>
+<script src="{{ static_url('actions.js') }}" defer></script>
+{% endif %}
+
+<section class="band">
+  <article class="prose home">
+    {{ page.body_html | safe }}
+  </article>
+</section>

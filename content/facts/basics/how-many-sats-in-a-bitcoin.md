@@ -84,4 +84,8 @@ It can be divided 100 million ways.
 
 Sats make those fractions feel like ordinary numbers.
 
+<!-- quote: whole-gold-bar -->
+
 You do not need a whole coin any more than you need a whole gold bar.
+
+<!-- /quote: whole-gold-bar -->

@@ -20,7 +20,18 @@
     <figcaption>{% if hook.get('caption') %}{{ hook.get('caption') }} {% endif %}<a href="{{ stats_page }}">{{ hook.get('link_text') or 'See the numbers behind the chart' }}</a>.</figcaption>
   </figure>
   {% endif %}
+  {% set progress = page.meta.get('progress') %}
+  {% if progress %}
+  {# actions.js puts this block above the list of acts and adds a tick box to each act; with scripts off nothing shows #}
+  {# front matter keys are read as progress['...'] where a plain name would collide with a dict method (clear) #}
+  <div class="acts-progress" data-acts-progress data-acts-key="{{ progress['key'] }}" data-done-label="{{ progress['done_label'] }}" tabindex="-1" hidden>
+    <p><strong><span data-acts-count>0</span> {{ progress['count_text'] }}</strong> {{ progress['saved_text'] }}</p>
+    <progress max="1" value="0" aria-label="{{ progress['label'] }}"></progress>
+    <button type="button" class="linklike" data-acts-clear>{{ progress['clear_label'] }}</button>
+  </div>
+  {% endif %}
   {{ page.body_html | safe }}
+  {% if progress %}<script src="{{ static_url('actions.js') }}" defer></script>{% endif %}
   {% include "_newsletter.html" %}
   {% include "_placements.html" %}
 </article>

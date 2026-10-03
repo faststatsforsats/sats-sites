@@ -1,0 +1,26 @@
+{
+ "shared/static/brand/acts-coin.webp": {
+  "png": "9e6272e9d5019cf7f5ebb28f3c7c84899452f0b7fc04a37c774521744a923b6f",
+  "webp": "5c7105ca5870b9057df09108724b918940c42b421c1f51e901da3bd499b79e3e"
+ },
+ "shared/static/brand/facts-coin.webp": {
+  "png": "7bc9aead00654e087f4c57d3c2e60ba4d1c5de29b834a3fd4f203966a6375e4f",
+  "webp": "064a3f2471cc683ec238792d2a0d2d65580b53f82b1b8ed28e12e706c0ea7be4"
+ },
+ "shared/static/brand/stats-coin.webp": {
+  "png": "bd2191b400acf0da0ac85c627938e841119b72a7559d6105c094fd6df97c4ba9",
+  "webp": "9941cf3f2e35aff3951d0253af4a65ca5c5ec3c3b75b8db053e4fd2c53bb6d01"
+ },
+ "sites/acts/static/brand/wordmark.webp": {
+  "png": "a0fe1f4809bc90d2f826f15b380f72024780f2a7b08669e8e0b6ff12c8a7e3d1",
+  "webp": "38c90b83d125cd1e93efd9e3a551d862ae207fb613455c738fb7da694998d522"
+ },
+ "sites/facts/static/brand/wordmark.webp": {
+  "png": "163ca605cc8c805b750e8aab063d5db1464333066c1f74cc1861657b8bf97f09",
+  "webp": "ad1bf502f802067f6a257ae3a7f7b5439b263047b6cc4807b8692a3d4f858fa6"
+ },
+ "sites/stats/static/brand/wordmark.webp": {
+  "png": "77d69f0a32c7cac76a8636b9e1f81b0fe1cd5127782ad13de631192fac9db250",
+  "webp": "fe322ea683d10e9754cab0f743b14dc0ad5ed57e807ea75a764ea82344d0ba09"
+ }
+}

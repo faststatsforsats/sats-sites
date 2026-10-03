@@ -1,0 +1,129 @@
+{# The Stats home page. First screen: the plan's headline and introduction, the comparison, and one button.
+   Then the live strip, three stories, the converter and the chart of the week, the featured everyday prices, the
+   other charts, and the links. The words are in content/stats/index.md; the figures come from data/ through `stats`. #}
+{% from "_art.html" import picture, quoted_line %}
+{% set hero = page.meta.get('hero') or {} %}
+{% set cmp = stats.home_compare() %}
+<section class="hero">
+  <div class="hero-text">
+    <h1>{{ hero.get('headline') or page.title }}</h1>
+    {% if hero.get('intro') %}<p class="lead">{{ hero.get('intro') }}</p>{% endif %}
+    {% if hero.get('button') %}<p class="hero-actions"><a class="button" href="{{ hero.button.url }}">{{ hero.button.text }}</a></p>{% endif %}
+    {% if hero.get('note') %}<p class="hero-note">{{ inline(hero.get('note')) }}</p>{% endif %}
+  </div>
+  <div class="hero-visual">
+    {% include "_compare.html" %}
+  </div>
+</section>
+
+<section class="band" aria-labelledby="today-h">
+  <h2 id="today-h">{{ page.meta.today_heading }}</h2>
+  {% include "_bignumber.html" %}
+</section>
+
+{# Three stories. Each card: a picture or two bars, the headline, one fact (the chart's own finding, from the
+   Daily Build), one quoted line last, and where the card goes. The whole card is the link. #}
+{% set stories = page.meta.get('stories') or [] %}
+{% if stories %}
+<section class="band" aria-labelledby="stories-h">
+  <h2 id="stories-h">{{ page.meta.stories_heading }}</h2>
+  <ul class="stories">
+    {% for story in stories %}
+    {% set slug = story.url.strip('/').split('/') | last %}
+    {% set chart_card = stats.chart_by_slug.get(slug) %}
+    <li class="story">
+      {% if story.get('art') and art.get(story.art) %}
+      {{ picture(story.art, art[story.art], sizes="(min-width: 900px) 340px, (min-width: 720px) 300px, calc(100vw - 34px)") }}
+      {% elif story.get('figure') and cmp %}
+      {% set row = (cmp.rows | selectattr('key', 'equalto', story.figure) | list | first | default(none)) %}
+      {% set pair = row.get('y1') if row else none %}
+      {% if pair and pair.get('text') %}
+      <div class="story-figure">
+        <p class="story-figure-title">{{ story.figure_title }}</p>
+        <div class="cmp-bar cmp-then"><span class="cmp-when">{{ pair.when }}</span><span class="cmp-track"><span class="bar" style="--f: {{ pair.then_f }}" aria-hidden="true"></span><span class="cmp-val">{{ pair.text }}</span></span></div>
+        <div class="cmp-bar cmp-now"><span class="cmp-when">{{ row.now.when }}</span><span class="cmp-track"><span class="bar" style="--f: {{ pair.now_f }}" aria-hidden="true"></span><span class="cmp-val">{{ row.now.text }}</span></span></div>
+        <p class="story-figure-note">{{ pair.change_text }}</p>
+      </div>
+      {% endif %}
+      {% endif %}
+      <div class="story-body">
+        <h3><a href="{{ story.url }}">{{ story.headline }}</a></h3>
+        {# the fact first: the chart's own finding. A card that already shows its two figures as bars does not repeat it. #}
+        {% if chart_card and not story.get('figure') %}<p class="story-fact">{{ chart_card.title }}.</p>{% endif %}
+        {% if story.get('take') %}<p class="quoted-line">{{ quoted_line(story.take) }}</p>
+        {% elif story.get('art') and art.get(story.art) and art[story.art].get('caption') %}<p class="quoted-line">{{ quoted_line(art[story.art].caption) }}</p>{% endif %}
+        <span class="story-cta" aria-hidden="true">{{ story.button }}</span>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="band band-split">
+  <div>
+    <h2>{{ page.meta.converter_heading }}</h2>
+    {% include "_converter.html" %}
+    <p class="more"><a href="/tools/sats-converter/">{{ page.meta.converter_more }}</a></p>
+  </div>
+  {# one chart a week, in turn (front matter `weekly`; stats.weekly_chart counts the weeks) #}
+  {% set weekly = page.meta.get('weekly') or {} %}
+  {% set pick = stats.weekly_chart(weekly.get('charts'), build_date, weekly.get('start')) %}
+  {% if pick %}
+  <div>
+    <h2>{{ weekly.heading }}</h2>
+    {% with cards = [pick.card] %}{% include "_gallery.html" %}{% endwith %}
+    {% if pick.line %}<p class="quoted-line">{{ quoted_line(pick.line) }}</p>{% endif %}
+  </div>
+  {% endif %}
+</section>
+
+{% if site.get('newsletter_embed') and page.meta.get('subscribe') %}
+<section class="band newsletter" aria-labelledby="subscribe-h">
+  <h2 id="subscribe-h">{{ page.meta.subscribe.heading }}</h2>
+  {{ site.get('newsletter_embed') | safe }}
+</section>
+{% endif %}
+
+{% set basket = stats.featured_basket() %}
+{% if basket %}
+<section class="band" aria-labelledby="everyday-h">
+  <h2 id="everyday-h">Everyday prices in sats</h2>
+  {% set months = basket|map(attribute='month')|unique|list %}
+  {% set one_month = months|length == 1 %}
+  <table class="numbers">
+    <thead><tr><th>Item</th><th>Price{% if one_month %}, {{ months[0] }}{% endif %}</th><th class="num">In sats</th><th class="num hide-sm">A year ago</th></tr></thead>
+    <tbody>
+    {% for row in basket %}
+      <tr><td><a href="{{ row.url }}">{{ row.name }}</a></td><td>{{ row.usd_text }}{% if not one_month %} ({{ row.month }}){% endif %}</td><td class="num">{{ row.sats_text }}</td><td class="num hide-sm">{{ row.sats_ago_text }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <p class="more"><a href="/value/everyday-prices/">See all {{ stats.basket()|length }} everyday prices in sats</a></p>
+</section>
+{% endif %}
+
+{# the charts that no card above already opens #}
+{% set shown = (stories | map(attribute='url') | list) + (['/charts/' ~ pick.slug ~ '/'] if pick else []) %}
+{% set others = stats.gallery() | rejectattr('page', 'in', shown) | list %}
+<section class="band" aria-labelledby="charts-h">
+  <h2 id="charts-h">The charts</h2>
+  {% with cards = others[:4], gallery_class = "gallery-row" %}{% include "_gallery.html" %}{% endwith %}
+  <p class="more"><a href="/charts/">Explore all {{ stats.gallery()|length }} charts</a></p>
+</section>
+
+<section class="band" aria-labelledby="links-h">
+  <h2 id="links-h">Check a value or explore the history</h2>
+  {# each link carries the title of the page it opens #}
+  <ul class="link-row">
+    <li><a href="/tools/sats-converter/">Sats converter</a></li>
+    <li><a href="/sats/">Money in sats</a></li>
+    <li><a href="/items/">Everyday items priced in sats</a></li>
+    <li><a href="/value/comparisons/">Gold and homes in bitcoin terms</a></li>
+    <li><a href="/network/">The Bitcoin network today</a></li>
+    <li><a href="/history/">Sats per dollar, every January since 2011</a></li>
+  </ul>
+  <div class="prose home">
+    {{ page.body_html | safe }}
+  </div>
+</section>

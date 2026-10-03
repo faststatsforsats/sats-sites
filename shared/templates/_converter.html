@@ -1,0 +1,30 @@
+{# The sats converter's form (the converter page and the Stats home page). One per page: converter.js finds it by id.
+   It starts from the prices the Daily Build baked in and follows the live price through live.js. The starting
+   example ($100, and 100,000 sats) is worked out here at build time, so the form reads sensibly before the script
+   runs and with scripts off; converter.js writes the same figures in the same format. #}
+{% set usd = stats.prices.get('usd') %}
+<form class="converter" id="converter" data-live-want="price" data-prices='{{ stats.prices | tojson }}' data-updated="{{ stats.updated }}" onsubmit="return false">
+  <div class="converter-row">
+    <label for="conv-amount">Amount</label>
+    <input id="conv-amount" type="number" inputmode="decimal" min="0" step="any" value="100">
+    <select id="conv-currency" aria-label="Currency">
+      {% for cur in ['usd','eur','gbp','cad','aud','chf','jpy','inr','brl','mxn'] if stats.prices.get(cur) %}
+      <option value="{{ cur }}">{{ cur | upper }}</option>
+      {% endfor %}
+      {% for cur in stats.prices if cur not in ['usd','eur','gbp','cad','aud','chf','jpy','inr','brl','mxn'] %}
+      <option value="{{ cur }}">{{ cur | upper }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="converter-out">
+    <div><span class="big-label">is</span><output id="conv-sats" for="conv-amount">{% if usd %}{{ "{:,.0f}".format(100 / usd * 100000000) }} sats{% else %}…{% endif %}</output></div>
+    <div><span class="big-label">or</span><output id="conv-btc" for="conv-amount">{% if usd %}{{ "{:,.8f}".format(100 / usd) }} BTC{% else %}…{% endif %}</output></div>
+  </div>
+  <div class="converter-row">
+    <label for="conv-sats-in">Sats</label>
+    <input id="conv-sats-in" type="number" inputmode="numeric" min="0" step="1" value="100000">
+    <output id="conv-money" for="conv-sats-in">{% if usd %}= ${{ "{:,.2f}".format(100000 / 100000000 * usd) }}{% endif %}</output>
+  </div>
+  <p class="small" id="conv-note">Price <span id="conv-price">{% if usd %}${{ "{:,.0f}".format(usd) }} per bitcoin{% endif %}</span>, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>. Data provided by <a href="https://www.coingecko.com" rel="noopener">CoinGecko</a>.</p>
+</form>
+<script src="{{ static_url('converter.js') }}" defer></script>

@@ -13,17 +13,21 @@
   {% set one_month = months|length == 1 %}
   <table class="numbers">
     <thead><tr><th>Item</th><th>Price{% if one_month %}, {{ months[0] }}{% endif %}</th><th class="num">In sats</th><th class="num hide-sm">A year ago</th><th class="num">Change</th></tr></thead>
+    {# grouped so the list no longer opens with a run of fuels (Jim's plan, October 2026): food, home and energy, transport, drinks #}
+    {% for group in stats.basket_groups() %}
     <tbody>
-    {% for row in basket %}
+      <tr class="group"><th colspan="5" scope="rowgroup">{{ group.label }}</th></tr>
+    {% for row in group.rows %}
       <tr>
         <td><a href="{{ row.url }}">{{ row.name }}</a></td>
-        <td>{{ row.usd_text }}{% if not one_month %} ({{ row.month }}){% endif %}</td>
+        <td class="price">{{ row.usd_text }}{% if not one_month %} ({{ row.month }}){% endif %}</td>
         <td class="num">{{ row.sats_text }}</td>
         <td class="num hide-sm">{{ row.sats_ago_text }}</td>
         <td class="num">{% if row.change_pct is not none %}{{ "%+.0f"|format(row.change_pct) }}%{% endif %}</td>
       </tr>
     {% endfor %}
     </tbody>
+    {% endfor %}
   </table>
   <p class="small">Use the month shown for each item. "A year ago" and "Change" compare its sats cost with the same month a year earlier. A lower sats cost can reflect a higher bitcoin price, a lower dollar price for the item, or both. The data is checked each morning; new figures appear when the sources publish them.</p>
   {% if stats.chart_by_slug.get('eggs-in-sats') %}

@@ -5,6 +5,14 @@ template: campaign
 eyebrow: October 2026
 updated: 2026-10-02
 attribution: [coingecko]
+# Tick boxes on the twelve acts, kept in the reader's own browser (shared/static/actions.js); the privacy policy says so
+progress:
+  key: first-100k
+  done_label: "Done"
+  count_text: "of 12 acts done."
+  saved_text: "Your ticks are saved in this browser only."
+  label: "Acts done"
+  clear_label: "Clear my ticks"
 hook_chart:
   slug: twenty-five-a-week
   alt: What $25 a week since 2020 bought in sats

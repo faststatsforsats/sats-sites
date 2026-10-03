@@ -1,6 +1,6 @@
-{# Chart cards. `cards` is a list of charts/index.json entries. #}
+{# Chart cards. `cards` is a list of charts/index.json entries; `gallery_class` (optional) adds a class to the list. #}
 {% if cards %}
-<ul class="gallery">
+<ul class="gallery{% if gallery_class is defined and gallery_class %} {{ gallery_class }}{% endif %}">
   {% for c in cards %}
   <li>
     <a href="{{ c.page }}">

@@ -17,11 +17,21 @@ sources:
   - name: "Fast Acts for Sats"
     url: https://fastactsforsats.com/store/how-to-store-sats-safely/
 ---
+<!-- quote: manages-keys -->
+
 A bitcoin wallet manages your keys. The bitcoin itself is recorded on the blockchain.
+
+<!-- /quote: manages-keys -->
+
+<!-- quote: key-ring -->
 
 Think of the wallet as the key ring that lets you use what is yours.
 
+<!-- /quote: key-ring -->
+
 Sats are the smallest unit of bitcoin. There are 100,000,000 in one bitcoin. Your wallet shows a balance in bitcoin, sats, or dollars, depending on its settings.
+
+[[art:key-and-doorway:bridge]]
 
 ## Three things to understand
 
@@ -45,7 +55,11 @@ Backup formats differ. Many use 12 or 24 words; some newer Trezor backups use 20
 
 With a valid backup and any required passphrase, you can restore access using a compatible wallet and its official recovery process.
 
+<!-- quote: no-reset-desk -->
+
 Without a working wallet or the required backup, the bitcoin can become permanently inaccessible. There is no central password-reset desk.
+
+<!-- /quote: no-reset-desk -->
 
 For hardware wallets, use the maker's secure recovery procedure. Never type their recovery words into an ordinary website or phone app.
 

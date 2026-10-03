@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from bisect import bisect_right
 from pathlib import Path
 
@@ -50,58 +51,87 @@ CURRENCIES = {
 # (fuel and utility items have five-digit codes, so gasoline is "APU0000" + "74714").
 # Retired: apples (APU0000711111, Red Delicious), which BLS stopped publishing after October 2017.
 ITEMS = {
-    "eggs": {"id": "APU0000708111", "title": "Eggs, grade A, large, per dozen, U.S. city average", "data_unit": "USD per dozen",
+    "eggs": {"id": "APU0000708111", "group": "food", "title": "Eggs, grade A, large, per dozen, U.S. city average", "data_unit": "USD per dozen",
              "name": "A dozen eggs", "short": "a dozen large eggs", "unit": "per dozen", "chart": "eggs-in-sats"},
-    "gasoline": {"id": "APU000074714", "title": "Gasoline, unleaded regular, per gallon, U.S. city average", "data_unit": "USD per gallon",
+    "gasoline": {"id": "APU000074714", "group": "transport", "title": "Gasoline, unleaded regular, per gallon, U.S. city average", "data_unit": "USD per gallon",
                  "name": "A gallon of gas", "short": "a gallon of regular gasoline", "unit": "per gallon"},
-    "milk": {"id": "APU0000709112", "title": "Milk, fresh, whole, fortified, per gallon, U.S. city average", "data_unit": "USD per gallon",
+    "milk": {"id": "APU0000709112", "group": "food", "title": "Milk, fresh, whole, fortified, per gallon, U.S. city average", "data_unit": "USD per gallon",
              "name": "A gallon of milk", "short": "a gallon of whole milk", "unit": "per gallon"},
-    "bread": {"id": "APU0000702111", "title": "Bread, white, pan, per pound, U.S. city average", "data_unit": "USD per pound",
+    "bread": {"id": "APU0000702111", "group": "food", "title": "Bread, white, pan, per pound, U.S. city average", "data_unit": "USD per pound",
               "name": "A pound of white bread", "short": "a pound of white bread", "unit": "per pound"},
-    "coffee": {"id": "APU0000717311", "title": "Coffee, 100%, ground roast, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
+    "coffee": {"id": "APU0000717311", "group": "food", "title": "Coffee, 100%, ground roast, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
                "name": "A pound of coffee", "short": "a pound of ground coffee", "unit": "per pound"},
-    "ground_beef": {"id": "APU0000703112", "title": "Ground beef, 100% beef, per pound, U.S. city average", "data_unit": "USD per pound",
+    "ground_beef": {"id": "APU0000703112", "group": "food", "title": "Ground beef, 100% beef, per pound, U.S. city average", "data_unit": "USD per pound",
                     "name": "A pound of ground beef", "short": "a pound of ground beef", "unit": "per pound"},
-    "electricity": {"id": "APU000072610", "title": "Electricity, per kilowatt-hour, U.S. city average", "data_unit": "USD per kWh",
+    "electricity": {"id": "APU000072610", "group": "home", "title": "Electricity, per kilowatt-hour, U.S. city average", "data_unit": "USD per kWh",
                     "name": "A kilowatt-hour of electricity", "short": "a kilowatt-hour of electricity", "unit": "per kWh"},
-    "bananas": {"id": "APU0000711211", "title": "Bananas, per pound, U.S. city average", "data_unit": "USD per pound",
+    "bananas": {"id": "APU0000711211", "group": "food", "title": "Bananas, per pound, U.S. city average", "data_unit": "USD per pound",
                 "name": "A pound of bananas", "short": "a pound of bananas", "unit": "per pound"},
-    "chicken": {"id": "APU0000706111", "title": "Chicken, fresh, whole, per pound, U.S. city average", "data_unit": "USD per pound",
+    "chicken": {"id": "APU0000706111", "group": "food", "title": "Chicken, fresh, whole, per pound, U.S. city average", "data_unit": "USD per pound",
                 "name": "A pound of chicken", "short": "a pound of fresh whole chicken", "unit": "per pound"},
-    "bacon": {"id": "APU0000704111", "title": "Bacon, sliced, per pound, U.S. city average", "data_unit": "USD per pound",
+    "bacon": {"id": "APU0000704111", "group": "food", "title": "Bacon, sliced, per pound, U.S. city average", "data_unit": "USD per pound",
               "name": "A pound of bacon", "short": "a pound of sliced bacon", "unit": "per pound"},
-    "flour": {"id": "APU0000701111", "title": "Flour, white, all purpose, per pound, U.S. city average", "data_unit": "USD per pound",
+    "flour": {"id": "APU0000701111", "group": "food", "title": "Flour, white, all purpose, per pound, U.S. city average", "data_unit": "USD per pound",
               "name": "A pound of flour", "short": "a pound of all-purpose flour", "unit": "per pound"},
-    "rice": {"id": "APU0000701312", "title": "Rice, white, long grain, uncooked, per pound, U.S. city average", "data_unit": "USD per pound",
+    "rice": {"id": "APU0000701312", "group": "food", "title": "Rice, white, long grain, uncooked, per pound, U.S. city average", "data_unit": "USD per pound",
              "name": "A pound of rice", "short": "a pound of long-grain rice", "unit": "per pound"},
-    "sugar": {"id": "APU0000715211", "title": "Sugar, white, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
+    "sugar": {"id": "APU0000715211", "group": "food", "title": "Sugar, white, all sizes, per pound, U.S. city average", "data_unit": "USD per pound",
               "name": "A pound of sugar", "short": "a pound of white sugar", "unit": "per pound"},
-    "butter": {"id": "APU0000FS1101", "title": "Butter, stick, per pound, U.S. city average", "data_unit": "USD per pound",
+    "butter": {"id": "APU0000FS1101", "group": "food", "title": "Butter, stick, per pound, U.S. city average", "data_unit": "USD per pound",
                "name": "A pound of butter", "short": "a pound of stick butter", "unit": "per pound"},
-    "potatoes": {"id": "APU0000712112", "title": "Potatoes, white, per pound, U.S. city average", "data_unit": "USD per pound",
+    "potatoes": {"id": "APU0000712112", "group": "food", "title": "Potatoes, white, per pound, U.S. city average", "data_unit": "USD per pound",
                  "name": "A pound of potatoes", "short": "a pound of white potatoes", "unit": "per pound"},
-    "tomatoes": {"id": "APU0000712311", "title": "Tomatoes, field grown, per pound, U.S. city average", "data_unit": "USD per pound",
+    "tomatoes": {"id": "APU0000712311", "group": "food", "title": "Tomatoes, field grown, per pound, U.S. city average", "data_unit": "USD per pound",
                  "name": "A pound of tomatoes", "short": "a pound of field-grown tomatoes", "unit": "per pound"},
-    "oranges": {"id": "APU0000711311", "title": "Oranges, navel, per pound, U.S. city average", "data_unit": "USD per pound",
+    "oranges": {"id": "APU0000711311", "group": "food", "title": "Oranges, navel, per pound, U.S. city average", "data_unit": "USD per pound",
                 "name": "A pound of oranges", "short": "a pound of navel oranges", "unit": "per pound"},
-    "wheat_bread": {"id": "APU0000702212", "title": "Bread, whole wheat, pan, per pound, U.S. city average", "data_unit": "USD per pound",
+    "wheat_bread": {"id": "APU0000702212", "group": "food", "title": "Bread, whole wheat, pan, per pound, U.S. city average", "data_unit": "USD per pound",
                     "name": "A pound of whole wheat bread", "short": "a pound of whole wheat bread", "unit": "per pound"},
-    "diesel": {"id": "APU000074717", "title": "Automotive diesel fuel, per gallon, U.S. city average", "data_unit": "USD per gallon",
+    "diesel": {"id": "APU000074717", "group": "transport", "title": "Automotive diesel fuel, per gallon, U.S. city average", "data_unit": "USD per gallon",
                "name": "A gallon of diesel", "short": "a gallon of diesel", "unit": "per gallon"},
-    "premium_gas": {"id": "APU000074716", "title": "Gasoline, unleaded premium, per gallon, U.S. city average", "data_unit": "USD per gallon",
+    "premium_gas": {"id": "APU000074716", "group": "transport", "title": "Gasoline, unleaded premium, per gallon, U.S. city average", "data_unit": "USD per gallon",
                     "name": "A gallon of premium gas", "short": "a gallon of premium gasoline", "unit": "per gallon"},
-    "natural_gas": {"id": "APU000072620", "title": "Utility (piped) gas, per therm, U.S. city average", "data_unit": "USD per therm",
+    "natural_gas": {"id": "APU000072620", "group": "home", "title": "Utility (piped) gas, per therm, U.S. city average", "data_unit": "USD per therm",
                     "name": "A therm of natural gas", "short": "a therm of piped natural gas", "unit": "per therm"},
-    "fuel_oil": {"id": "APU000072511", "title": "Fuel oil #2, per gallon, U.S. city average", "data_unit": "USD per gallon",
+    "fuel_oil": {"id": "APU000072511", "group": "home", "title": "Fuel oil #2, per gallon, U.S. city average", "data_unit": "USD per gallon",
                  "name": "A gallon of heating oil", "short": "a gallon of No. 2 fuel oil", "unit": "per gallon"},
-    "beer": {"id": "APU0000720111", "title": "Malt beverages, all types, all sizes, any origin, per 16 ounces, U.S. city average", "data_unit": "USD per 16 oz",
+    "beer": {"id": "APU0000720111", "group": "drinks", "title": "Malt beverages, all types, all sizes, any origin, per 16 ounces, U.S. city average", "data_unit": "USD per 16 oz",
              "name": "A pint of beer", "short": "16 ounces of beer", "unit": "per 16 oz"},
-    "wine": {"id": "APU0000720311", "title": "Wine, red and white table, all sizes, any origin, per liter, U.S. city average", "data_unit": "USD per liter",
+    "wine": {"id": "APU0000720311", "group": "drinks", "title": "Wine, red and white table, all sizes, any origin, per liter, U.S. city average", "data_unit": "USD per liter",
              "name": "A liter of wine", "short": "a liter of table wine", "unit": "per liter"},
 }
 # An item whose series stopped this many months before the newest item's month is left off the pages,
 # so an old price is never shown as this month's.
 STALE_AFTER_MONTHS = 6
+
+# How the everyday-prices table is grouped (Jim's plan of October 2026: "feature a smaller mix of food, transport and
+# housing" instead of an alphabetical list that opens with several fuels). The group names are drafted for his review.
+ITEM_GROUPS = {"food": "Food", "home": "Home and energy", "transport": "Transport", "drinks": "Drinks"}
+# The mix the home page features, in this order: four foods, one transport, one home item.
+FEATURED_ITEMS = ("eggs", "milk", "bread", "coffee", "gasoline", "electricity")
+_ungrouped = sorted(stem for stem, item in ITEMS.items() if item.get("group") not in ITEM_GROUPS)
+if _ungrouped:      # caught when the module loads, so an item cannot drop out of the grouped table unnoticed
+    raise SystemExit(f"ERROR: lib/stats_data.py: ITEMS {_ungrouped} need a group from ITEM_GROUPS ({', '.join(ITEM_GROUPS)})")
+
+# The words of the home page's first-screen comparison (Jim's plan: "a large comparison with Today / One year / Five
+# years controls, one plain takeaway, a clear data date"). The row names come from his introduction ("A dollar. A
+# dozen eggs. A place to live."); the sentences are drafted for his review. A change is always named in words
+# ("more sats per dollar"), never left to a color or a sign: fewer sats for the same eggs can mean more buying power.
+COMPARE_ROWS = {
+    "dollar": {"name": "A dollar", "chart": "/charts/sats-per-dollar/", "per": "per dollar", "unit": "sats", "more": "more sats", "fewer": "fewer sats",
+               "basis": "daily average"},
+    "eggs": {"name": "A dozen eggs", "chart": "/charts/eggs-in-sats/", "per": "per dozen", "unit": "sats", "more": "more sats", "fewer": "fewer sats",
+             "basis": "monthly average", "latest": "Latest month"},
+    "home": {"name": "A new home", "chart": "/charts/home-in-bitcoin/", "per": "per home", "unit": "bitcoin", "more": "more bitcoin", "fewer": "less bitcoin",
+             "basis": "quarterly figure", "latest": "Latest quarter"},
+}
+# When the source has no figure for the matching earlier period (most BLS average prices skip October 2025), the row says so
+COMPARE_MISSING = "The source has no figure for {when}."
+COMPARE_SPANS = {"y1": {"years": 1, "label": "One year", "earlier": "a year earlier"}, "y5": {"years": 5, "label": "Five years", "earlier": "five years earlier"}}
+TAKEAWAY_TODAY = "A dollar buys {figure} at the latest price."
+TAKEAWAY_MORE = "A dollar buys {pct} more sats than {earlier}, because bitcoin's dollar price is lower."
+TAKEAWAY_FEWER = "A dollar buys {pct} fewer sats than {earlier}, because bitcoin's dollar price is higher."
+TAKEAWAY_SAME = "A dollar buys about as many sats as it did {earlier}."
 
 
 def _read(path: Path):
@@ -128,13 +158,47 @@ def _months_between(earlier: str, later: str) -> int:
     return (int(later[:4]) - int(earlier[:4])) * 12 + int(later[5:7]) - int(earlier[5:7])
 
 
-def _year_ago(series, day: str):
+def _years_ago(series, day: str, years: int = 1):
+    """The point on or before the same date that many years earlier."""
     d = dt.date.fromisoformat(day[:10])
     try:
-        target = d.replace(year=d.year - 1)
+        target = d.replace(year=d.year - years)
     except ValueError:
-        target = d.replace(year=d.year - 1, day=28)
+        target = d.replace(year=d.year - years, day=28)
     return _on_or_before(series, target.isoformat())
+
+
+def _year_ago(series, day: str):
+    return _years_ago(series, day, 1)
+
+
+def _same_period_a_year_ago(series, day: str):
+    """For a monthly or quarterly series: the point for the same month one year earlier, or None when the source has
+    none. The nearest earlier month will not do: BLS has no October 2025 figure for 22 of the 24 items here (the two
+    gasolines have one), and a table that says "a year ago" must not show September's."""
+    point = _year_ago(series, day)
+    return point if point and point[0][:7] == f"{int(day[:4]) - 1:04d}{day[4:7]}" else None
+
+
+def short_date(day: str) -> str:
+    """Oct 2, 2026"""
+    d = dt.date.fromisoformat(day[:10])
+    return f"{d:%b} {d.day}, {d.year}"
+
+
+def short_month(day: str) -> str:
+    """Aug 2026"""
+    d = dt.date.fromisoformat(day[:10])
+    return f"{d:%b} {d.year}"
+
+
+def pct_text(change: float) -> str:
+    """How big a change is, without its sign: 40%, 5.7%, 118%. Whole numbers from 10% up."""
+    size = abs(change)
+    if size >= 10:
+        return f"{size:.0f}%"
+    text = f"{size:.1f}"
+    return (text[:-2] if text.endswith(".0") else text) + "%"
 
 
 def long_date(day: str) -> str:
@@ -247,6 +311,7 @@ class StatsData:
                 "name": meta["name"],
                 "short": meta["short"],
                 "unit": meta["unit"],
+                "group": meta.get("group", "food"),
                 "chart": meta.get("chart"),
                 "series_title": meta["title"],
                 "series_id": meta["id"],
@@ -301,7 +366,7 @@ class StatsData:
             if not btc:
                 continue
             sats = usd / btc * 100_000_000
-            ago = _year_ago(item["points"], day)
+            ago = _same_period_a_year_ago(item["points"], day)
             sats_ago = None
             if ago and self.monthly_avg.get(ago[0]):
                 sats_ago = ago[1] / self.monthly_avg[ago[0]] * 100_000_000
@@ -348,7 +413,7 @@ class StatsData:
             day, usd = self.gold[-1]
             btc = self.monthly_avg.get(day)
             if btc:
-                ago = _year_ago(self.gold, day)
+                ago = _same_period_a_year_ago(self.gold, day)
                 ago_sats = ago[1] / self.monthly_avg[ago[0]] * 1e8 if ago and self.monthly_avg.get(ago[0]) else None
                 rows.append({"name": "A troy ounce of gold", "when": month_name(day), "usd_text": fmt_money(usd), "value_text": fmt_sats(usd / btc * 1e8),
                              "ago_text": fmt_sats(ago_sats) if ago_sats else "", "chart": "gold-in-sats", "source": "World Bank Pink Sheet (gold), blockchain.com (price)", "data_file": "/data/gold.json"})
@@ -356,7 +421,7 @@ class StatsData:
             day, usd = self.homes[-1]
             btc = self.quarterly_avg.get(day)
             if btc:
-                ago = _year_ago(self.homes, day)
+                ago = _same_period_a_year_ago(self.homes, day)
                 ago_btc = ago[1] / self.quarterly_avg[ago[0]] if ago and self.quarterly_avg.get(ago[0]) else None
                 rows.append({"name": "US median new-home sale price", "when": quarter(day), "usd_text": fmt_money(usd), "value_text": fmt_btc(usd / btc),
                              "ago_text": fmt_btc(ago_btc) if ago_btc else "", "chart": "home-in-bitcoin", "source": "FRED (MSPUS), blockchain.com (price)", "data_file": "/data/homes.json"})
@@ -379,6 +444,124 @@ class StatsData:
             out.update({"hashrate_ehs": ths / 1e6, "hashrate_text": f"{ths / 1e6:,.0f} EH/s", "hashrate_date": long_date(day),
                         "hashrate_ago_text": f"{ago[1] / 1e6:,.0f} EH/s" if ago else ""})
         return out
+
+    def featured_basket(self) -> list[dict]:
+        """The home page's mix of everyday prices: the FEATURED_ITEMS that have current data, in that order."""
+        rows = {row["stem"]: row for row in self.basket()}
+        return [rows[stem] for stem in FEATURED_ITEMS if stem in rows]
+
+    def basket_groups(self) -> list[dict]:
+        """The everyday prices grouped for the full table: food, home and energy, transport, drinks."""
+        rows = self.basket()
+        out = []
+        for key, label in ITEM_GROUPS.items():
+            group = [row for row in rows if row.get("group") == key]
+            if group:
+                out.append({"key": key, "label": label, "rows": group})
+        return out
+
+    def home_compare(self) -> dict | None:
+        """The home page's first-screen comparison: a dollar, a dozen eggs, and a new home, each at its latest period
+        and at the same period one and five years earlier. Every pair uses one series definition (daily averages for
+        the dollar, monthly averages for eggs, quarterly figures for homes), so the latest quote is kept apart: it shows
+        only in the Today view, labeled "Latest price" with its time. A row is left out when its data is missing."""
+        rows = []
+
+        def shown(text: str) -> float:
+            """The number a reader sees in a formatted figure ("3,294 sats" is 3294, "5.72 bitcoin" is 5.72)."""
+            return float(re.sub(r"[^0-9.]", "", text.split(" ")[0]))
+
+        def entry(key, when_now, value_now, text_now, earlier, missing=None):
+            """One row. A change is worked out from the two figures as printed, so the percentage beside them is the
+            one a reader gets with a calculator; the bars are drawn from the same two numbers."""
+            meta = COMPARE_ROWS[key]
+            row = {"key": key, **meta, "now": {"when": when_now, "value": value_now, "text": text_now}}
+            now = shown(text_now)
+            for span, point in earlier.items():
+                if not point:
+                    continue
+                when, _value, text = point
+                then = shown(text)
+                if not then or not now:
+                    continue
+                top = max(then, now)
+                change = (now / then - 1) * 100
+                if abs(change) < 0.5:
+                    words = f"About the same {meta['unit']} {meta['per']}"
+                else:
+                    words = f"{pct_text(change)} {meta['more'] if change > 0 else meta['fewer']} {meta['per']}"
+                row[span] = {"when": when, "value": then, "text": text, "change": change, "change_text": words,
+                             "now_f": round(now / top, 4), "then_f": round(then / top, 4)}
+            for span, when in (missing or {}).items():
+                if span not in row:
+                    row[span] = {"missing": COMPARE_MISSING.format(when=when)}
+            return row
+
+        def period_back(day: str, years: int) -> str:
+            """The first day of the same month, that many years earlier (monthly and quarterly series are dated so)."""
+            return f"{int(day[:4]) - years:04d}{day[4:]}"
+
+        # A dollar: sats per dollar from the daily average price
+        if self.price_daily and self.price_daily[-1][1]:
+            day, usd = self.price_daily[-1]
+            earlier = {}
+            for span, cfg in COMPARE_SPANS.items():
+                point = _years_ago(self.price_daily, day, cfg["years"])
+                if point and point[1]:
+                    earlier[span] = (short_date(point[0]), 1e8 / point[1], fmt_sats(1e8 / point[1]))
+            rows.append(entry("dollar", short_date(day), 1e8 / usd, fmt_sats(1e8 / usd), earlier))
+
+        # A dozen eggs: the BLS monthly average over the month's average bitcoin price
+        eggs = self.items_data.get("eggs")
+        if eggs:
+            day, usd = eggs["points"][-1]
+            btc = self.monthly_avg.get(day)
+            if btc:
+                earlier, missing = {}, {}
+                first = eggs["points"][0][0]
+                for span, cfg in COMPARE_SPANS.items():
+                    wanted = period_back(day, cfg["years"])
+                    point = _on_or_before(eggs["points"], wanted)
+                    if point and point[0] == wanted and point[1] and self.monthly_avg.get(point[0]):     # the same month, that many years back
+                        sats = point[1] / self.monthly_avg[point[0]] * 1e8
+                        earlier[span] = (short_month(point[0]), sats, fmt_sats(sats))
+                    elif wanted >= first:          # inside the series, but the source skipped that month
+                        missing[span] = short_month(wanted)
+                sats_now = usd / btc * 1e8
+                rows.append(entry("eggs", short_month(day), sats_now, fmt_sats(sats_now), earlier, missing))
+
+        # A new home: the quarterly median new-home price over the quarter's average bitcoin price
+        if self.homes:
+            day, usd = self.homes[-1]
+            btc = self.quarterly_avg.get(day)
+            if btc:
+                earlier, missing = {}, {}
+                first = self.homes[0][0]
+                for span, cfg in COMPARE_SPANS.items():
+                    wanted = period_back(day, cfg["years"])
+                    point = _on_or_before(self.homes, wanted)
+                    if point and point[0] == wanted and point[1] and self.quarterly_avg.get(point[0]):
+                        coins = point[1] / self.quarterly_avg[point[0]]
+                        earlier[span] = (quarter(point[0]), coins, fmt_btc(coins))
+                    elif wanted >= first:
+                        missing[span] = quarter(wanted)
+                rows.append(entry("home", quarter(day), usd / btc, fmt_btc(usd / btc), earlier, missing))
+
+        if not rows:
+            return None
+        takeaways = {"today": TAKEAWAY_TODAY}
+        dollar = next((row for row in rows if row["key"] == "dollar"), None)
+        for span, cfg in COMPARE_SPANS.items():
+            point = dollar.get(span) if dollar else None
+            if not point or "change" not in point:
+                continue
+            if abs(point["change"]) < 0.5:
+                takeaways[span] = TAKEAWAY_SAME.format(earlier=cfg["earlier"])
+            else:
+                takeaways[span] = (TAKEAWAY_MORE if point["change"] > 0 else TAKEAWAY_FEWER).format(pct=pct_text(point["change"]), earlier=cfg["earlier"])
+        # a view is offered when at least one row has both of its figures for it
+        spans = [{"key": span, **cfg} for span, cfg in COMPARE_SPANS.items() if any("change" in row.get(span, {}) for row in rows)]
+        return {"rows": rows, "spans": spans, "takeaways": takeaways}
 
     # ------------------------------------------------------------------ programmatic "in sats" pages
 
@@ -427,3 +610,21 @@ class StatsData:
 
     def gallery(self) -> list[dict]:
         return self.charts
+
+    def weekly_chart(self, entries, day: dt.date, start=None) -> dict | None:
+        """The home page's chart of the week: `entries` (each a chart's slug and its line) take turns, one a week,
+        starting again after the last. Weeks run Monday to Sunday and are counted from `start`, so the turn does not
+        jump at New Year. An entry whose chart is missing gives its week to the next one."""
+        listed = [entry for entry in entries or [] if isinstance(entry, dict) and entry.get("slug")]
+        if not listed:
+            return None
+        if not isinstance(start, dt.date):
+            start = dt.date(2026, 9, 28)
+        monday = start - dt.timedelta(days=start.weekday())
+        week = (day - monday).days // 7
+        for step in range(len(listed)):
+            entry = listed[(week + step) % len(listed)]
+            card = self.chart_by_slug.get(entry["slug"])
+            if card:
+                return {"card": card, "line": entry.get("line"), "slug": entry["slug"]}
+        return None

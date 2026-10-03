@@ -1,0 +1,58 @@
+{# The Stats home page's first-screen comparison (lib/stats_data.py, home_compare): a dollar, a dozen eggs, a new home,
+   at their latest figures and against one and five years earlier. The radio buttons choose the view with no script
+   (site.css); the three views are all in the page and share one space, so the panel keeps its height when the view
+   changes. A browser that cannot do that shows the three views one after another, without the buttons.
+   A change is named in words beside each pair. Each pair uses one definition of the price, so the latest quote
+   appears only in the Today view, labeled with its time; the eggs and home figures there carry their own period. #}
+{% set words = page.meta.compare %}
+{% if cmp %}
+<section class="compare" aria-labelledby="compare-h">
+  <h2 id="compare-h" class="visually-hidden">{{ words.heading }}</h2>
+  <fieldset class="seg">
+    <legend class="visually-hidden">{{ words.legend }}</legend>
+    <label><input type="radio" name="compare" value="today"{% if not cmp.spans %} checked{% endif %}> {{ words.today_label }}</label>
+    {% for span in cmp.spans %}<label><input type="radio" name="compare" value="{{ span.key }}"{% if loop.first %} checked{% endif %}> {{ span.label }}</label>{% endfor %}
+  </fieldset>
+
+  <div class="cmp-views">
+  <div class="cmp-view" data-view="today">
+    <h3>{{ words.today_label }}</h3>
+    {% for row in cmp.rows %}
+    <div class="cmp-row">
+      <p class="cmp-what cmp-single">
+        <a href="{{ row.chart }}">{{ row.name }}</a>
+        <span class="cmp-figure">{% if row.key == 'dollar' %}<span class="live" data-live="sats-per-dollar">{{ "{:,}".format(stats.sats_per_dollar) }} sats</span>{% else %}{{ row.now.text }}{% endif %}</span>
+      </p>
+      <span class="cmp-note">{% if row.key == 'dollar' %}{{ words.price_label }}, <span class="live-when" data-live-when="price">as of {{ stats.updated_text }}</span>{% else %}{{ row.latest }}: {{ row.now.when }}, {{ row.basis }}{% endif %}</span>
+    </div>
+    {% endfor %}
+    {% set parts = cmp.takeaways.today.split('{figure}') %}
+    <p class="cmp-takeaway">{{ parts[0] }}<span class="live" data-live="sats-per-dollar">{{ "{:,}".format(stats.sats_per_dollar) }} sats</span>{{ parts[1] }}</p>
+    <p class="cmp-dates">{% if cmp.rows | length == 3 %}{{ words.dates_today }} {% endif %}Retrieved {{ stats.updated_text }}.</p>
+  </div>
+
+  {% for span in cmp.spans %}
+  <div class="cmp-view" data-view="{{ span.key }}">
+    <h3>{{ span.label }}</h3>
+    {% for row in cmp.rows if row.get(span.key) %}
+    {% set then = row[span.key] %}
+    <div class="cmp-row">
+      {% if then.get('missing') %}
+      {# the source has no figure for the matching earlier period: say so, and show the latest figure alone #}
+      <p class="cmp-what"><a href="{{ row.chart }}">{{ row.name }}</a></p>
+      <div class="cmp-bar cmp-now"><span class="cmp-when">{{ row.now.when }}</span><span class="cmp-track"><span class="bar" style="--f: 1" aria-hidden="true"></span><span class="cmp-val">{{ row.now.text }}</span></span></div>
+      <p class="cmp-missing">{{ then.missing }}</p>
+      {% else %}
+      <p class="cmp-what"><a href="{{ row.chart }}">{{ row.name }}</a> <span class="cmp-change">{{ then.change_text }}</span></p>
+      <div class="cmp-bar cmp-then"><span class="cmp-when">{{ then.when }}</span><span class="cmp-track"><span class="bar" style="--f: {{ then.then_f }}" aria-hidden="true"></span><span class="cmp-val">{{ then.text }}</span></span></div>
+      <div class="cmp-bar cmp-now"><span class="cmp-when">{{ row.now.when }}</span><span class="cmp-track"><span class="bar" style="--f: {{ then.now_f }}" aria-hidden="true"></span><span class="cmp-val">{{ row.now.text }}</span></span></div>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% if cmp.takeaways.get(span.key) %}<p class="cmp-takeaway">{{ cmp.takeaways[span.key] }}</p>{% endif %}
+    <p class="cmp-dates">{% if cmp.rows | selectattr(span.key, 'defined') | list | length == 3 %}{{ words.dates }} {% endif %}Retrieved {{ stats.updated_text }}.</p>
+  </div>
+  {% endfor %}
+  </div>
+</section>
+{% endif %}

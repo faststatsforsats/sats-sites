@@ -24,24 +24,44 @@
 <link rel="stylesheet" href="{{ static_url('site.css') }}">
 <link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="/feed.xml">
 </head>
+{# A coin in the header or the footer: the light WebP copy first (scripts/brand.py), the PNG for a browser that cannot
+   show WebP. The same picture at the same size, at under a third of the weight. `light` says which copies are there
+   and still match the record in shared/brand.json; without one, the page names the PNG alone. #}
+{% macro coin(key, cls, size) -%}
+<picture>{% if light.coins.get(key) %}<source type="image/webp" srcset="/static/brand/{{ key }}-coin.webp">{% endif %}<img class="{{ cls }}" src="/static/brand/{{ key }}-coin.png" alt="" width="{{ size }}" height="{{ size }}"></picture>
+{%- endmacro %}
 <body data-site="{{ site.key }}" data-api="{{ site.api_url }}">
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-header">
   <div class="wrap">
-    <div class="family" aria-label="The three Sats sites">
+    <nav class="family" aria-label="The three Sats sites">
       {% for entry in sites %}
-        {% if entry.key == site.key %}<span class="family-current"><img class="family-coin" src="/static/brand/{{ entry.key }}-coin.png" alt="" width="18" height="18">{{ entry.short_name }}</span>{% else %}<a href="{{ entry.url }}/"><img class="family-coin" src="/static/brand/{{ entry.key }}-coin.png" alt="" width="18" height="18">{{ entry.short_name }}</a>{% endif %}{% if not loop.last %}<span class="family-sep" aria-hidden="true">/</span>{% endif %}
+        {% if entry.key == site.key %}<span class="family-current">{{ coin(entry.key, "family-coin", 18) }}{{ entry.short_name }}</span>{% else %}<a href="{{ entry.url }}/">{{ coin(entry.key, "family-coin", 18) }}{{ entry.short_name }}</a>{% endif %}{% if not loop.last %}<span class="family-sep" aria-hidden="true">/</span>{% endif %}
       {% endfor %}
       <span class="family-note">for Sats</span>
-    </div>
-    <div class="masthead">
-      <a class="brand" href="/"><img class="brand-coin" src="/static/brand/{{ site.key }}-coin.png" alt="" width="56" height="56"><img class="brand-word" src="/brand/wordmark.png" alt="{{ site.name }}"></a>
-      <p class="tagline">{{ site.tagline }}</p>
-    </div>
+    </nav>
+    <p class="tagline">{{ site.tagline }}</p>
+    <a class="brand" href="/">{{ coin(site.key, "brand-coin", 46) }}<picture>{% if light.wordmark %}<source type="image/webp" srcset="/brand/wordmark.webp">{% endif %}<img class="brand-word" src="/brand/wordmark.png" alt="{{ site.name }}"{% if wordmark %} width="{{ wordmark.width }}" height="{{ wordmark.height }}"{% endif %}></picture></a>
     {% if nav %}
     <nav class="site-nav" aria-label="Sections">
       {% for item in nav %}<a href="{{ item.url }}"{% if section and item.url == '/' ~ section ~ '/' %} aria-current="true"{% endif %}>{{ item.label }}</a>{% endfor %}
     </nav>
+    {# On a narrow screen the menu is one row that scrolls sideways. This arrow sits over the row's right edge while
+       there is more that way, wherever the cut happens to fall; it is outside the row, so nothing moves when it comes
+       or goes. Without scripts the row fades out at the edge instead. #}
+    <span class="nav-more" aria-hidden="true" hidden></span>
+    <script>
+    (function () {
+      var nav = document.querySelector(".site-nav"), more = document.querySelector(".nav-more");
+      if (!nav || !more) return;
+      nav.className += " has-hint";
+      function mark() { more.hidden = nav.scrollWidth - nav.clientWidth - nav.scrollLeft < 8; }
+      nav.addEventListener("scroll", mark, { passive: true });
+      window.addEventListener("resize", mark);
+      window.addEventListener("load", mark);
+      mark();
+    })();
+    </script>
     {% endif %}
   </div>
 </header>
@@ -60,7 +80,7 @@
     {% endif %}
     <p class="disclaimer">{{ site.disclaimer }}</p>
     <ul class="family-footer" aria-label="The three Sats sites">
-      {% for entry in sites %}<li><a href="{{ entry.url }}/"><img class="family-coin" src="/static/brand/{{ entry.key }}-coin.png" alt="" width="18" height="18">{{ entry.name }}</a> <span>{{ entry.what }}</span></li>{% endfor %}
+      {% for entry in sites %}<li><a href="{{ entry.url }}/">{{ coin(entry.key, "family-coin", 18) }}{{ entry.name }}</a> <span>{{ entry.what }}</span></li>{% endfor %}
     </ul>
     {# the pages every site carries (content/shared/): each names itself here with footer_label #}
     {% if footer_links %}
