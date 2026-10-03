@@ -10,7 +10,7 @@ chart:
   source_links:
   - name: alternative.me Crypto Fear & Greed Index
     url: https://alternative.me/crypto/fear-and-greed-index/
-  pulled: October 3, 2026, 16:18 UTC
+  pulled: October 3, 2026, 16:25 UTC
   data: /data/fear-greed.json
 attribution:
 - altme

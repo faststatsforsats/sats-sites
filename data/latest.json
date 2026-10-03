@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-03T16:18:11+00:00",
+ "updated": "2026-10-03T16:25:16+00:00",
  "price": {
   "usd": 84850.29665025683,
   "prices": {
@@ -115,12 +115,12 @@
  },
  "sats_per_dollar": 1179,
  "fees": {
-  "fast": 7,
-  "medium": 6,
-  "slow": 5,
+  "fast": 3,
+  "medium": 3,
+  "slow": 1,
   "unit": "sat/vB",
-  "height": 969741,
-  "updated": "2026-10-03T16:11:40.503Z",
+  "height": 969745,
+  "updated": "2026-10-03T16:21:37.285Z",
   "source": {
    "name": "mempool.space",
    "url": "https://mempool.space"

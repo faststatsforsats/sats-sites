@@ -12,7 +12,7 @@ chart:
     url: https://www.worldbank.org/en/research/commodity-markets
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 3, 2026, 16:18 UTC
+  pulled: October 3, 2026, 16:25 UTC
   data: /data/gold.json
 attribution:
 - worldbank
