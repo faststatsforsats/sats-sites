@@ -12,7 +12,7 @@ chart:
     url: https://fred.stlouisfed.org/series/MSPUS
   - name: blockchain.com, market price (USD)
     url: https://www.blockchain.com/explorer/charts/market-price
-  pulled: October 3, 2026, 09:09 UTC
+  pulled: October 3, 2026, 15:41 UTC
   data: /data/homes.json
 attribution:
 - fred
