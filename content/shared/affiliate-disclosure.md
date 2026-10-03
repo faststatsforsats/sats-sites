@@ -1,7 +1,7 @@
 ---
 title: Affiliate disclosure
 description: See how affiliate links work on the three Sats sites, how they are marked, which programs are active, and what a commission does not change.
-updated: 2026-10-02
+updated: 2026-10-03
 footer_label: Affiliate disclosure
 order: 2
 ---
@@ -29,4 +29,4 @@ A link to a product is not a recommendation to buy it. The guides describe how p
 
 ## Questions
 
-Write to [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com).
+Write to [dg@faststatsforsats.com](mailto:dg@faststatsforsats.com).

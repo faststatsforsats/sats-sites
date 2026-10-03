@@ -13,7 +13,7 @@ from pathlib import Path
 
 import requests
 
-USER_AGENT = "faststatsforsats.com daily build (https://faststatsforsats.com; jim@faststatsforsats.com)"
+USER_AGENT = "faststatsforsats.com daily build (https://faststatsforsats.com; dg@faststatsforsats.com)"
 FIXTURES_DIR = Path(__file__).resolve().parent.parent / "fixtures"
 TIMEOUT = 60
 

@@ -7,7 +7,7 @@ order: 1
 ---
 <p class="lead">These sites do not ask who you are. They have no accounts, no sign-up forms, and no advertising, and their pages set no cookies.</p>
 
-This policy covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats. DG Tulman runs all three and can be reached at [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com).
+This policy covers Fast Stats for Sats, Fast Facts for Sats, and Fast Acts for Sats. DG Tulman runs all three and can be reached at [dg@faststatsforsats.com](mailto:dg@faststatsforsats.com).
 
 ## What happens when you open a page
 
@@ -45,7 +45,7 @@ Another site can show a chart or a sats badge from Fast Stats for Sats. Both loa
 
 ## Email
 
-If you write to jim@faststatsforsats.com, your address and your message stay in that mailbox so the message can be answered. Zoho Mail hosts the mailbox. Ask at the same address to have a message deleted.
+If you write to dg@faststatsforsats.com, your address and your message stay in that mailbox so the message can be answered. Zoho Mail hosts the mailbox. Ask at the same address to have a message deleted.
 
 ## Changes
 

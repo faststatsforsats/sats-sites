@@ -1,7 +1,7 @@
 ---
 title: Terms of use
 description: Read the terms for the three Sats sites, including what the information is for, where the figures come from, and how the charts may be reused.
-updated: 2026-10-02
+updated: 2026-10-03
 footer_label: Terms
 order: 3
 ---
@@ -49,4 +49,4 @@ These terms can change. The date at the top of the page shows when they last did
 
 ## Contact
 
-Write to [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com).
+Write to [dg@faststatsforsats.com](mailto:dg@faststatsforsats.com).

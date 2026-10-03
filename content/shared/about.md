@@ -25,7 +25,7 @@ AI tools help draft and check the pages. DG Tulman decides what is published and
 
 ## Corrections
 
-If a figure or a sentence looks wrong, write to [jim@faststatsforsats.com](mailto:jim@faststatsforsats.com). Say which page it is on and what the source shows.
+If a figure or a sentence looks wrong, write to [dg@faststatsforsats.com](mailto:dg@faststatsforsats.com). Say which page it is on and what the source shows.
 
 ## How the sites are meant to pay their way
 
